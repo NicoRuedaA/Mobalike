@@ -30,6 +30,10 @@ namespace MobaGameplay.Controllers
 
             Vector3 inputDirection = new Vector3(horizontal, 0f, vertical).normalized;
 
+            // Leer si el jugador está presionando Shift
+            bool isSprinting = Keyboard.current.shiftKey.isPressed;
+            entity.Movement.SetSprint(isSprinting);
+
             if (inputDirection.sqrMagnitude > 0.01f)
             {
                 if (mainCamera == null) mainCamera = Camera.main;

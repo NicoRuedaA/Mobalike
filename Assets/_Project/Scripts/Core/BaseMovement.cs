@@ -7,6 +7,7 @@ namespace MobaGameplay.Core
         public abstract float CurrentVelocity { get; }
         public abstract void MoveTo(Vector3 destination);
         public abstract void MoveDirection(Vector3 direction);
+        public abstract void SetSprint(bool isSprinting);
         public abstract void Stop();
     }
 }
