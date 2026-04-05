@@ -60,6 +60,15 @@ namespace MobaGameplay.Controllers
                 // Si no hay input, decirle que se detenga
                 entity.Movement.MoveDirection(Vector3.zero);
             }
+
+            // 4. Leer Click Izquierdo para el ataque básico
+            if (Mouse.current != null && Mouse.current.leftButton.wasPressedThisFrame)
+            {
+                if (entity.Combat != null)
+                {
+                    entity.Combat.BasicAttack();
+                }
+            }
         }
     }
 }

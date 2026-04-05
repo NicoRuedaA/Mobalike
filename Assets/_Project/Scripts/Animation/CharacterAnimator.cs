@@ -33,6 +33,32 @@ namespace MobaGameplay.Animation
             animIDMotionSpeed = Animator.StringToHash("MotionSpeed");
         }
 
+        private void Start()
+        {
+            // Suscribirse a los eventos de combate para reproducir animaciones
+            if (entity.Combat != null)
+            {
+                entity.Combat.OnBasicAttack += TriggerAttackAnimation;
+            }
+        }
+
+        private void OnDestroy()
+        {
+            // Siempre des-suscribirse de los eventos al destruirse para evitar memory leaks
+            if (entity != null && entity.Combat != null)
+            {
+                entity.Combat.OnBasicAttack -= TriggerAttackAnimation;
+            }
+        }
+
+        private void TriggerAttackAnimation()
+        {
+            if (animator != null)
+            {
+                animator.SetTrigger("Attack");
+            }
+        }
+
         private void Update()
         {
             // El componente sobrevive y no da error aunque la entidad no tenga un script de movimiento
