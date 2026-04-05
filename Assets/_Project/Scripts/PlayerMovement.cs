@@ -9,25 +9,51 @@ public class PlayerMovement : MonoBehaviour
     [Tooltip("Velocidad de rotación al cambiar de dirección.")]
     [SerializeField] private float rotationSpeed = 15f;
 
+    [Header("Animation Settings")]
+    [Tooltip("Referencia al Animator del personaje. Si está vacío, se buscará automáticamente.")]
+    [SerializeField] private Animator animator;
+
     private Vector3 targetPosition;
     private bool isMoving = false;
     private Plane groundPlane;
     private Camera mainCamera;
+
+    // IDs de los parámetros del Animator (Starter Assets)
+    private int animIDSpeed;
+    private int animIDMotionSpeed;
+    
+    // Valor interpolado para la animación suave
+    private float animationBlend;
 
     private void Start()
     {
         mainCamera = Camera.main;
         
         // Creamos un plano matemático infinito en Y=0 mirando hacia arriba (Vector3.up)
-        // Esto servirá como nuestro "suelo" 2D en el mundo 3D
         groundPlane = new Plane(Vector3.up, Vector3.zero);
         targetPosition = transform.position;
+
+        // Intentar obtener el Animator del objeto actual o sus hijos
+        if (animator == null)
+        {
+            animator = GetComponentInChildren<Animator>();
+        }
+
+        AssignAnimationIDs();
+    }
+
+    private void AssignAnimationIDs()
+    {
+        // Convierte los nombres de los parámetros a IDs (es mucho más eficiente)
+        animIDSpeed = Animator.StringToHash("Speed");
+        animIDMotionSpeed = Animator.StringToHash("MotionSpeed");
     }
 
     private void Update()
     {
         HandleInput();
         MovePlayer();
+        UpdateAnimations();
     }
 
     private void HandleInput()
@@ -79,5 +105,22 @@ public class PlayerMovement : MonoBehaviour
         {
             isMoving = false;
         }
+    }
+
+    private void UpdateAnimations()
+    {
+        // Si no tenemos animator, no hacemos nada
+        if (animator == null) return;
+
+        // Calculamos la velocidad objetivo (si se mueve, es moveSpeed; si no, es 0)
+        float targetSpeed = isMoving ? moveSpeed : 0f;
+
+        // Suavizamos la transición entre quieto y moviéndose (como hace el script original de Starter Assets)
+        animationBlend = Mathf.Lerp(animationBlend, targetSpeed, Time.deltaTime * 10f);
+        if (animationBlend < 0.01f) animationBlend = 0f;
+
+        // Actualizamos los parámetros del Animator
+        animator.SetFloat(animIDSpeed, animationBlend);
+        animator.SetFloat(animIDMotionSpeed, 1f); // Velocidad normal de reproducción
     }
 }
