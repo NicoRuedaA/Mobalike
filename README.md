@@ -1,3 +1,5 @@
+[English](README.md) | [Español](README.es.md)
+
 # Mobalike
 
 A modular, scalable MOBA (Multiplayer Online Battle Arena) gameplay prototype built with Unity.
