@@ -43,7 +43,9 @@ namespace MobaGameplay.Movement
         public override bool IsGrounded {
             get {
                 if (controller != null && controller.isGrounded) return true;
-                return Physics.Raycast(transform.position + Vector3.up * 0.1f, Vector3.down, 0.2f, groundLayer, QueryTriggerInteraction.Ignore);
+                // Excluir la capa del jugador (asumiendo capa 8 "Player", o simplemente usar el CharacterController.isGrounded)
+                Vector3 spherePosition = new Vector3(transform.position.x, transform.position.y + controller.radius - 0.1f, transform.position.z);
+                return Physics.CheckSphere(spherePosition, controller.radius, groundLayer & ~(1 << 8), QueryTriggerInteraction.Ignore);
             }
         }
         
@@ -166,8 +168,8 @@ namespace MobaGameplay.Movement
 
             movement.y = verticalVelocity;
             controller.Move(movement * Time.deltaTime);
-            
-            if (IsGrounded && verticalVelocity < 0f) {
+
+            if ((controller.isGrounded || IsGrounded) && verticalVelocity < 0f) {
                 isJumping = false;
             }
         }
@@ -184,7 +186,8 @@ namespace MobaGameplay.Movement
 
         private void ApplyGravity()
         {
-            if (IsGrounded && verticalVelocity < 0.0f)
+            // Siempre que el CharacterController toque el piso, detenemos la acumulación de gravedad
+            if ((controller.isGrounded || IsGrounded) && verticalVelocity < 0.0f)
             {
                 verticalVelocity = -2f;
             }
