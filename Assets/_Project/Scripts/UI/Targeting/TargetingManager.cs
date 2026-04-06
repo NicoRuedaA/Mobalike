@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.InputSystem;
 using MobaGameplay.Abilities;
 
 namespace MobaGameplay.UI.Targeting
@@ -87,9 +88,10 @@ namespace MobaGameplay.UI.Targeting
         private void Update()
         {
             if (activeIndicatorObj == null || currentAimingAbility == null || playerTransform == null) return;
+            if (Camera.main == null || Mouse.current == null) return;
 
             // Get mouse position on ground plane
-            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+            Ray ray = Camera.main.ScreenPointToRay(Mouse.current.position.ReadValue());
             Plane groundPlane = new Plane(Vector3.up, playerTransform.position);
             
             if (groundPlane.Raycast(ray, out float hitDist))
