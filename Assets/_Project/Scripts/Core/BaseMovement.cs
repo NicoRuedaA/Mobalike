@@ -6,6 +6,7 @@ namespace MobaGameplay.Core
     public abstract class BaseMovement : MonoBehaviour
     {
         public abstract float CurrentVelocity { get; }
+        public abstract Vector3 VelocityVector { get; }
         public abstract bool IsGrounded { get; }
         public abstract bool IsJumping { get; }
 

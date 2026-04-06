@@ -53,8 +53,14 @@ namespace MobaGameplay.Animation
             if (animator == null || entity.Movement == null) return;
 
             float targetSpeed = entity.Movement.CurrentVelocity;
+            if (targetSpeed > 0.01f) {
+                Vector3 localVel = transform.InverseTransformDirection(entity.Movement.VelocityVector);
+                if (localVel.z < -0.1f) {
+                    targetSpeed = -targetSpeed; // Negativo para caminar hacia atrás
+                }
+            }
             animationBlend = Mathf.Lerp(animationBlend, targetSpeed, Time.deltaTime * 10f);
-            if (animationBlend < 0.01f) animationBlend = 0f;
+            if (Mathf.Abs(animationBlend) < 0.01f) animationBlend = 0f;
 
             animator.SetFloat(animIDSpeed, animationBlend);
             animator.SetFloat(animIDMotionSpeed, 1f);

@@ -38,7 +38,13 @@ namespace MobaGameplay.Movement
         private Vector3 lookTarget;
 
         public override float CurrentVelocity => currentVelocity;
-        public override bool IsGrounded => controller != null && controller.isGrounded;
+        public override Vector3 VelocityVector => controller != null ? controller.velocity : Vector3.zero;
+        public override bool IsGrounded {
+            get {
+                if (controller != null && controller.isGrounded) return true;
+                return Physics.Raycast(transform.position + Vector3.up * 0.1f, Vector3.down, 0.2f);
+            }
+        }
         public override bool IsJumping => isJumping;
 
         private float CurrentSpeed => isSprinting ? sprintSpeed : walkSpeed;
@@ -49,6 +55,7 @@ namespace MobaGameplay.Movement
             controller.center = new Vector3(0f, 0.93f, 0f);
             controller.radius = 0.28f;
             controller.height = 1.8f;
+            controller.minMoveDistance = 0f;
         }
 
         private void Start()
