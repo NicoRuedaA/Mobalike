@@ -6,16 +6,21 @@ namespace MobaGameplay.Movement
     [RequireComponent(typeof(CharacterController))]
     public class XZPlaneMovement : BaseMovement
     {
-        public enum MovementMode { None, Pathing, Directional }
+        public enum MovementMode { None, Pathing, Directional, Dashing }
 
         [Header("Movement Settings")]
-        [SerializeField] private float walkSpeed = 3f;
-        [SerializeField] private float sprintSpeed = 6f;
-        [SerializeField] private float rotationSpeed = 15f;
+        [SerializeField] private float walkSpeed = 5f;
+        [SerializeField] private float sprintSpeed = 8f;
+        [SerializeField] private float rotationSpeed = 25f;
         
         [Header("Jump & Gravity")]
         [SerializeField] private float jumpHeight = 1.2f;
-        [SerializeField] private float gravity = -15f;
+        [SerializeField] private float gravity = -20f;
+
+        [Header("Dash Settings")]
+        [SerializeField] private float dashSpeed = 25f;
+        [SerializeField] private float dashDuration = 0.15f;
+        [SerializeField] private float dashCooldown = 2f;
 
         private CharacterController controller;
         private Vector3 targetPosition;
@@ -27,6 +32,11 @@ namespace MobaGameplay.Movement
         private float verticalVelocity;
         private bool isJumping = false;
 
+        private float dashTimer = 0f;
+        private float dashCooldownTimer = 0f;
+        private Vector3 dashDirection;
+        private Vector3 lookTarget;
+
         public override float CurrentVelocity => currentVelocity;
         public override bool IsGrounded => controller != null && controller.isGrounded;
         public override bool IsJumping => isJumping;
@@ -36,7 +46,6 @@ namespace MobaGameplay.Movement
         private void Awake()
         {
             controller = GetComponent<CharacterController>();
-            // Asegurarnos de que el collider tiene las medidas estándar humanoides
             controller.center = new Vector3(0f, 0.93f, 0f);
             controller.radius = 0.28f;
             controller.height = 1.8f;
@@ -45,10 +54,12 @@ namespace MobaGameplay.Movement
         private void Start()
         {
             targetPosition = transform.position;
+            lookTarget = transform.position + transform.forward;
         }
 
         public override void MoveTo(Vector3 destination)
         {
+            if (currentMode == MovementMode.Dashing) return;
             destination.y = transform.position.y;
             targetPosition = destination;
             currentMode = MovementMode.Pathing;
@@ -56,6 +67,7 @@ namespace MobaGameplay.Movement
 
         public override void MoveDirection(Vector3 direction)
         {
+            if (currentMode == MovementMode.Dashing) return;
             currentDirection = direction.normalized;
             if (currentDirection.sqrMagnitude > 0.01f)
             {
@@ -74,6 +86,7 @@ namespace MobaGameplay.Movement
 
         public override void Stop()
         {
+            if (currentMode == MovementMode.Dashing) return;
             currentMode = MovementMode.None;
             targetPosition = transform.position;
             currentDirection = Vector3.zero;
@@ -82,20 +95,52 @@ namespace MobaGameplay.Movement
 
         public override void Jump()
         {
-            if (IsGrounded)
+            if (IsGrounded && currentMode != MovementMode.Dashing)
             {
                 verticalVelocity = Mathf.Sqrt(jumpHeight * -2f * gravity);
                 isJumping = true;
             }
         }
 
+        public override void LookAtPoint(Vector3 point)
+        {
+            lookTarget = point;
+            lookTarget.y = transform.position.y;
+        }
+
+        public override void Dash(Vector3 direction)
+        {
+            if (dashCooldownTimer <= 0f)
+            {
+                currentMode = MovementMode.Dashing;
+                dashDirection = direction.normalized;
+                if (dashDirection == Vector3.zero) dashDirection = transform.forward;
+                dashTimer = dashDuration;
+                dashCooldownTimer = dashCooldown;
+                verticalVelocity = 0f; // Reiniciar gravedad para un dash recto en el aire
+            }
+        }
+
         private void Update()
         {
+            if (dashCooldownTimer > 0f) dashCooldownTimer -= Time.deltaTime;
+
             ApplyGravity();
+            HandleRotation();
 
             Vector3 movement = Vector3.zero;
 
-            if (currentMode == MovementMode.Pathing)
+            if (currentMode == MovementMode.Dashing)
+            {
+                movement = dashDirection * dashSpeed;
+                currentVelocity = dashSpeed;
+                dashTimer -= Time.deltaTime;
+                if (dashTimer <= 0f)
+                {
+                    Stop();
+                }
+            }
+            else if (currentMode == MovementMode.Pathing)
             {
                 movement = HandlePathingMovement();
             }
@@ -108,15 +153,21 @@ namespace MobaGameplay.Movement
                 currentVelocity = 0f;
             }
 
-            // Aplicar gravedad al movimiento final
             movement.y = verticalVelocity;
-
-            // Mover físicamente al jugador (CharacterController se encarga de colisiones)
             controller.Move(movement * Time.deltaTime);
             
-            // Reiniciar salto al tocar suelo de nuevo
             if (IsGrounded && verticalVelocity < 0f) {
                 isJumping = false;
+            }
+        }
+
+        private void HandleRotation()
+        {
+            Vector3 dir = (lookTarget - transform.position).normalized;
+            if (dir != Vector3.zero)
+            {
+                Quaternion targetRot = Quaternion.LookRotation(dir);
+                transform.rotation = Quaternion.Slerp(transform.rotation, targetRot, rotationSpeed * Time.deltaTime);
             }
         }
 
@@ -124,9 +175,8 @@ namespace MobaGameplay.Movement
         {
             if (IsGrounded && verticalVelocity < 0.0f)
             {
-                verticalVelocity = -2f; // Mantenerlo pegado al suelo
+                verticalVelocity = -2f;
             }
-
             verticalVelocity += gravity * Time.deltaTime;
         }
 
@@ -134,19 +184,13 @@ namespace MobaGameplay.Movement
         {
             Vector3 direction = (targetPosition - transform.position);
             direction.y = 0;
-            
             if (direction.magnitude < 0.1f)
             {
                 Stop();
                 return Vector3.zero;
             }
-
             direction.Normalize();
             currentVelocity = CurrentSpeed;
-
-            Quaternion targetRotation = Quaternion.LookRotation(direction);
-            transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, rotationSpeed * Time.deltaTime);
-
             return direction * CurrentSpeed;
         }
 
@@ -157,12 +201,7 @@ namespace MobaGameplay.Movement
                 Stop();
                 return Vector3.zero;
             }
-
             currentVelocity = CurrentSpeed;
-            
-            Quaternion targetRotation = Quaternion.LookRotation(currentDirection);
-            transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, rotationSpeed * Time.deltaTime);
-
             return currentDirection * CurrentSpeed;
         }
     }

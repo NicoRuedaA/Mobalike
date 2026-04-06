@@ -14,5 +14,7 @@ namespace MobaGameplay.Core
         public abstract void SetSprint(bool sprint);
         public abstract void Stop();
         public abstract void Jump();
+        public abstract void LookAtPoint(Vector3 point);
+        public abstract void Dash(Vector3 direction);
     }
 }
