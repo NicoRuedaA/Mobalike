@@ -7,23 +7,20 @@ namespace MobaGameplay.Animation
     public class CharacterAnimator : MonoBehaviour
     {
         [Header("Animation Settings")]
-        [Tooltip("Referencia al Animator. Si está vacío, se buscará automáticamente.")]
         [SerializeField] private Animator animator;
         
         private BaseEntity entity;
         private int animIDSpeed;
         private int animIDMotionSpeed;
+        private int animIDGrounded;
+        private int animIDJump;
+        private int animIDFreeFall;
         private float animationBlend;
 
         private void Awake()
         {
             entity = GetComponent<BaseEntity>();
-            
-            if (animator == null)
-            {
-                animator = GetComponentInChildren<Animator>();
-            }
-
+            if (animator == null) animator = GetComponentInChildren<Animator>();
             AssignAnimationIDs();
         }
 
@@ -31,71 +28,47 @@ namespace MobaGameplay.Animation
         {
             animIDSpeed = Animator.StringToHash("Speed");
             animIDMotionSpeed = Animator.StringToHash("MotionSpeed");
+            animIDGrounded = Animator.StringToHash("Grounded");
+            animIDJump = Animator.StringToHash("Jump");
+            animIDFreeFall = Animator.StringToHash("FreeFall");
         }
 
         private void Start()
         {
-            // Suscribirse a los eventos de combate para reproducir animaciones
-            if (entity.Combat != null)
-            {
-                entity.Combat.OnBasicAttack += TriggerAttackAnimation;
-            }
+            if (entity.Combat != null) entity.Combat.OnBasicAttack += TriggerAttackAnimation;
         }
 
         private void OnDestroy()
         {
-            // Siempre des-suscribirse de los eventos al destruirse para evitar memory leaks
-            if (entity != null && entity.Combat != null)
-            {
-                entity.Combat.OnBasicAttack -= TriggerAttackAnimation;
-            }
+            if (entity != null && entity.Combat != null) entity.Combat.OnBasicAttack -= TriggerAttackAnimation;
         }
 
         private void TriggerAttackAnimation()
         {
-            if (animator != null)
-            {
-                animator.SetTrigger("Attack");
-            }
+            if (animator != null) animator.SetTrigger("Attack");
         }
 
         private void Update()
         {
-            // El componente sobrevive y no da error aunque la entidad no tenga un script de movimiento
             if (animator == null || entity.Movement == null) return;
 
-            // Lee la velocidad actual del componente de movimiento
             float targetSpeed = entity.Movement.CurrentVelocity;
-
-            // Suavizado de la transición (Blend Tree)
             animationBlend = Mathf.Lerp(animationBlend, targetSpeed, Time.deltaTime * 10f);
             if (animationBlend < 0.01f) animationBlend = 0f;
 
-            // Envía la velocidad al Animator
             animator.SetFloat(animIDSpeed, animationBlend);
-            animator.SetFloat(animIDMotionSpeed, 1f); // Velocidad de reproducción normal
+            animator.SetFloat(animIDMotionSpeed, 1f);
+
+            // Sincronizar parámetros de salto y caída
+            bool isGrounded = entity.Movement.IsGrounded;
+            bool isJumping = entity.Movement.IsJumping;
+
+            animator.SetBool(animIDGrounded, isGrounded);
+            animator.SetBool(animIDJump, isJumping);
+            animator.SetBool(animIDFreeFall, !isGrounded && !isJumping);
         }
 
-        // --- Manejo de Eventos de Animación (Starter Assets) ---
-        
-        public void OnFootstep(AnimationEvent animationEvent)
-        {
-            // Este evento es disparado automáticamente por los clips de animación Walk/Run
-            // Aquí podríamos reproducir sonidos de pasos en el futuro.
-            // Por ahora, tener este método vacío silencia los errores de la consola.
-            if (animationEvent.animatorClipInfo.weight > 0.5f)
-            {
-                // Ejemplo: Play footstep audio
-            }
-        }
-
-        public void OnLand(AnimationEvent animationEvent)
-        {
-            // Evento disparado al aterrizar. Silenciamos el error.
-            if (animationEvent.animatorClipInfo.weight > 0.5f)
-            {
-                // Ejemplo: Play landing audio
-            }
-        }
+        public void OnFootstep(AnimationEvent animationEvent) { }
+        public void OnLand(AnimationEvent animationEvent) { }
     }
 }

@@ -19,7 +19,6 @@ namespace MobaGameplay.Controllers
             if (entity.Movement == null) return;
             if (Keyboard.current == null) return;
 
-            // 1. Leer los inputs WASD (o flechas) del Input System nuevo
             float horizontal = 0f;
             float vertical = 0f;
 
@@ -29,8 +28,6 @@ namespace MobaGameplay.Controllers
             if (Keyboard.current.sKey.isPressed || Keyboard.current.downArrowKey.isPressed) vertical -= 1f;
 
             Vector3 inputDirection = new Vector3(horizontal, 0f, vertical).normalized;
-
-            // Leer si el jugador está presionando Shift
             bool isSprinting = Keyboard.current.shiftKey.isPressed;
             entity.Movement.SetSprint(isSprinting);
 
@@ -39,8 +36,6 @@ namespace MobaGameplay.Controllers
                 if (mainCamera == null) mainCamera = Camera.main;
                 if (mainCamera == null) return;
 
-                // 2. Hacer el movimiento relativo a la cámara isométrica
-                // "W" va hacia donde la cámara está mirando (sin la inclinación Y)
                 Vector3 forward = mainCamera.transform.forward;
                 forward.y = 0;
                 forward.Normalize();
@@ -49,25 +44,22 @@ namespace MobaGameplay.Controllers
                 right.y = 0;
                 right.Normalize();
 
-                // Calcular la dirección final basada en la perspectiva de la cámara
                 Vector3 moveDir = forward * inputDirection.z + right * inputDirection.x;
-
-                // 3. El Cerebro ordena al Cuerpo que se mueva en esa dirección
                 entity.Movement.MoveDirection(moveDir);
             }
             else
             {
-                // Si no hay input, decirle que se detenga
                 entity.Movement.MoveDirection(Vector3.zero);
             }
 
-            // 4. Leer Click Izquierdo para el ataque básico
             if (Mouse.current != null && Mouse.current.leftButton.wasPressedThisFrame)
             {
-                if (entity.Combat != null)
-                {
-                    entity.Combat.BasicAttack();
-                }
+                if (entity.Combat != null) entity.Combat.BasicAttack();
+            }
+
+            if (Keyboard.current.spaceKey.wasPressedThisFrame)
+            {
+                entity.Movement.Jump();
             }
         }
     }
