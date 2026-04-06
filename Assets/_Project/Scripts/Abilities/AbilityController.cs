@@ -15,6 +15,10 @@ namespace MobaGameplay.Abilities
         
         public BaseAbility ActiveTargetingAbility { get; private set; }
 
+        public BaseAbility Ability1 => ability1;
+        public BaseAbility Ability2 => ability2;
+        public BaseAbility Ability3 => ability3;
+
         private void Awake()
         {
             entity = GetComponent<BaseEntity>();

@@ -15,6 +15,8 @@ namespace MobaGameplay.Abilities
         protected BaseEntity ownerEntity;
 
         public bool IsOnCooldown => currentCooldown > 0f;
+        public float CurrentCooldown => currentCooldown;
+        public float MaxCooldown => cooldown;
 
         public virtual void Initialize(BaseEntity owner)
         {
