@@ -2724,6 +2724,134 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!1 &1177391309
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1177391314}
+  - component: {fileID: 1177391313}
+  - component: {fileID: 1177391312}
+  - component: {fileID: 1177391311}
+  - component: {fileID: 1177391310}
+  m_Layer: 0
+  m_Name: Enemy_Dummy
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1177391310
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1177391309}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 13055446ecf70cc48a71c009557a552d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MobaGameplay.Core.EnemyEntity
+  maxHealth: 500
+--- !u!23 &1177391311
+MeshRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1177391309}
+  m_Enabled: 1
+  m_CastShadows: 1
+  m_ReceiveShadows: 1
+  m_DynamicOccludee: 1
+  m_StaticShadowCaster: 0
+  m_MotionVectors: 1
+  m_LightProbeUsage: 1
+  m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 2
+  m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
+  m_ForceMeshLod: -1
+  m_MeshLodSelectionBias: 0
+  m_RenderingLayerMask: 1
+  m_RendererPriority: 0
+  m_Materials:
+  - {fileID: 2100000, guid: 31321ba15b8f8eb4c954353edc038b1d, type: 2}
+  m_StaticBatchInfo:
+    firstSubMesh: 0
+    subMeshCount: 0
+  m_StaticBatchRoot: {fileID: 0}
+  m_ProbeAnchor: {fileID: 0}
+  m_LightProbeVolumeOverride: {fileID: 0}
+  m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
+  m_PreserveUVs: 1
+  m_IgnoreNormalsForChartDetection: 0
+  m_ImportantGI: 0
+  m_StitchLightmapSeams: 1
+  m_SelectedEditorRenderState: 3
+  m_MinimumChartSize: 4
+  m_AutoUVMaxDistance: 0.5
+  m_AutoUVMaxAngle: 89
+  m_LightmapParameters: {fileID: 0}
+  m_GlobalIlluminationMeshLod: 0
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
+  m_SortingOrder: 0
+  m_MaskInteraction: 0
+  m_AdditionalVertexStreams: {fileID: 0}
+--- !u!136 &1177391312
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1177391309}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 0.5
+  m_Height: 2
+  m_Direction: 1
+  m_Center: {x: 0, y: 0, z: 0}
+--- !u!33 &1177391313
+MeshFilter:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1177391309}
+  m_Mesh: {fileID: 10208, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!4 &1177391314
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1177391309}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 3, y: 1, z: 3}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1186080892
 GameObject:
   m_ObjectHideFlags: 0
@@ -5425,6 +5553,10 @@ GameObject:
   - component: {fileID: 5521050719080623890}
   - component: {fileID: 5521050719080623892}
   - component: {fileID: 5521050719080623891}
+  - component: {fileID: 5521050719080623896}
+  - component: {fileID: 5521050719080623895}
+  - component: {fileID: 5521050719080623894}
+  - component: {fileID: 5521050719080623893}
   m_Layer: 0
   m_Name: Player
   m_TagString: Player
@@ -5574,6 +5706,88 @@ MonoBehaviour:
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
+--- !u!114 &5521050719080623893
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5521050719080623884}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 83f167e77869cff41a863d95da7d61fc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MobaGameplay.Abilities.Types.TargetedProjectileAbility
+  abilityName: Skill 3 - Veigar R
+  cooldown: 5
+  castTime: 0
+  manaCost: 0
+  projectilePrefab: {fileID: 2747305188469570397, guid: b08534305e3fead42b50a2e8e8cefd10, type: 3}
+  spawnPoint: {fileID: 0}
+  projectileSpeed: 15
+  turnSpeed: 10
+  damage: 150
+  castRange: 8
+--- !u!114 &5521050719080623894
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5521050719080623884}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d88a83bb9efaf744bb3c54e99cbbc111, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MobaGameplay.Abilities.Types.AreaOfEffectAbility
+  abilityName: Skill 2 - Explosion AoE
+  cooldown: 5
+  castTime: 0
+  manaCost: 0
+  aoePrefab: {fileID: 1215716349592562957, guid: 0ab1dee3b00cde64ea07da4ad897e9fd, type: 3}
+  damage: 100
+  radius: 3
+  explosionDelay: 1
+  enemyLayer:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  maxCastRange: 10
+--- !u!114 &5521050719080623895
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5521050719080623884}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1101d386611082b4ba61a5f283d592a5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MobaGameplay.Abilities.Types.ProjectileAbility
+  abilityName: Skill 1 - Proyectil Recto
+  cooldown: 5
+  castTime: 0
+  manaCost: 0
+  projectilePrefab: {fileID: 1659227643650796056, guid: 36c3a8322706eda4aa35b7f4e7916287, type: 3}
+  spawnPoint: {fileID: 0}
+  projectileSpeed: 20
+  damage: 50
+  maxRange: 15
+--- !u!114 &5521050719080623896
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5521050719080623884}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4621aa8ad4d54dc4cb6c6814352a8c48, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MobaGameplay.Abilities.AbilityController
+  ability1: {fileID: 5521050719080623895}
+  ability2: {fileID: 5521050719080623894}
+  ability3: {fileID: 5521050719080623893}
 --- !u!4 &5583402631138559369
 Transform:
   m_ObjectHideFlags: 0
@@ -6394,3 +6608,4 @@ SceneRoots:
   - {fileID: 44790520}
   - {fileID: 1142148082}
   - {fileID: 355510514}
+  - {fileID: 1177391314}
