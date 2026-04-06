@@ -13,6 +13,11 @@ Un prototipo modular y escalable de jugabilidad MOBA (Multiplayer Online Battle 
 * **Cámara Isométrica Inteligente:** Sistema de cámara auto-configurable que incluye desplazamiento por los bordes (edge panning), amortiguación suave y centrado en el jugador (Barra espaciadora).
 * **Arquitectura Modular:** Construido usando un patrón de componentes escalable de "Cerebro y Cuerpo" (Brain and Body), desacoplando la lógica de entrada de la ejecución para soportar de manera fluida tanto a personajes controlados por el jugador como entidades de IA.
 * **Animaciones Fluidas:** Mezcla suave de animaciones y transiciones de estado utilizando los Starter Assets de Unity.
+* **Sistema de Inventario y Equipamiento estilo MMORPG:** Funcionalidad Drag & Drop, disposición de equipamiento "Paper-Doll" (Cabeza, Pecho, Arma, Pantalones, Botas) y un backend escalable basado en ScriptableObjects `ItemData`.
+
+## Herramientas y Scripts de Editor
+
+* **Generador Masivo de Objetos de la Wiki:** Obtiene iconos y estadísticas de la API de la wiki de Supervive para generar automáticamente datos de objetos como ScriptableObjects.
 
 ## Arquitectura
 

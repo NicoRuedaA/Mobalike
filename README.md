@@ -13,6 +13,11 @@ A modular, scalable MOBA (Multiplayer Online Battle Arena) gameplay prototype bu
 * **Smart Isometric Camera:** Auto-configuring camera system featuring edge panning, smooth dampening, and player-centering (Spacebar).
 * **Modular Architecture:** Built using a scalable "Brain and Body" component pattern, decoupling input logic from execution to seamlessly support both Player Characters and AI entities.
 * **Fluid Animations:** Smooth animation blending and state transitions using Unity's Starter Assets.
+* **MMORPG-style Inventory & Equipment System:** Features Drag & Drop functionality, a Paper-Doll equipment layout (Head, Chest, Weapon, Pants, Boots), and a scalable `ItemData` ScriptableObject backend.
+
+## Tools & Editor Scripts
+
+* **Wiki Mass Item Generator:** Fetches icons and stats from the Supervive wiki API to automatically generate ScriptableObject item data.
 
 ## Architecture
 
