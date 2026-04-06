@@ -7605,6 +7605,9 @@ GameObject:
   - component: {fileID: 5521050719080623895}
   - component: {fileID: 5521050719080623894}
   - component: {fileID: 5521050719080623893}
+  - component: {fileID: 5521050719080623899}
+  - component: {fileID: 5521050719080623898}
+  - component: {fileID: 5521050719080623897}
   m_Layer: 0
   m_Name: Player
   m_TagString: Player
@@ -7865,9 +7868,77 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4621aa8ad4d54dc4cb6c6814352a8c48, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MobaGameplay.Abilities.AbilityController
-  ability1: {fileID: 5521050719080623895}
-  ability2: {fileID: 5521050719080623894}
-  ability3: {fileID: 5521050719080623893}
+  ability1: {fileID: 5521050719080623899}
+  ability2: {fileID: 5521050719080623898}
+  ability3: {fileID: 5521050719080623897}
+--- !u!114 &5521050719080623897
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5521050719080623884}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 64d175393641ec74e94d9744245d3d86, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MobaGameplay.Abilities.DashAbility
+  abilityName: New Ability
+  cooldown: 5
+  castTime: 0
+  manaCost: 0
+  TargetingType: 1
+  CastRange: 10
+  Range: 2
+  Width: 1
+  dashSpeed: 20
+  dashDuration: 0.2
+--- !u!114 &5521050719080623898
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5521050719080623884}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 618fa641ded66a0468d9cf6deddaae29, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MobaGameplay.Abilities.GroundSmashAbility
+  abilityName: New Ability
+  cooldown: 5
+  castTime: 0
+  manaCost: 0
+  TargetingType: 1
+  CastRange: 10
+  Range: 2
+  Width: 1
+  baseDamage: 100
+  adRatio: 0.8
+  vfxPrefab: {fileID: 2987217871762459909, guid: 37030b197ed8eec479acc2791096ccc5, type: 3}
+--- !u!114 &5521050719080623899
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5521050719080623884}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2e5935fef719174428276b73d1136f0d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MobaGameplay.Abilities.FireballAbility
+  abilityName: New Ability
+  cooldown: 5
+  castTime: 0
+  manaCost: 0
+  TargetingType: 1
+  CastRange: 10
+  Range: 2
+  Width: 1
+  projectilePrefab: {fileID: 1210754999178854918, guid: 62d2ced362fb20249a36ff74f39d4ccb, type: 3}
+  baseDamage: 80
+  apRatio: 0.6
 --- !u!4 &5583402631138559369
 Transform:
   m_ObjectHideFlags: 0
