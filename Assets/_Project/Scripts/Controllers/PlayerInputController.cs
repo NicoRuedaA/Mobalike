@@ -66,31 +66,70 @@ namespace MobaGameplay.Controllers
                 entity.Movement.MoveDirection(Vector3.zero);
             }
 
-            // 3. COMBATE
+            // 3. HABILIDADES (1, 2, 3)
+            if (Keyboard.current.digit1Key.wasPressedThisFrame && entity.Abilities != null)
+                entity.Abilities.TryStartTargetingAbility1();
+            if (Keyboard.current.digit2Key.wasPressedThisFrame && entity.Abilities != null)
+                entity.Abilities.TryStartTargetingAbility2();
+            if (Keyboard.current.digit3Key.wasPressedThisFrame && entity.Abilities != null)
+                entity.Abilities.TryStartTargetingAbility3();
+
+            // 4. COMBATE O CONFIRMAR HABILIDAD (Click Izquierdo)
             if (Mouse.current.leftButton.wasPressedThisFrame)
             {
                 // Evitar atacar si estamos haciendo click en la interfaz (UI)
                 if (EventSystem.current == null || !EventSystem.current.IsPointerOverGameObject())
                 {
-                    if (entity.Combat != null) entity.Combat.BasicAttack();
+                    if (entity.Abilities != null && entity.Abilities.ActiveTargetingAbility != null)
+                    {
+                        // Estamos apuntando una habilidad, así que el click la lanza
+                        Ray aimRay = mainCamera.ScreenPointToRay(Mouse.current.position.ReadValue());
+                        Vector3 aimPoint = Vector3.zero;
+                        BaseEntity targetEnt = null;
+
+                        // Raycast para encontrar un objetivo válido
+                        if (Physics.Raycast(aimRay, out RaycastHit hit))
+                        {
+                            aimPoint = hit.point;
+                            targetEnt = hit.collider.GetComponent<BaseEntity>();
+                        }
+                        else if (groundPlane.Raycast(aimRay, out float d))
+                        {
+                            aimPoint = aimRay.GetPoint(d);
+                        }
+
+                        entity.Abilities.ExecuteTargeting(aimPoint, targetEnt);
+                    }
+                    else if (entity.Combat != null) 
+                    {
+                        // No estamos apuntando, lanzar ataque básico normal
+                        entity.Combat.BasicAttack();
+                    }
                 }
             }
 
-            // 4. SALTO
+            // 5. SALTO
             if (Keyboard.current.spaceKey.wasPressedThisFrame)
             {
                 entity.Movement.Jump();
             }
 
-            // 5. DASH (Esquive)
+            // 6. DASH Y CANCELAR HABILIDAD (Click Derecho)
             if (Mouse.current.rightButton.wasPressedThisFrame)
             {
-                // Evitar dashear si estamos haciendo click derecho en la interfaz
                 if (EventSystem.current == null || !EventSystem.current.IsPointerOverGameObject())
                 {
-                    // Dash en la dirección del movimiento, o si está quieto, hacia donde mira
-                    Vector3 dashDir = moveDir != Vector3.zero ? moveDir.normalized : entity.transform.forward;
-                    entity.Movement.Dash(dashDir);
+                    if (entity.Abilities != null && entity.Abilities.ActiveTargetingAbility != null)
+                    {
+                        // Si estamos apuntando, el click derecho cancela la habilidad en lugar de hacer un dash
+                        entity.Abilities.CancelTargeting();
+                    }
+                    else
+                    {
+                        // Dash en la dirección del movimiento, o si está quieto, hacia donde mira
+                        Vector3 dashDir = moveDir != Vector3.zero ? moveDir.normalized : entity.transform.forward;
+                        entity.Movement.Dash(dashDir);
+                    }
                 }
             }
         }

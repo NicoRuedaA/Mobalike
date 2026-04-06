@@ -2714,7 +2714,12 @@ Animator:
   m_LinearVelocityBlending: 0
   m_StabilizeFeet: 0
   m_AnimatePhysics: 0
-  m_WarningMessage: 
+  m_WarningMessage: "\nBinding warning: Some generic clip(s) animate transforms that
+    are already bound by a Humanoid avatar. These transforms can only be changed
+    by Humanoid clips.\n\tTransform 'Left_LowerArm'\n\tTransform 'Chest'\n\tTransform
+    'Spine'\n\tTransform 'Right_Foot'\n\tTransform 'Right_Toes'\n\tTransform 'Right_LowerLeg'\n\tTransform
+    'UpperChest'\n\tTransform 'Left_Toes'\n\tTransform 'Right_Shoulder'\n\tTransform
+    'Left_Foot'\n\tand more ...\n\tFrom animation clip 'mixamo.com'"
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
@@ -5420,7 +5425,7 @@ GameObject:
   - component: {fileID: 5521050719080623890}
   - component: {fileID: 5521050719080623892}
   - component: {fileID: 5521050719080623891}
-  m_Layer: 8
+  m_Layer: 0
   m_Name: Player
   m_TagString: Player
   m_Icon: {fileID: 0}
