@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.EventSystems;
 using MobaGameplay.Core;
+using MobaGameplay.UI.Targeting;
 
 namespace MobaGameplay.Controllers
 {
@@ -9,6 +10,7 @@ namespace MobaGameplay.Controllers
     {
         private Camera mainCamera;
         private Plane groundPlane;
+        private HoverOutline currentHovered;
 
         protected override void Awake()
         {
@@ -23,6 +25,40 @@ namespace MobaGameplay.Controllers
 
             if (mainCamera == null) mainCamera = Camera.main;
             if (mainCamera == null) return;
+
+            // 0. HOVER (Raycast cada frame)
+            Ray hoverRay = mainCamera.ScreenPointToRay(Mouse.current.position.ReadValue());
+            if (EventSystem.current == null || !EventSystem.current.IsPointerOverGameObject())
+            {
+                if (Physics.Raycast(hoverRay, out RaycastHit hoverHit))
+                {
+                    HoverOutline outline = hoverHit.collider.GetComponentInParent<HoverOutline>();
+                    if (outline != null)
+                    {
+                        if (currentHovered != outline)
+                        {
+                            if (currentHovered != null) currentHovered.SetHover(false);
+                            currentHovered = outline;
+                            currentHovered.SetHover(true);
+                        }
+                    }
+                    else if (currentHovered != null)
+                    {
+                        currentHovered.SetHover(false);
+                        currentHovered = null;
+                    }
+                }
+                else if (currentHovered != null)
+                {
+                    currentHovered.SetHover(false);
+                    currentHovered = null;
+                }
+            }
+            else if (currentHovered != null)
+            {
+                currentHovered.SetHover(false);
+                currentHovered = null;
+            }
 
             // 1. APUNTADO (Rotación hacia el ratón)
             groundPlane = new Plane(Vector3.up, new Vector3(0, entity.transform.position.y, 0));

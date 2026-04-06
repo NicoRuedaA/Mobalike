@@ -4,6 +4,20 @@ namespace MobaGameplay.Core
 {
     public class EnemyEntity : BaseEntity
     {
+        protected override void Awake()
+        {
+            base.Awake();
+            
+            // Automatically add hover outline if not present
+            var hoverOutline = GetComponent<MobaGameplay.UI.Targeting.HoverOutline>();
+            if (hoverOutline == null)
+            {
+                hoverOutline = gameObject.AddComponent<MobaGameplay.UI.Targeting.HoverOutline>();
+                hoverOutline.outlineColor = Color.red;
+                hoverOutline.outlineWidth = 0.02f;
+            }
+        }
+
         protected override void Die()
         {
             base.Die();
