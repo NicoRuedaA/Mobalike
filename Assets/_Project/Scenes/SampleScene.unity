@@ -2650,6 +2650,75 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 0}
+--- !u!1 &1167437881
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1167437882}
+  - component: {fileID: 1167437884}
+  - component: {fileID: 1167437883}
+  m_Layer: 0
+  m_Name: Visuals
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1167437882
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1167437881}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 2224608797559353700}
+  - {fileID: 8222299022904937263}
+  m_Father: {fileID: 5176156373276652982}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1167437883
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1167437881}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 560c2038c86c0c14e98089e7554a30cf, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MobaGameplay.Animation.AnimationEventReceiver
+--- !u!95 &1167437884
+Animator:
+  serializedVersion: 7
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1167437881}
+  m_Enabled: 1
+  m_Avatar: {fileID: 9000000, guid: 36078ab0369161e49a29d349ae3e0739, type: 3}
+  m_Controller: {fileID: 9100000, guid: 40db3173a05ae3242b1c182a09b0a183, type: 2}
+  m_CullingMode: 1
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_AnimatePhysics: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!1 &1186080892
 GameObject:
   m_ObjectHideFlags: 0
@@ -4084,28 +4153,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!95 &1239978741740515276
-Animator:
-  serializedVersion: 7
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5521050719080623884}
-  m_Enabled: 1
-  m_Avatar: {fileID: 9000000, guid: 36078ab0369161e49a29d349ae3e0739, type: 3}
-  m_Controller: {fileID: 9100000, guid: 40db3173a05ae3242b1c182a09b0a183, type: 2}
-  m_CullingMode: 1
-  m_UpdateMode: 0
-  m_ApplyRootMotion: 0
-  m_LinearVelocityBlending: 0
-  m_StabilizeFeet: 0
-  m_AnimatePhysics: 0
-  m_WarningMessage: 
-  m_HasTransformHierarchy: 1
-  m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorStateOnDisable: 0
-  m_WriteDefaultValuesOnDisable: 0
 --- !u!4 &1241621590012696341
 Transform:
   m_ObjectHideFlags: 0
@@ -4392,7 +4439,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 2982587813917427332}
-  m_Father: {fileID: 5176156373276652982}
+  m_Father: {fileID: 1167437882}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2228975507403286239
 GameObject:
@@ -5257,8 +5304,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 173579167353460304}
-  - {fileID: 2224608797559353700}
-  - {fileID: 8222299022904937263}
+  - {fileID: 1167437882}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!4 &5345329579617454716
@@ -5366,7 +5412,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5176156373276652982}
-  - component: {fileID: 1239978741740515276}
   - component: {fileID: 5521050719080623888}
   - component: {fileID: 5521050719080623887}
   - component: {fileID: 5521050719080623886}
@@ -5406,7 +5451,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7421306df2f3d1248b33e9e56a03ac4d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MobaGameplay.Animation.CharacterAnimator
-  animator: {fileID: 1239978741740515276}
+  animator: {fileID: 0}
 --- !u!114 &5521050719080623887
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5422,6 +5467,9 @@ MonoBehaviour:
   walkSpeed: 5
   sprintSpeed: 8
   rotationSpeed: 15
+  groundLayer:
+    serializedVersion: 2
+    m_Bits: 4294967295
   jumpHeight: 1.2
   gravity: -20
   dashSpeed: 25
@@ -6185,7 +6233,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 2039639933638328071}
-  m_Father: {fileID: 5176156373276652982}
+  m_Father: {fileID: 1167437882}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &8443109720922393391
 GameObject:

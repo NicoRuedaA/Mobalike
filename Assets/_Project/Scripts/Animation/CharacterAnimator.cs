@@ -20,7 +20,11 @@ namespace MobaGameplay.Animation
         private void Awake()
         {
             entity = GetComponent<BaseEntity>();
-            if (animator == null) animator = GetComponentInChildren<Animator>();
+            animator = GetComponentInChildren<Animator>();
+            if (animator == null)
+            {
+                Debug.LogError($"CharacterAnimator en {gameObject.name} NO encontró un Animator en sus hijos. ¡Las animaciones no funcionarán!", this);
+            }
             AssignAnimationIDs();
         }
 

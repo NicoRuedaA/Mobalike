@@ -12,6 +12,7 @@ namespace MobaGameplay.Movement
         [SerializeField] private float walkSpeed = 5f;
         [SerializeField] private float sprintSpeed = 8f;
         [SerializeField] private float rotationSpeed = 25f;
+        [SerializeField] private LayerMask groundLayer = ~0;
         
         [Header("Jump & Gravity")]
         [SerializeField] private float jumpHeight = 1.2f;
@@ -42,9 +43,10 @@ namespace MobaGameplay.Movement
         public override bool IsGrounded {
             get {
                 if (controller != null && controller.isGrounded) return true;
-                return Physics.Raycast(transform.position + Vector3.up * 0.1f, Vector3.down, 0.2f);
+                return Physics.Raycast(transform.position + Vector3.up * 0.1f, Vector3.down, 0.2f, groundLayer, QueryTriggerInteraction.Ignore);
             }
         }
+        
         public override bool IsJumping => isJumping;
 
         private float CurrentSpeed => isSprinting ? sprintSpeed : walkSpeed;
@@ -55,7 +57,8 @@ namespace MobaGameplay.Movement
             controller.center = new Vector3(0f, 0.93f, 0f);
             controller.radius = 0.28f;
             controller.height = 1.8f;
-            controller.minMoveDistance = 0f;
+            controller.minMoveDistance = 0.001f;
+            controller.stepOffset = 0.3f;
         }
 
         private void Start()
@@ -185,7 +188,14 @@ namespace MobaGameplay.Movement
             {
                 verticalVelocity = -2f;
             }
-            verticalVelocity += gravity * Time.deltaTime;
+            else
+            {
+                verticalVelocity += gravity * Time.deltaTime;
+                if (verticalVelocity < -20f) 
+                {
+                    verticalVelocity = -20f;
+                }
+            }
         }
 
         private Vector3 HandlePathingMovement()
