@@ -76,7 +76,7 @@ namespace MobaGameplay.Abilities.Projectiles
                 // Implementación temporal de daño directo si es un enemigo
                 if (hitEntity is EnemyEntity enemy)
                 {
-                    enemy.TakeDamage(damage);
+                    enemy.TakeDamage(new MobaGameplay.Combat.DamageInfo(damage, MobaGameplay.Combat.DamageType.Magical, owner));
                 }
                 else
                 {

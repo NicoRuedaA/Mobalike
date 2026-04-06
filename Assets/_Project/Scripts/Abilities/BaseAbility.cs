@@ -1,5 +1,6 @@
 using UnityEngine;
 using MobaGameplay.Core;
+using MobaGameplay.UI.Targeting;
 
 namespace MobaGameplay.Abilities
 {
@@ -10,6 +11,12 @@ namespace MobaGameplay.Abilities
         public float cooldown = 5f;
         public float castTime = 0f;
         public float manaCost = 0f;
+
+        [Header("Targeting Settings")]
+        public IndicatorType TargetingType = IndicatorType.Circle;
+        public float CastRange = 10f; // Max distance from player
+        public float Range = 2f; // Radius of circle or length of line
+        public float Width = 1f; // Width of line or angle of cone
 
         protected float currentCooldown = 0f;
         protected BaseEntity ownerEntity;
@@ -38,13 +45,18 @@ namespace MobaGameplay.Abilities
 
         public virtual void BeginTargeting()
         {
-            // Override this if the ability needs aiming before casting
-            Debug.Log($"Targeting started for {abilityName}");
+            if (TargetingManager.Instance != null)
+            {
+                TargetingManager.Instance.StartTargeting(this);
+            }
         }
 
         public virtual void CancelTargeting()
         {
-            Debug.Log($"Targeting cancelled for {abilityName}");
+            if (TargetingManager.Instance != null)
+            {
+                TargetingManager.Instance.CancelTargeting();
+            }
         }
 
         public virtual void ExecuteCast(Vector3 targetPosition, BaseEntity targetEntity)
@@ -52,7 +64,7 @@ namespace MobaGameplay.Abilities
             if (!CanCast()) return;
 
             currentCooldown = cooldown;
-            Debug.Log($"Cast executed for {abilityName}");
+            CancelTargeting();
         }
     }
 }

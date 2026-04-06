@@ -77,17 +77,14 @@ namespace MobaGameplay.Controllers
             // 4. COMBATE O CONFIRMAR HABILIDAD (Click Izquierdo)
             if (Mouse.current.leftButton.wasPressedThisFrame)
             {
-                // Evitar atacar si estamos haciendo click en la interfaz (UI)
                 if (EventSystem.current == null || !EventSystem.current.IsPointerOverGameObject())
                 {
                     if (entity.Abilities != null && entity.Abilities.ActiveTargetingAbility != null)
                     {
-                        // Estamos apuntando una habilidad, así que el click la lanza
                         Ray aimRay = mainCamera.ScreenPointToRay(Mouse.current.position.ReadValue());
                         Vector3 aimPoint = Vector3.zero;
                         BaseEntity targetEnt = null;
 
-                        // Raycast para encontrar un objetivo válido
                         if (Physics.Raycast(aimRay, out RaycastHit hit))
                         {
                             aimPoint = hit.point;
@@ -102,7 +99,6 @@ namespace MobaGameplay.Controllers
                     }
                     else if (entity.Combat != null) 
                     {
-                        // No estamos apuntando, lanzar ataque básico normal
                         entity.Combat.BasicAttack();
                     }
                 }
