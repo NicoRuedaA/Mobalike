@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.EventSystems;
 using MobaGameplay.Core;
 
 namespace MobaGameplay.Controllers
@@ -68,7 +69,11 @@ namespace MobaGameplay.Controllers
             // 3. COMBATE
             if (Mouse.current.leftButton.wasPressedThisFrame)
             {
-                if (entity.Combat != null) entity.Combat.BasicAttack();
+                // Evitar atacar si estamos haciendo click en la interfaz (UI)
+                if (EventSystem.current == null || !EventSystem.current.IsPointerOverGameObject())
+                {
+                    if (entity.Combat != null) entity.Combat.BasicAttack();
+                }
             }
 
             // 4. SALTO
@@ -80,9 +85,13 @@ namespace MobaGameplay.Controllers
             // 5. DASH (Esquive)
             if (Mouse.current.rightButton.wasPressedThisFrame)
             {
-                // Dash en la dirección del movimiento, o si está quieto, hacia donde mira
-                Vector3 dashDir = moveDir != Vector3.zero ? moveDir.normalized : entity.transform.forward;
-                entity.Movement.Dash(dashDir);
+                // Evitar dashear si estamos haciendo click derecho en la interfaz
+                if (EventSystem.current == null || !EventSystem.current.IsPointerOverGameObject())
+                {
+                    // Dash en la dirección del movimiento, o si está quieto, hacia donde mira
+                    Vector3 dashDir = moveDir != Vector3.zero ? moveDir.normalized : entity.transform.forward;
+                    entity.Movement.Dash(dashDir);
+                }
             }
         }
     }

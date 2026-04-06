@@ -96,7 +96,7 @@ namespace MobaGameplay.CameraSystems
             if (Keyboard.current == null || Mouse.current == null) return;
 
             // Al mantener pulsado Espacio, la cámara se centra en el jugador
-            isCenteringOnPlayer = Keyboard.current.yKey.isPressed;
+            isCenteringOnPlayer = Keyboard.current.spaceKey.isPressed;
 
             // Manejar el Zoom
             HandleZoom();

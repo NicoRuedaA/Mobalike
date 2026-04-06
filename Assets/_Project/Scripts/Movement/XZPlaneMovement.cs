@@ -144,7 +144,8 @@ namespace MobaGameplay.Movement
                 dashTimer -= Time.deltaTime;
                 if (dashTimer <= 0f)
                 {
-                    Stop();
+                    currentMode = MovementMode.None;
+                    currentVelocity = 0f;
                 }
             }
             else if (currentMode == MovementMode.Pathing)
