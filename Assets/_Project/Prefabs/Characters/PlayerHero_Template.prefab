@@ -1,0 +1,153 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &9081329088083904760
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 73125157190665656}
+  - component: {fileID: 3339619901323560352}
+  - component: {fileID: 3493763024130491911}
+  - component: {fileID: 4987403591262770791}
+  - component: {fileID: 189337532880995926}
+  - component: {fileID: 6181503038862107187}
+  m_Layer: 0
+  m_Name: PlayerHero_Template
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &73125157190665656
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9081329088083904760}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &3339619901323560352
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9081329088083904760}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7813e59238d105947a0ec628e92c195e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MobaGameplay.Core.HeroEntity
+  MaxHealth: 1500
+  CurrentHealth: 1500
+  MaxMana: 500
+  CurrentMana: 500
+  AttackDamage: 60
+  AbilityPower: 100
+  PhysicalArmor: 30
+  MagicResistance: 30
+  MovementSpeed: 5
+  CurrentLevel: 1
+  MaxLevel: 18
+  CurrentExp: 0
+  ExpToNextLevel: 100
+  CurrentGold: 0
+  HealthPerLevel: 85
+  ManaPerLevel: 30
+  ADPerLevel: 3.5
+  APPerLevel: 0
+  ArmorPerLevel: 4
+  MRPerLevel: 1.25
+--- !u!114 &3493763024130491911
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9081329088083904760}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4621aa8ad4d54dc4cb6c6814352a8c48, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MobaGameplay.Abilities.AbilityController
+  ability1: {fileID: 4987403591262770791}
+  ability2: {fileID: 189337532880995926}
+  ability3: {fileID: 6181503038862107187}
+--- !u!114 &4987403591262770791
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9081329088083904760}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2e5935fef719174428276b73d1136f0d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MobaGameplay.Abilities.FireballAbility
+  abilityName: Fireball
+  cooldown: 4
+  castTime: 0
+  manaCost: 50
+  TargetingType: 2
+  CastRange: 15
+  Range: 15
+  Width: 1
+  projectilePrefab: {fileID: 1210754999178854918, guid: 62d2ced362fb20249a36ff74f39d4ccb, type: 3}
+  baseDamage: 80
+  apRatio: 0.6
+--- !u!114 &189337532880995926
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9081329088083904760}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 618fa641ded66a0468d9cf6deddaae29, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MobaGameplay.Abilities.GroundSmashAbility
+  abilityName: Ground Smash
+  cooldown: 8
+  castTime: 0
+  manaCost: 80
+  TargetingType: 1
+  CastRange: 10
+  Range: 3
+  Width: 1
+  baseDamage: 120
+  adRatio: 0.8
+  vfxPrefab: {fileID: 2987217871762459909, guid: 37030b197ed8eec479acc2791096ccc5, type: 3}
+--- !u!114 &6181503038862107187
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9081329088083904760}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 64d175393641ec74e94d9744245d3d86, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MobaGameplay.Abilities.DashAbility
+  abilityName: Dash
+  cooldown: 6
+  castTime: 0
+  manaCost: 30
+  TargetingType: 0
+  CastRange: 10
+  Range: 2
+  Width: 1
+  dashSpeed: 30
+  dashDuration: 0.2
