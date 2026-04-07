@@ -16,6 +16,7 @@ namespace MobaGameplay.Core
         [Header("Combat Stats")]
         public float AttackDamage = 50f;
         public float AbilityPower = 0f;
+        public float AttackSpeed = 1.5f; // Attacks per second
         public float PhysicalArmor = 30f;
         public float MagicResistance = 30f;
         public float MovementSpeed = 5f;

@@ -147,8 +147,8 @@ namespace MobaGameplay.Controllers
                     ExecuteActiveAbility();
             }
 
-            // 5. COMBATE (Click Izquierdo solo para Auto-Ataque)
-            if (Mouse.current.leftButton.wasPressedThisFrame)
+            // 5. COMBATE (Click Izquierdo solo para Auto-Ataque continuo)
+            if (Mouse.current.leftButton.isPressed)
             {
                 if (EventSystem.current == null || !EventSystem.current.IsPointerOverGameObject())
                 {
