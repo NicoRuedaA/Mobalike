@@ -27,8 +27,14 @@ namespace MobaGameplay.UI
         [SerializeField] private Color healthyColor = new Color(0.2f, 0.85f, 0.2f, 1f);
         [SerializeField] private Color mediumHealthColor = new Color(0.93f, 0.78f, 0.2f, 1f);
         [SerializeField] private Color lowHealthColor = new Color(0.9f, 0.2f, 0.2f, 1f);
-        [SerializeField] private Color recentDamageColor = new Color(1f, 0.68f, 0.15f, 0.9f);
+        [SerializeField] private Color recentDamageColor = new Color(0.95f, 0.15f, 0.15f, 0.95f);
         [SerializeField] private Color missingHealthColor = new Color(0.33f, 0.08f, 0.08f, 0.95f);
+
+        [Header("Tick Marks")]
+        [SerializeField] private bool showTickMarks = true;
+        [SerializeField] private Color tickColor = new Color(0, 0, 0, 0.7f);
+        [SerializeField, Range(0.01f, 0.5f)] private float tickInterval = 0.1f;
+        [SerializeField, Range(0.001f, 0.05f)] private float tickWidth = 0.005f;
 
         private const float Epsilon = 0.0001f;
 
@@ -332,6 +338,7 @@ namespace MobaGameplay.UI
             if (healthFill != null)
             {
                 healthFill.raycastTarget = false;
+                if (showTickMarks) ApplyTickMaterial(healthFill);
             }
         }
 
@@ -395,6 +402,18 @@ namespace MobaGameplay.UI
 
             image.type = Image.Type.Simple;
             image.fillAmount = 1f;
+        }
+
+        private void ApplyTickMaterial(Image target)
+        {
+            Shader tickShader = Shader.Find("UI/HealthBarTick");
+            if (tickShader == null) return;
+            
+            Material mat = new Material(tickShader);
+            mat.SetColor("_TickColor", tickColor);
+            mat.SetFloat("_TickInterval", tickInterval);
+            mat.SetFloat("_TickWidth", tickWidth);
+            target.material = mat;
         }
 
         private Image CreateHealthLayer(string layerName, Color layerColor, int siblingIndex)

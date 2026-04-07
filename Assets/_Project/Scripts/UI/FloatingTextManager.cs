@@ -1,6 +1,5 @@
 using UnityEngine;
 using MobaGameplay.Combat;
-using TMPro;
 
 namespace MobaGameplay.UI
 {
@@ -8,33 +7,31 @@ namespace MobaGameplay.UI
     {
         public static FloatingTextManager Instance { get; private set; }
 
-        [SerializeField] private FloatingDamageText _damageTextPrefab;
+        [SerializeField] private FloatingDamageText damageTextPrefab;
+        
+        [Header("Spawn Settings")]
+        [SerializeField] private float jitterRadius = 0.4f;
+        [SerializeField] private float verticalOffset = 2f;
 
         private void Awake()
         {
-            if (Instance == null)
-            {
-                Instance = this;
-            }
-            else
-            {
-                Destroy(gameObject);
-            }
+            if (Instance == null) Instance = this;
+            else Destroy(gameObject);
         }
 
-        public void Spawn(Vector3 position, float amount, DamageType type)
+        public void Spawn(Vector3 position, float amount, DamageType type, bool isCritical = false)
         {
-            if (_damageTextPrefab == null) 
-            {
-                Debug.LogWarning("FloatingTextManager: No DamageTextPrefab assigned!");
-                return;
-            }
+            if (damageTextPrefab == null) return;
 
-            // Small jitter so numbers don't overlap perfectly
-            Vector3 randomJitter = new Vector3(Random.Range(-0.5f, 0.5f), Random.Range(-0.2f, 0.5f), Random.Range(-0.5f, 0.5f));
+            Vector3 jitter = new Vector3(
+                Random.Range(-jitterRadius, jitterRadius),
+                Random.Range(0f, jitterRadius * 0.5f),
+                Random.Range(-jitterRadius, jitterRadius)
+            );
             
-            FloatingDamageText textInstance = Instantiate(_damageTextPrefab, position + randomJitter, Quaternion.identity);
-            textInstance.Setup(amount, type);
+            Vector3 spawnPos = position + Vector3.up * verticalOffset + jitter;
+            FloatingDamageText instance = Instantiate(damageTextPrefab, spawnPos, Quaternion.identity);
+            instance.Setup(amount, type, isCritical);
         }
     }
 }
