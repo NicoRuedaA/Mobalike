@@ -33,15 +33,26 @@ namespace MobaGameplay.Abilities.Projectiles
 
             float distanceToMove = speed * Time.deltaTime;
             
-            if (Physics.SphereCast(transform.position, collisionRadius, direction, out RaycastHit hit, distanceToMove, hitLayers))
+            // Usar SphereCastAll para evitar que nuestro propio collider bloquee el rayo
+            // y nos impida detectar al enemigo que está justo detrás.
+            RaycastHit[] hits = Physics.SphereCastAll(transform.position, collisionRadius, direction, distanceToMove, hitLayers);
+            
+            foreach (var hit in hits)
             {
                 BaseEntity target = hit.collider.GetComponentInParent<BaseEntity>();
-                if (target != null && target != owner)
+                
+                // Ignorar colisiones con el propio lanzador
+                if (target == owner) continue; 
+
+                // Si es un enemigo, aplicar daño
+                if (target != null)
                 {
                     target.TakeDamage(new DamageInfo(damage, damageType, owner));
-                    HitAndDestroy();
-                    return;
                 }
+                
+                // Destruir el proyectil ante CUALQUIER otro impacto válido (muros, enemigos, escudos)
+                HitAndDestroy();
+                return;
             }
 
             transform.position += direction * distanceToMove;

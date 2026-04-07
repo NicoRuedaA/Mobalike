@@ -72,8 +72,13 @@ namespace MobaGameplay.Abilities
         {
             if (ActiveTargetingAbility != null)
             {
+                // GARANTÍA DE LIMPIEZA: Forzamos la limpieza de la UI *antes* de ejecutar la lógica 
+                // interna de la habilidad, evitando que un early return deje la UI sucia.
+                ActiveTargetingAbility.CancelTargeting();
+                
                 ActiveTargetingAbility.ExecuteCast(targetPosition, targetEntity);
-                ActiveTargetingAbility = null; // Clear state after casting
+                
+                ActiveTargetingAbility = null; // Clear state after casting attempt
             }
         }
     }
