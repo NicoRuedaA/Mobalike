@@ -11,7 +11,23 @@ namespace MobaGameplay.Core
         public float MaxHealth = 1000f;
         public float CurrentHealth = 1000f;
         public float MaxMana = 500f;
-        public float CurrentMana = 500f;
+        
+        [SerializeField]
+        private float currentMana = 500f;
+        private bool manaInitialized = false;
+        public float CurrentMana
+        {
+            get => currentMana;
+            set
+            {
+                float oldMana = currentMana;
+                currentMana = Mathf.Clamp(value, 0f, MaxMana);
+                if (manaInitialized && Mathf.Abs(oldMana - currentMana) > 0.01f)
+                {
+                    OnManaChanged?.Invoke(oldMana, currentMana);
+                }
+            }
+        }
 
         [Header("Combat Stats")]
         public float AttackDamage = 50f;
@@ -32,6 +48,7 @@ namespace MobaGameplay.Core
 
         public event Action<DamageInfo> OnTakeDamage;
         public event Action<BaseEntity> OnDeath;
+        public event Action<float, float> OnManaChanged; // (previousMana, currentMana)
 
         public BaseMovement Movement { get; private set; }
         public BaseCombat Combat { get; private set; }
@@ -54,6 +71,9 @@ namespace MobaGameplay.Core
             {
                 CurrentMana = Mathf.Min(MaxMana, CurrentMana + manaRegen * Time.deltaTime);
             }
+
+            // Mark as initialized after first frame to enable event firing
+            if (!manaInitialized) manaInitialized = true;
         }
 
         public virtual void TakeDamage(DamageInfo damageInfo)

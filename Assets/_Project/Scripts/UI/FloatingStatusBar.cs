@@ -66,6 +66,7 @@ namespace MobaGameplay.UI
             if (targetEntity != null)
             {
                 targetEntity.OnTakeDamage += HandleTakeDamage;
+                targetEntity.OnManaChanged += HandleManaChanged;
             }
 
             ForceSyncToTarget();
@@ -76,6 +77,7 @@ namespace MobaGameplay.UI
             if (targetEntity != null)
             {
                 targetEntity.OnTakeDamage -= HandleTakeDamage;
+                targetEntity.OnManaChanged -= HandleManaChanged;
             }
         }
 
@@ -158,6 +160,11 @@ namespace MobaGameplay.UI
                 isInitialized = true;
             }
 
+            ApplyBars();
+        }
+
+        private void HandleManaChanged(float oldMana, float newMana)
+        {
             ApplyBars();
         }
 
