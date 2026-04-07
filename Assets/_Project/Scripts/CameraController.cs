@@ -20,6 +20,14 @@ namespace MobaGameplay.CameraSystems
         [Tooltip("Tiempo de suavizado para el movimiento de la cámara.")]
         [SerializeField] private float smoothTime = 0.15f;
 
+        [Header("Hero Shooter Settings")]
+        [Tooltip("Si es true, la cámara sigue al jugador y se desplaza hacia el ratón.")]
+        [SerializeField] private bool heroShooterMode = true;
+        [Tooltip("Cuánto se aleja la cámara hacia el cursor del ratón.")]
+        [SerializeField] private float maxMouseOffset = 5f;
+        [Tooltip("Suavizado adicional para el offset del ratón.")]
+        [SerializeField] private float mouseOffsetSmoothTime = 0.1f;
+
         [Header("Zoom Settings")]
         [Tooltip("Velocidad de zoom con la rueda del ratón.")]
         [SerializeField] private float zoomSpeed = 1f;
@@ -43,6 +51,11 @@ namespace MobaGameplay.CameraSystems
         // Punto en el suelo que la cámara está mirando
         private Vector3 lookAtPosition;
         private bool isCenteringOnPlayer = false;
+
+        // Hero Shooter Mouse Offset
+        private Vector3 currentMouseOffset = Vector3.zero;
+        private Vector3 mouseOffsetVelocity = Vector3.zero;
+        private Plane groundPlane;
 
         // Zoom state
         private float currentZoom = 1f;
@@ -78,10 +91,12 @@ namespace MobaGameplay.CameraSystems
             {
                 lookAtPosition = playerTarget.position;
                 transform.position = lookAtPosition + CurrentOffset;
+                groundPlane = new Plane(Vector3.up, new Vector3(0, playerTarget.position.y, 0));
             }
             else
             {
                 lookAtPosition = transform.position - CurrentOffset;
+                groundPlane = new Plane(Vector3.up, Vector3.zero);
             }
         }
 
@@ -95,22 +110,66 @@ namespace MobaGameplay.CameraSystems
         {
             if (Keyboard.current == null || Mouse.current == null) return;
 
-            // Al mantener pulsado Espacio, la cámara se centra en el jugador
-            isCenteringOnPlayer = Keyboard.current.spaceKey.isPressed;
+            // En modo hero shooter siempre seguimos al jugador (a menos que quieran liberar la cámara, pero para simplificar siempre se sigue al jugador con el offset).
+            isCenteringOnPlayer = Keyboard.current.spaceKey.isPressed || heroShooterMode;
 
             // Manejar el Zoom
             HandleZoom();
 
-            // Si no estamos centrando la cámara, comprobar el movimiento por los bordes (Edge Panning)
-            if (!isCenteringOnPlayer)
+            if (heroShooterMode && playerTarget != null)
+            {
+                HandleHeroShooterCamera();
+            }
+            else if (!isCenteringOnPlayer)
             {
                 HandleEdgePanning();
+                currentMouseOffset = Vector3.SmoothDamp(currentMouseOffset, Vector3.zero, ref mouseOffsetVelocity, mouseOffsetSmoothTime);
             }
             else if (playerTarget != null)
             {
-                // Si estamos centrando, el punto a mirar es el jugador
                 lookAtPosition = playerTarget.position;
+                currentMouseOffset = Vector3.SmoothDamp(currentMouseOffset, Vector3.zero, ref mouseOffsetVelocity, mouseOffsetSmoothTime);
             }
+        }
+
+        private void HandleHeroShooterCamera()
+        {
+            // Base player position
+            lookAtPosition = playerTarget.position;
+
+            // Only offset towards mouse if aiming or shooting?
+            // "Add a dynamic camera offset that pans slightly towards the mouse cursor when the player is aiming."
+            // But we can just make it dynamic based on Right Click.
+            bool isAiming = Mouse.current.rightButton.isPressed;
+            Vector3 targetMouseOffset = Vector3.zero;
+
+            if (isAiming)
+            {
+                Ray ray = cam.ScreenPointToRay(Mouse.current.position.ReadValue());
+                if (groundPlane.Raycast(ray, out float enter))
+                {
+                    Vector3 mouseHitPoint = ray.GetPoint(enter);
+                    // Distance from player to mouse
+                    Vector3 offsetDir = mouseHitPoint - playerTarget.position;
+                    offsetDir.y = 0;
+                    
+                    // We only go up to maxMouseOffset distance
+                    if (offsetDir.magnitude > maxMouseOffset)
+                    {
+                        offsetDir = offsetDir.normalized * maxMouseOffset;
+                    }
+                    
+                    // Or we can just interpolate 50% between player and mouse, clamped.
+                    // A simple clamp is offsetDir.
+                    targetMouseOffset = offsetDir;
+                }
+            }
+
+            // Smoothly move the offset
+            currentMouseOffset = Vector3.SmoothDamp(currentMouseOffset, targetMouseOffset, ref mouseOffsetVelocity, mouseOffsetSmoothTime);
+            
+            // Add offset to lookAtPosition
+            lookAtPosition += currentMouseOffset;
         }
 
         private void HandleZoom()
