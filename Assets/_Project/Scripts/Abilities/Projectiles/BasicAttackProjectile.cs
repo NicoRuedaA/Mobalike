@@ -43,6 +43,8 @@ namespace MobaGameplay.Abilities.Projectiles
             
             foreach (var hit in hits)
             {
+                if (hit.collider.isTrigger) continue; // Ignoramos triggers de visión, aggro, etc.
+
                 BaseEntity target = hit.collider.GetComponentInParent<BaseEntity>();
                 
                 // Ignore self
@@ -50,10 +52,24 @@ namespace MobaGameplay.Abilities.Projectiles
 
                 if (target != null)
                 {
-                    target.TakeDamage(new DamageInfo(damage, damageType, owner));
+                    if (!target.IsDead) 
+                    {
+                        target.TakeDamage(new DamageInfo(damage, damageType, owner));
+                        HitAndDestroy();
+                        return;
+                    }
+                }
+                else 
+                {
+                    // Si es el suelo (normal hacia arriba) lo ignoramos para evitar chocar por error
+                    if (Vector3.Dot(hit.normal, Vector3.up) > 0.8f || hit.point.y < 0.1f) 
+                        continue;
+
+                    // Es una pared u obstáculo estático
                     HitAndDestroy();
                     return;
                 }
+            }
                 else if (!hit.collider.isTrigger) 
                 {
                     // Hit a wall/obstacle

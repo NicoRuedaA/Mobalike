@@ -42,15 +42,20 @@ namespace MobaGameplay.Combat
         {
             if (basicAttackProjectilePrefab == null) return;
             
-            Vector3 spawnPos = projectileSpawnPoint != null ? projectileSpawnPoint.position : (transform.position + Vector3.up * 1f + transform.forward * 0.5f);
+            // Garantizar que la posición de spawn esté a 1.0 de altura y su trayectoria sea perfectamente plana
+            Vector3 spawnPos = projectileSpawnPoint != null ? projectileSpawnPoint.position : (transform.position + Vector3.up * 1.0f + transform.forward * 0.5f);
             
-            GameObject projObj = Instantiate(basicAttackProjectilePrefab, spawnPos, transform.rotation);
+            Vector3 dir = transform.forward;
+            dir.y = 0;
+            dir.Normalize();
+
+            GameObject projObj = Instantiate(basicAttackProjectilePrefab, spawnPos, Quaternion.LookRotation(dir));
             BasicAttackProjectile projectile = projObj.GetComponent<BasicAttackProjectile>();
             
             if (projectile != null)
             {
                 float damage = entity != null ? entity.AttackDamage : 10f;
-                projectile.Initialize(transform.forward, damage, DamageType.Physical, entity, projectileSpeed, projectileMaxDistance, hitLayers);
+                projectile.Initialize(dir, damage, DamageType.Physical, entity, projectileSpeed, projectileMaxDistance, hitLayers);
             }
         }
     }

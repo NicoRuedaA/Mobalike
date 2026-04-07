@@ -81,10 +81,31 @@ namespace MobaGameplay.Core
             Debug.Log($"[{gameObject.name}] died!");
             OnDeath?.Invoke(this);
 
-            // Basic death behavior, disable components or play animation
-            // Disable collider and movement
-            if (TryGetComponent(out Collider col)) col.enabled = false;
-            if (Movement != null) Movement.Stop();
+            // 1. Disable all colliders (Hurtboxes) to avoid further hits
+            Collider[] colliders = GetComponentsInChildren<Collider>();
+            foreach (var col in colliders) 
+            {
+                col.enabled = false;
+            }
+
+            // 2. Stop and disable Movement, Combat, and Abilities
+            if (Movement != null) 
+            {
+                Movement.Stop();
+                if (Movement is MonoBehaviour monoMovement) monoMovement.enabled = false;
+            }
+            if (Combat != null) Combat.enabled = false;
+            if (Abilities != null) Abilities.enabled = false;
+
+            // 3. Hide floating UI
+            var floatingUI = GetComponentInChildren<UI.FloatingStatusBar>();
+            if (floatingUI != null) 
+            {
+                floatingUI.gameObject.SetActive(false);
+            }
+
+            // 4. Destroy after a delay (e.g. for death animation)
+            Destroy(gameObject, 3f);
         }
     }
 }

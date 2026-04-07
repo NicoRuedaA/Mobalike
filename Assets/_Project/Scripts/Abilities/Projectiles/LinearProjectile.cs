@@ -39,6 +39,8 @@ namespace MobaGameplay.Abilities.Projectiles
             
             foreach (var hit in hits)
             {
+                if (hit.collider.isTrigger) continue; // Ignoramos triggers (zonas de aggro, etc)
+
                 BaseEntity target = hit.collider.GetComponentInParent<BaseEntity>();
                 
                 // Si choca con el propio lanzador (ej. su propio collider), ignorarlo por completo
@@ -47,15 +49,20 @@ namespace MobaGameplay.Abilities.Projectiles
                 // Si choca con otro Entity (enemigo o aliado)
                 if (target != null)
                 {
-                    target.TakeDamage(new DamageInfo(damage, damageType, owner));
-                    HitAndDestroy();
-                    return;
+                    if (!target.IsDead)
+                    {
+                        target.TakeDamage(new DamageInfo(damage, damageType, owner));
+                        HitAndDestroy();
+                        return;
+                    }
                 }
-                
-                // Si no tiene BaseEntity, podría ser el suelo, una pared, etc.
-                if (!hit.collider.isTrigger)
+                else
                 {
-                    Debug.Log($"[LinearProjectile] Destroyed because it hit {hit.collider.gameObject.name} (Layer: {hit.collider.gameObject.layer})");
+                    // Si es el suelo (normal hacia arriba) lo ignoramos para evitar chocar por error
+                    if (Vector3.Dot(hit.normal, Vector3.up) > 0.8f || hit.point.y < 0.1f) 
+                        continue;
+
+                    // Es una pared u obstáculo estático
                     HitAndDestroy();
                     return;
                 }
