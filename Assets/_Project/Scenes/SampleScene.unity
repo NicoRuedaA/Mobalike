@@ -3034,13 +3034,14 @@ MonoBehaviour:
   MaxHealth: 1000
   CurrentHealth: 692.3076
   MaxMana: 500
-  CurrentMana: 500
+  currentMana: 500
   AttackDamage: 50
   AbilityPower: 0
   AttackSpeed: 1.5
   PhysicalArmor: 30
   MagicResistance: 30
   MovementSpeed: 5
+  manaRegen: 5
   criticalChance: 0.15
   criticalMultiplier: 1.5
 --- !u!23 &1177391311
@@ -6792,13 +6793,14 @@ MonoBehaviour:
   MaxHealth: 1000
   CurrentHealth: 500
   MaxMana: 500
-  CurrentMana: 500
+  currentMana: 500
   AttackDamage: 50
   AbilityPower: 0
   AttackSpeed: 1.5
   PhysicalArmor: 30
   MagicResistance: 30
   MovementSpeed: 5
+  manaRegen: 5
   criticalChance: 0.15
   criticalMultiplier: 1.5
   CurrentLevel: 1
@@ -6991,7 +6993,7 @@ MonoBehaviour:
   abilityName: New Ability
   cooldown: 5
   castTime: 0
-  manaCost: 0
+  manaCost: 30
   TargetingType: 1
   CastRange: 10
   Range: 2
@@ -7013,7 +7015,7 @@ MonoBehaviour:
   abilityName: New Ability
   cooldown: 5
   castTime: 0
-  manaCost: 0
+  manaCost: 80
   TargetingType: 1
   CastRange: 10
   Range: 2
@@ -7036,7 +7038,7 @@ MonoBehaviour:
   abilityName: New Ability
   cooldown: 5
   castTime: 0
-  manaCost: 0
+  manaCost: 50
   TargetingType: 1
   CastRange: 10
   Range: 2
