@@ -155,7 +155,7 @@ namespace MobaGameplay.Controllers
                     // Si está apuntando (click derecho) y no hay habilidad activa, empezar a cargar
                     if (isAiming && entity.Combat != null && (entity.Abilities == null || entity.Abilities.ActiveTargetingAbility == null))
                     {
-                        if (rangedCombat != null && !rangedCombat.IsCharging)
+                        if (rangedCombat != null && !rangedCombat.IsCharging && rangedCombat.CanCharge)
                         {
                             rangedCombat.StartCharging();
                         }

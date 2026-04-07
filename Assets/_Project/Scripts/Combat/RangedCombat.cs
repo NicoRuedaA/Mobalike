@@ -25,13 +25,18 @@ namespace MobaGameplay.Combat
         [SerializeField] private float chargedSizeMultiplier = 1.5f;
         [Tooltip("Tiempo máximo de carga (segundos)")]
         [SerializeField] private float maxChargeTime = 1.0f;
+        [Tooltip("Cooldown después de un ataque cargado (evita spam)")]
+        [SerializeField] private float chargedCooldown = 2.0f;
 
         private BaseEntity entity;
         private float lastAttackTime = -999f;
+        private float lastChargedTime = -999f;
 
         public bool IsCharging { get; private set; }
         public float ChargeProgress { get; private set; }
         public float MaxChargeTime => maxChargeTime;
+        public bool CanCharge => !IsOnChargedCooldown;
+        public bool IsOnChargedCooldown => Time.time < lastChargedTime + chargedCooldown;
 
         private void Awake()
         {
@@ -56,6 +61,9 @@ namespace MobaGameplay.Combat
 
         public void StartCharging()
         {
+            // No permitir cargar si estamos en cooldown de ataque cargado
+            if (IsOnChargedCooldown) return;
+            
             IsCharging = true;
             ChargeProgress = 0f;
         }
@@ -102,6 +110,7 @@ namespace MobaGameplay.Combat
                     float damageMult = Mathf.Lerp(1f, chargedDamageMultiplier, t);
                     
                     projectile.ApplyChargeMultiplier(sizeMult, speedMult, damageMult);
+                    lastChargedTime = Time.time; // Iniciar cooldown de ataque cargado
                     Debug.Log($"[RangedCombat] Charged attack! Size:{sizeMult:F2}x Speed:{speedMult:F2}x Damage:{damageMult:F2}x");
                 }
             }
