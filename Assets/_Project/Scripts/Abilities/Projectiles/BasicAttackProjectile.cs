@@ -70,13 +70,6 @@ namespace MobaGameplay.Abilities.Projectiles
                     return;
                 }
             }
-                else if (!hit.collider.isTrigger) 
-                {
-                    // Hit a wall/obstacle
-                    HitAndDestroy();
-                    return;
-                }
-            }
 
             transform.position += direction * distanceToMove;
 
