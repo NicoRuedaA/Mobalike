@@ -14,7 +14,7 @@ namespace MobaGameplay.Combat
         [Header("Projectile Stats")]
         [SerializeField] private float projectileSpeed = 25f;
         [SerializeField] private float projectileMaxDistance = 20f;
-        [SerializeField] private LayerMask hitLayers;
+        [SerializeField] private LayerMask hitLayers = ~0;
 
         private BaseEntity entity;
         private float lastAttackTime = -999f;

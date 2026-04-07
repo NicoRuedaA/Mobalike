@@ -8232,7 +8232,7 @@ MonoBehaviour:
   projectileMaxDistance: 20
   hitLayers:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 4294967295
 --- !u!120 &5521050719080623902
 LineRenderer:
   serializedVersion: 3
