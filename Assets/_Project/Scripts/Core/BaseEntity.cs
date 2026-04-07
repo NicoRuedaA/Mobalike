@@ -73,7 +73,10 @@ namespace MobaGameplay.Core
             }
 
             // Mark as initialized after first frame to enable event firing
-            if (!manaInitialized) manaInitialized = true;
+            if (!manaInitialized)
+            {
+                manaInitialized = true;
+            }
         }
 
         public virtual void TakeDamage(DamageInfo damageInfo)
