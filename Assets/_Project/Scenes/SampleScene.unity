@@ -1257,6 +1257,9 @@ MonoBehaviour:
   playerTarget: {fileID: 5176156373276652982}
   baseOffset: {x: 0, y: 15, z: -10}
   smoothTime: 0.15
+  heroShooterMode: 1
+  maxMouseOffset: 5
+  mouseOffsetSmoothTime: 0.1
   zoomSpeed: 1
   minZoom: 0.35
   maxZoom: 1
@@ -3918,6 +3921,7 @@ MonoBehaviour:
   CurrentMana: 500
   AttackDamage: 50
   AbilityPower: 0
+  AttackSpeed: 1.5
   PhysicalArmor: 30
   MagicResistance: 30
   MovementSpeed: 5
@@ -5292,6 +5296,60 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2017983331}
   m_CullTransparentMesh: 1
+--- !u!21 &2047377449
+Material:
+  serializedVersion: 8
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: Auto_Default_LineRenderer_Universal
+  m_Shader: {fileID: 4800000, guid: 650dd9526735d5b46b79224bc6e94025, type: 3}
+  m_Parent: {fileID: 0}
+  m_ModifiedSerializedProperties: 0
+  m_ValidKeywords: []
+  m_InvalidKeywords: []
+  m_LightmapFlags: 4
+  m_EnableInstancingVariants: 0
+  m_DoubleSidedGI: 0
+  m_CustomRenderQueue: -1
+  stringTagMap: {}
+  disabledShaderPasses: []
+  m_LockedProperties: 
+  m_SavedProperties:
+    serializedVersion: 3
+    m_TexEnvs:
+    - _BaseMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _MainTex:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    m_Ints: []
+    m_Floats:
+    - _AddPrecomputedVelocity: 0
+    - _AlphaClip: 0
+    - _AlphaToMask: 0
+    - _Blend: 0
+    - _BlendOp: 0
+    - _Cull: 2
+    - _Cutoff: 0.5
+    - _DstBlend: 0
+    - _DstBlendAlpha: 0
+    - _QueueOffset: 0
+    - _SampleGI: 0
+    - _SrcBlend: 1
+    - _SrcBlendAlpha: 1
+    - _Surface: 0
+    - _XRMotionVectorsPass: 1
+    - _ZWrite: 1
+    m_Colors:
+    - _BaseColor: {r: 1, g: 1, b: 1, a: 1}
+    - _Color: {r: 1, g: 1, b: 1, a: 1}
+  m_BuildTextureStacks: []
+  m_AllowLocking: 1
 --- !u!1 &2050554590
 GameObject:
   m_ObjectHideFlags: 0
@@ -7598,7 +7656,6 @@ GameObject:
   - component: {fileID: 5521050719080623886}
   - component: {fileID: 5521050719080623885}
   - component: {fileID: 5521050719080623889}
-  - component: {fileID: 5521050719080623890}
   - component: {fileID: 5521050719080623892}
   - component: {fileID: 5521050719080623891}
   - component: {fileID: 5521050719080623896}
@@ -7608,6 +7665,9 @@ GameObject:
   - component: {fileID: 5521050719080623899}
   - component: {fileID: 5521050719080623898}
   - component: {fileID: 5521050719080623897}
+  - component: {fileID: 5521050719080623902}
+  - component: {fileID: 5521050719080623901}
+  - component: {fileID: 5521050719080623900}
   m_Layer: 0
   m_Name: Player
   m_TagString: Player
@@ -7654,6 +7714,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::MobaGameplay.Movement.XZPlaneMovement
   walkSpeed: 5
   sprintSpeed: 8
+  aimSpeed: 3
   rotationSpeed: 15
   groundLayer:
     serializedVersion: 2
@@ -7681,6 +7742,7 @@ MonoBehaviour:
   CurrentMana: 500
   AttackDamage: 50
   AbilityPower: 0
+  AttackSpeed: 1.5
   PhysicalArmor: 30
   MagicResistance: 30
   MovementSpeed: 5
@@ -7720,18 +7782,6 @@ CharacterController:
   m_SkinWidth: 0.08
   m_MinMoveDistance: 0.001
   m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &5521050719080623890
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5521050719080623884}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ebcccc4f85316ff44896a1f0101879fa, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::MobaGameplay.Combat.MeleeCombat
 --- !u!114 &5521050719080623891
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -7939,6 +7989,160 @@ MonoBehaviour:
   projectilePrefab: {fileID: 1210754999178854918, guid: 62d2ced362fb20249a36ff74f39d4ccb, type: 3}
   baseDamage: 80
   apRatio: 0.6
+--- !u!114 &5521050719080623900
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5521050719080623884}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2f72ebcff6fce01468706c232ac6eb7c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MobaGameplay.Visuals.LaserSight
+  laserLength: 15
+  hitLayers:
+    serializedVersion: 2
+    m_Bits: 0
+--- !u!114 &5521050719080623901
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5521050719080623884}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f6dd3512895dc054db56682fc7de20b4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MobaGameplay.Combat.RangedCombat
+  basicAttackProjectilePrefab: {fileID: 4136283584567336420, guid: 23802ec068ee8444fab0737d4a1306fe, type: 3}
+  projectileSpawnPoint: {fileID: 0}
+  projectileSpeed: 25
+  projectileMaxDistance: 20
+  hitLayers:
+    serializedVersion: 2
+    m_Bits: 0
+--- !u!120 &5521050719080623902
+LineRenderer:
+  serializedVersion: 3
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5521050719080623884}
+  m_Enabled: 1
+  m_CastShadows: 1
+  m_ReceiveShadows: 1
+  m_DynamicOccludee: 1
+  m_StaticShadowCaster: 0
+  m_MotionVectors: 0
+  m_LightProbeUsage: 0
+  m_ReflectionProbeUsage: 0
+  m_RayTracingMode: 0
+  m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
+  m_ForceMeshLod: -1
+  m_MeshLodSelectionBias: 0
+  m_RenderingLayerMask: 1
+  m_RendererPriority: 0
+  m_Materials:
+  - {fileID: 2047377449}
+  m_StaticBatchInfo:
+    firstSubMesh: 0
+    subMeshCount: 0
+  m_StaticBatchRoot: {fileID: 0}
+  m_ProbeAnchor: {fileID: 0}
+  m_LightProbeVolumeOverride: {fileID: 0}
+  m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
+  m_PreserveUVs: 0
+  m_IgnoreNormalsForChartDetection: 0
+  m_ImportantGI: 0
+  m_StitchLightmapSeams: 1
+  m_SelectedEditorRenderState: 3
+  m_MinimumChartSize: 4
+  m_AutoUVMaxDistance: 0.5
+  m_AutoUVMaxAngle: 89
+  m_LightmapParameters: {fileID: 0}
+  m_GlobalIlluminationMeshLod: 0
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
+  m_SortingOrder: 0
+  m_MaskInteraction: 0
+  m_Positions:
+  - {x: 0, y: 0, z: 0}
+  - {x: 0, y: 0, z: 1}
+  m_Parameters:
+    serializedVersion: 3
+    widthMultiplier: 1
+    widthCurve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 0
+        value: 0.05
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 1
+        value: 0.05
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    colorGradient:
+      serializedVersion: 2
+      key0: {r: 1, g: 1, b: 1, a: 1}
+      key1: {r: 1, g: 1, b: 1, a: 1}
+      key2: {r: 0, g: 0, b: 0, a: 0}
+      key3: {r: 0, g: 0, b: 0, a: 0}
+      key4: {r: 0, g: 0, b: 0, a: 0}
+      key5: {r: 0, g: 0, b: 0, a: 0}
+      key6: {r: 0, g: 0, b: 0, a: 0}
+      key7: {r: 0, g: 0, b: 0, a: 0}
+      ctime0: 0
+      ctime1: 65535
+      ctime2: 0
+      ctime3: 0
+      ctime4: 0
+      ctime5: 0
+      ctime6: 0
+      ctime7: 0
+      atime0: 0
+      atime1: 65535
+      atime2: 0
+      atime3: 0
+      atime4: 0
+      atime5: 0
+      atime6: 0
+      atime7: 0
+      m_Mode: 0
+      m_ColorSpace: -1
+      m_NumColorKeys: 2
+      m_NumAlphaKeys: 2
+    numCornerVertices: 0
+    numCapVertices: 0
+    alignment: 0
+    textureMode: 0
+    textureScale: {x: 1, y: 1}
+    shadowBias: 0.5
+    generateLightingData: 0
+  m_UseWorldSpace: 1
+  m_Loop: 0
+  m_ApplyActiveColorSpace: 1
 --- !u!4 &5583402631138559369
 Transform:
   m_ObjectHideFlags: 0

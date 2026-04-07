@@ -125,30 +125,49 @@ namespace MobaGameplay.Controllers
                 }
             }
 
-            // 4. HABILIDADES (QUICK CAST: Mantener para apuntar, soltar para lanzar)
+            // 4. HABILIDADES
             if (entity.Abilities != null)
             {
-                // Ability 1
+                // Ability 1 (NORMAL CAST: Pulsar 1 para apuntar, Click Izquierdo para disparar)
                 if (Keyboard.current.digit1Key.wasPressedThisFrame)
-                    entity.Abilities.TryStartTargetingAbility1();
-                else if (Keyboard.current.digit1Key.wasReleasedThisFrame && entity.Abilities.ActiveTargetingAbility == entity.Abilities.Ability1)
-                    ExecuteActiveAbility();
+                {
+                    if (entity.Abilities.ActiveTargetingAbility == entity.Abilities.Ability1)
+                        entity.Abilities.CancelTargeting();
+                    else
+                        entity.Abilities.TryStartTargetingAbility1();
+                }
 
-                // Ability 2
+                // Ability 2 (QUICK CAST: Mantener para apuntar, soltar para lanzar)
                 if (Keyboard.current.digit2Key.wasPressedThisFrame)
                     entity.Abilities.TryStartTargetingAbility2();
                 else if (Keyboard.current.digit2Key.wasReleasedThisFrame && entity.Abilities.ActiveTargetingAbility == entity.Abilities.Ability2)
                     ExecuteActiveAbility();
 
-                // Ability 3
+                // Ability 3 (QUICK CAST: Mantener para apuntar, soltar para lanzar)
                 if (Keyboard.current.digit3Key.wasPressedThisFrame)
                     entity.Abilities.TryStartTargetingAbility3();
                 else if (Keyboard.current.digit3Key.wasReleasedThisFrame && entity.Abilities.ActiveTargetingAbility == entity.Abilities.Ability3)
                     ExecuteActiveAbility();
             }
 
+            bool abilityCastThisFrame = false;
+
+            // 4.5. CONFIRMAR HABILIDAD NORMAL CAST (Click Izquierdo)
+            if (Mouse.current.leftButton.wasPressedThisFrame)
+            {
+                if (EventSystem.current == null || !EventSystem.current.IsPointerOverGameObject())
+                {
+                    if (entity.Abilities != null && entity.Abilities.ActiveTargetingAbility != null)
+                    {
+                        ExecuteActiveAbility();
+                        abilityCastThisFrame = true;
+                    }
+                }
+            }
+
             // 5. COMBATE (Click Izquierdo solo para Auto-Ataque continuo)
-            if (Mouse.current.leftButton.isPressed)
+            // Bloqueado si en este mismo frame se lanzó una habilidad (para no dar un tiro básico accidental)
+            if (!abilityCastThisFrame && Mouse.current.leftButton.isPressed)
             {
                 if (EventSystem.current == null || !EventSystem.current.IsPointerOverGameObject())
                 {
