@@ -60,14 +60,20 @@ namespace MobaGameplay.Controllers
                 currentHovered = null;
             }
 
-            // 1. APUNTADO (Rotación hacia el ratón)
+            // 1. INPUT DE RATÓN Y ESTADO DE APUNTADO
             groundPlane = new Plane(Vector3.up, new Vector3(0, entity.transform.position.y, 0));
             Ray ray = mainCamera.ScreenPointToRay(Mouse.current.position.ReadValue());
+            Vector3 mouseHitPoint = Vector3.zero;
             if (groundPlane.Raycast(ray, out float enter))
             {
-                Vector3 hitPoint = ray.GetPoint(enter);
-                entity.Movement.LookAtPoint(hitPoint);
+                mouseHitPoint = ray.GetPoint(enter);
             }
+
+            bool isAiming = Mouse.current.rightButton.isPressed;
+            bool isShooting = Mouse.current.leftButton.isPressed;
+            bool isTargetingAbility = entity.Abilities != null && entity.Abilities.ActiveTargetingAbility != null;
+
+            bool isAimingState = isAiming || isShooting || isTargetingAbility;
 
             // 2. MOVIMIENTO (WASD)
             float horizontal = 0f;
@@ -80,7 +86,9 @@ namespace MobaGameplay.Controllers
 
             Vector3 inputDirection = new Vector3(horizontal, 0f, vertical).normalized;
             bool isSprinting = Keyboard.current.shiftKey.isPressed;
-            entity.Movement.SetSprint(isSprinting);
+            
+            entity.Movement.SetAiming(isAimingState);
+            entity.Movement.SetSprint(isSprinting && !isAimingState);
 
             Vector3 moveDir = Vector3.zero;
 
@@ -102,7 +110,22 @@ namespace MobaGameplay.Controllers
                 entity.Movement.MoveDirection(Vector3.zero);
             }
 
-            // 3. HABILIDADES (QUICK CAST: Mantener para apuntar, soltar para lanzar)
+            // 3. ROTACIÓN (Strafe vs Free)
+            if (isAimingState)
+            {
+                // Look at mouse
+                entity.Movement.LookAtPoint(mouseHitPoint);
+            }
+            else
+            {
+                // Look in movement direction (if moving)
+                if (moveDir.sqrMagnitude > 0.01f)
+                {
+                    entity.Movement.LookAtPoint(entity.transform.position + moveDir);
+                }
+            }
+
+            // 4. HABILIDADES (QUICK CAST: Mantener para apuntar, soltar para lanzar)
             if (entity.Abilities != null)
             {
                 // Ability 1
@@ -124,7 +147,7 @@ namespace MobaGameplay.Controllers
                     ExecuteActiveAbility();
             }
 
-            // 4. COMBATE (Click Izquierdo solo para Auto-Ataque)
+            // 5. COMBATE (Click Izquierdo solo para Auto-Ataque)
             if (Mouse.current.leftButton.wasPressedThisFrame)
             {
                 if (EventSystem.current == null || !EventSystem.current.IsPointerOverGameObject())
@@ -136,13 +159,15 @@ namespace MobaGameplay.Controllers
                 }
             }
 
-            // 5. SALTO
+            // 6. DASH / SALTO (Espacio)
             if (Keyboard.current.spaceKey.wasPressedThisFrame)
             {
-                entity.Movement.Jump();
+                // entity.Movement.Jump(); // Comentado por ahora si queremos Dash en Espacio
+                Vector3 dashDir = moveDir != Vector3.zero ? moveDir.normalized : entity.transform.forward;
+                entity.Movement.Dash(dashDir);
             }
 
-            // 6. DASH Y CANCELAR HABILIDAD (Click Derecho)
+            // 7. CANCELAR HABILIDAD (Click Derecho)
             if (Mouse.current.rightButton.wasPressedThisFrame)
             {
                 if (EventSystem.current == null || !EventSystem.current.IsPointerOverGameObject())
@@ -150,11 +175,6 @@ namespace MobaGameplay.Controllers
                     if (entity.Abilities != null && entity.Abilities.ActiveTargetingAbility != null)
                     {
                         entity.Abilities.CancelTargeting();
-                    }
-                    else
-                    {
-                        Vector3 dashDir = moveDir != Vector3.zero ? moveDir.normalized : entity.transform.forward;
-                        entity.Movement.Dash(dashDir);
                     }
                 }
             }

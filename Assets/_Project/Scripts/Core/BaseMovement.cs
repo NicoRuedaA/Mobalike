@@ -13,6 +13,7 @@ namespace MobaGameplay.Core
         public abstract void MoveTo(Vector3 destination);
         public abstract void MoveDirection(Vector3 direction);
         public abstract void SetSprint(bool sprint);
+        public abstract void SetAiming(bool aiming);
         public abstract void Stop();
         public abstract void Jump();
         public abstract void LookAtPoint(Vector3 point);

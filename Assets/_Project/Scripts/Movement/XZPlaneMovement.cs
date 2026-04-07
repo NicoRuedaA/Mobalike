@@ -11,6 +11,7 @@ namespace MobaGameplay.Movement
         [Header("Movement Settings")]
         [SerializeField] private float walkSpeed = 5f;
         [SerializeField] private float sprintSpeed = 8f;
+        [SerializeField] private float aimSpeed = 3f;
         [SerializeField] private float rotationSpeed = 25f;
         [SerializeField] private LayerMask groundLayer = ~0;
         
@@ -29,6 +30,7 @@ namespace MobaGameplay.Movement
         private MovementMode currentMode = MovementMode.None;
         private float currentVelocity = 0f;
         private bool isSprinting = false;
+        private bool isAiming = false;
         
         private float verticalVelocity;
         private bool isJumping = false;
@@ -51,7 +53,14 @@ namespace MobaGameplay.Movement
         
         public override bool IsJumping => isJumping;
 
-        private float CurrentSpeed => isSprinting ? sprintSpeed : walkSpeed;
+        private float CurrentSpeed 
+        {
+            get 
+            {
+                if (isAiming) return aimSpeed;
+                return isSprinting ? sprintSpeed : walkSpeed;
+            }
+        }
 
         private void Awake()
         {
@@ -94,6 +103,11 @@ namespace MobaGameplay.Movement
         public override void SetSprint(bool sprint)
         {
             isSprinting = sprint;
+        }
+
+        public override void SetAiming(bool aiming)
+        {
+            isAiming = aiming;
         }
 
         public override void Stop()
