@@ -128,3 +128,4 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MobaGameplay.Core.EnemyEntity
   maxHealth: 500
+  manaRegen: 0
