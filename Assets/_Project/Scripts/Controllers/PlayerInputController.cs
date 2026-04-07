@@ -102,38 +102,34 @@ namespace MobaGameplay.Controllers
                 entity.Movement.MoveDirection(Vector3.zero);
             }
 
-            // 3. HABILIDADES (1, 2, 3)
-            if (Keyboard.current.digit1Key.wasPressedThisFrame && entity.Abilities != null)
-                entity.Abilities.TryStartTargetingAbility1();
-            if (Keyboard.current.digit2Key.wasPressedThisFrame && entity.Abilities != null)
-                entity.Abilities.TryStartTargetingAbility2();
-            if (Keyboard.current.digit3Key.wasPressedThisFrame && entity.Abilities != null)
-                entity.Abilities.TryStartTargetingAbility3();
+            // 3. HABILIDADES (QUICK CAST: Mantener para apuntar, soltar para lanzar)
+            if (entity.Abilities != null)
+            {
+                // Ability 1
+                if (Keyboard.current.digit1Key.wasPressedThisFrame)
+                    entity.Abilities.TryStartTargetingAbility1();
+                else if (Keyboard.current.digit1Key.wasReleasedThisFrame && entity.Abilities.ActiveTargetingAbility == entity.Abilities.Ability1)
+                    ExecuteActiveAbility();
 
-            // 4. COMBATE O CONFIRMAR HABILIDAD (Click Izquierdo)
+                // Ability 2
+                if (Keyboard.current.digit2Key.wasPressedThisFrame)
+                    entity.Abilities.TryStartTargetingAbility2();
+                else if (Keyboard.current.digit2Key.wasReleasedThisFrame && entity.Abilities.ActiveTargetingAbility == entity.Abilities.Ability2)
+                    ExecuteActiveAbility();
+
+                // Ability 3
+                if (Keyboard.current.digit3Key.wasPressedThisFrame)
+                    entity.Abilities.TryStartTargetingAbility3();
+                else if (Keyboard.current.digit3Key.wasReleasedThisFrame && entity.Abilities.ActiveTargetingAbility == entity.Abilities.Ability3)
+                    ExecuteActiveAbility();
+            }
+
+            // 4. COMBATE (Click Izquierdo solo para Auto-Ataque)
             if (Mouse.current.leftButton.wasPressedThisFrame)
             {
                 if (EventSystem.current == null || !EventSystem.current.IsPointerOverGameObject())
                 {
-                    if (entity.Abilities != null && entity.Abilities.ActiveTargetingAbility != null)
-                    {
-                        Ray aimRay = mainCamera.ScreenPointToRay(Mouse.current.position.ReadValue());
-                        Vector3 aimPoint = Vector3.zero;
-                        BaseEntity targetEnt = null;
-
-                        if (Physics.Raycast(aimRay, out RaycastHit hit))
-                        {
-                            aimPoint = hit.point;
-                            targetEnt = hit.collider.GetComponent<BaseEntity>();
-                        }
-                        else if (groundPlane.Raycast(aimRay, out float d))
-                        {
-                            aimPoint = aimRay.GetPoint(d);
-                        }
-
-                        entity.Abilities.ExecuteTargeting(aimPoint, targetEnt);
-                    }
-                    else if (entity.Combat != null) 
+                    if (entity.Combat != null && (entity.Abilities == null || entity.Abilities.ActiveTargetingAbility == null)) 
                     {
                         entity.Combat.BasicAttack();
                     }
@@ -153,17 +149,42 @@ namespace MobaGameplay.Controllers
                 {
                     if (entity.Abilities != null && entity.Abilities.ActiveTargetingAbility != null)
                     {
-                        // Si estamos apuntando, el click derecho cancela la habilidad en lugar de hacer un dash
                         entity.Abilities.CancelTargeting();
                     }
                     else
                     {
-                        // Dash en la dirección del movimiento, o si está quieto, hacia donde mira
                         Vector3 dashDir = moveDir != Vector3.zero ? moveDir.normalized : entity.transform.forward;
                         entity.Movement.Dash(dashDir);
                     }
                 }
             }
+        }
+
+        private void ExecuteActiveAbility()
+        {
+            if (entity.Abilities == null || entity.Abilities.ActiveTargetingAbility == null) return;
+            
+            if (EventSystem.current != null && EventSystem.current.IsPointerOverGameObject())
+            {
+                entity.Abilities.CancelTargeting();
+                return;
+            }
+
+            Ray aimRay = mainCamera.ScreenPointToRay(Mouse.current.position.ReadValue());
+            Vector3 aimPoint = Vector3.zero;
+            BaseEntity targetEnt = null;
+
+            if (Physics.Raycast(aimRay, out RaycastHit hit))
+            {
+                aimPoint = hit.point;
+                targetEnt = hit.collider.GetComponent<BaseEntity>();
+            }
+            else if (groundPlane.Raycast(aimRay, out float d))
+            {
+                aimPoint = aimRay.GetPoint(d);
+            }
+
+            entity.Abilities.ExecuteTargeting(aimPoint, targetEnt);
         }
     }
 }
