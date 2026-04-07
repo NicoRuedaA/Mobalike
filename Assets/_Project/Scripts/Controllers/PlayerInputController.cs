@@ -71,9 +71,12 @@ namespace MobaGameplay.Controllers
 
             bool isAiming = Mouse.current.rightButton.isPressed;
             bool isShooting = Mouse.current.leftButton.isPressed;
-            bool isTargetingAbility = entity.Abilities != null && entity.Abilities.ActiveTargetingAbility != null;
+            
+            // La rotación clásica: siempre mirar al ratón
+            entity.Movement.LookAtPoint(mouseHitPoint);
 
-            bool isAimingState = isAiming || isShooting || isTargetingAbility;
+            // Penalización de movimiento solo si apuntamos explícitamente con Click Derecho
+            entity.Movement.SetAiming(isAiming);
 
             // 2. MOVIMIENTO (WASD)
             float horizontal = 0f;
@@ -87,8 +90,7 @@ namespace MobaGameplay.Controllers
             Vector3 inputDirection = new Vector3(horizontal, 0f, vertical).normalized;
             bool isSprinting = Keyboard.current.shiftKey.isPressed;
             
-            entity.Movement.SetAiming(isAimingState);
-            entity.Movement.SetSprint(isSprinting && !isAimingState);
+            entity.Movement.SetSprint(isSprinting && !isAiming);
 
             Vector3 moveDir = Vector3.zero;
 
@@ -110,22 +112,7 @@ namespace MobaGameplay.Controllers
                 entity.Movement.MoveDirection(Vector3.zero);
             }
 
-            // 3. ROTACIÓN (Strafe vs Free)
-            if (isAimingState)
-            {
-                // Look at mouse
-                entity.Movement.LookAtPoint(mouseHitPoint);
-            }
-            else
-            {
-                // Look in movement direction (if moving)
-                if (moveDir.sqrMagnitude > 0.01f)
-                {
-                    entity.Movement.LookAtPoint(entity.transform.position + moveDir);
-                }
-            }
-
-            // 4. HABILIDADES (QUICK CAST: Mantener para apuntar, soltar para lanzar)
+            // 3. HABILIDADES (QUICK CAST: Mantener para apuntar, soltar para lanzar)
             if (entity.Abilities != null)
             {
                 // Ability 1
