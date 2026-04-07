@@ -82,16 +82,19 @@ public class SetupAttackAnimationAuto {
 
             string fbxPath = "Assets/_Project/Hook Punch.fbx";
             AnimationClip punchClip = null;
-            Object[] assets = AssetDatabase.LoadAllAssetsAtPath(fbxPath);
-            foreach(var asset in assets) {
-                if (asset is AnimationClip && !asset.name.Contains("__preview__") && !asset.name.StartsWith("Take ")) {
-                    punchClip = asset as AnimationClip;
-                    break;
+            
+            if (System.IO.File.Exists(Application.dataPath + "/../" + fbxPath)) {
+                Object[] assets = AssetDatabase.LoadAllAssetsAtPath(fbxPath);
+                foreach(var asset in assets) {
+                    if (asset is AnimationClip && !asset.name.Contains("__preview__") && !asset.name.StartsWith("Take ")) {
+                        punchClip = asset as AnimationClip;
+                        break;
+                    }
                 }
             }
 
             if (punchClip == null) {
-                Debug.LogError("Could not find AnimationClip in " + fbxPath);
+                Debug.LogWarning("Could not find AnimationClip in " + fbxPath + ". Attack animation not auto-configured.");
                 return;
             }
 
