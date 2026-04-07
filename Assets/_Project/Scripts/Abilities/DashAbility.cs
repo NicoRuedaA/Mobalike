@@ -12,10 +12,8 @@ namespace MobaGameplay.Abilities
         public override void ExecuteCast(Vector3 targetPosition, BaseEntity targetEntity)
         {
             if (!CanCast()) return;
-            if (ownerEntity.CurrentMana < manaCost) return;
 
-            ownerEntity.CurrentMana -= manaCost;
-            currentCooldown = cooldown;
+            base.ExecuteCast(targetPosition, targetEntity); // Consumes mana + starts cooldown
 
             Vector3 dir = (targetPosition - ownerEntity.transform.position).normalized;
             dir.y = 0;
@@ -24,8 +22,6 @@ namespace MobaGameplay.Abilities
             {
                 ownerEntity.Movement.Dash(dir);
             }
-
-            CancelTargeting();
         }
     }
 }

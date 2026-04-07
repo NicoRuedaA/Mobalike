@@ -43,6 +43,11 @@ namespace MobaGameplay.Abilities
         private void StartTargeting(BaseAbility ability)
         {
             if (ability == null) return;
+            if (!ability.HasEnoughMana)
+            {
+                Debug.Log($"[Ability] {ability.abilityName} - Not enough mana! Need {ability.ManaCost:F0}");
+                return;
+            }
             if (!ability.CanCast())
             {
                 Debug.Log($"[Ability] {ability.abilityName} is on cooldown!");

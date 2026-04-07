@@ -24,6 +24,8 @@ namespace MobaGameplay.Abilities
         public bool IsOnCooldown => currentCooldown > 0f;
         public float CurrentCooldown => currentCooldown;
         public float MaxCooldown => cooldown;
+        public bool HasEnoughMana => ownerEntity != null && ownerEntity.CurrentMana >= manaCost;
+        public float ManaCost => manaCost;
 
         public virtual void Initialize(BaseEntity owner)
         {
@@ -40,7 +42,7 @@ namespace MobaGameplay.Abilities
 
         public virtual bool CanCast()
         {
-            return !IsOnCooldown;
+            return !IsOnCooldown && HasEnoughMana;
         }
 
         public virtual void BeginTargeting()
@@ -63,6 +65,7 @@ namespace MobaGameplay.Abilities
         {
             if (!CanCast()) return;
 
+            ownerEntity.CurrentMana -= manaCost;
             currentCooldown = cooldown;
             CancelTargeting();
         }

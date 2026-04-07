@@ -14,7 +14,6 @@ namespace MobaGameplay.Abilities
         public override void ExecuteCast(Vector3 targetPosition, BaseEntity targetEntity)
         {
             if (!CanCast()) return;
-            if (ownerEntity.CurrentMana < manaCost) return;
 
             Vector3 direction = targetPosition - ownerEntity.transform.position;
             direction.y = 0;
@@ -23,8 +22,7 @@ namespace MobaGameplay.Abilities
                 targetPosition = ownerEntity.transform.position + direction.normalized * CastRange;
             }
 
-            ownerEntity.CurrentMana -= manaCost;
-            currentCooldown = cooldown;
+            base.ExecuteCast(targetPosition, targetEntity); // Consumes mana + starts cooldown
             ownerEntity.transform.forward = direction.normalized;
 
             if (vfxPrefab != null) Instantiate(vfxPrefab, targetPosition, Quaternion.identity);
@@ -39,8 +37,6 @@ namespace MobaGameplay.Abilities
                     target.TakeDamage(new DamageInfo(totalDamage, DamageType.Physical, ownerEntity));
                 }
             }
-
-            CancelTargeting();
         }
     }
 }

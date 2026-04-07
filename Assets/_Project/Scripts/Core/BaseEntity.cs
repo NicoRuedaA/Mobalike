@@ -21,6 +21,9 @@ namespace MobaGameplay.Core
         public float MagicResistance = 30f;
         public float MovementSpeed = 5f;
 
+        [Header("Mana Regen")]
+        [SerializeField] private float manaRegen = 5f; // Mana per second
+
         [Header("Critical Hit")]
         [SerializeField, Range(0f, 1f)] private float criticalChance = 0.15f;
         [SerializeField] private float criticalMultiplier = 1.5f;
@@ -42,6 +45,15 @@ namespace MobaGameplay.Core
 
             CurrentHealth = MaxHealth;
             CurrentMana = MaxMana;
+        }
+
+        private void Update()
+        {
+            // Mana regeneration
+            if (manaRegen > 0f && CurrentMana < MaxMana)
+            {
+                CurrentMana = Mathf.Min(MaxMana, CurrentMana + manaRegen * Time.deltaTime);
+            }
         }
 
         public virtual void TakeDamage(DamageInfo damageInfo)
