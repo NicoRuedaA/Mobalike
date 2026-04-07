@@ -54,6 +54,7 @@ MonoBehaviour:
   CurrentMana: 500
   AttackDamage: 60
   AbilityPower: 100
+  AttackSpeed: 1.5
   PhysicalArmor: 30
   MagicResistance: 30
   MovementSpeed: 5

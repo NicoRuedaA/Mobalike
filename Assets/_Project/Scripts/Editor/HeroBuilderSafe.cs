@@ -52,6 +52,24 @@ namespace MobaGameplay.Editor
             GameObject savedFireball = PrefabUtility.SaveAsPrefabAsset(fireballObj, fireballPath);
             Object.DestroyImmediate(fireballObj);
 
+            // 1.5 Build Basic Attack Projectile
+            GameObject basicAttackObj = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+            basicAttackObj.name = "BasicAttackProjectile";
+            basicAttackObj.transform.localScale = Vector3.one * 0.2f;
+            basicAttackObj.GetComponent<MeshRenderer>().sharedMaterial = orangeMat;
+            
+            var baCol = basicAttackObj.GetComponent<SphereCollider>();
+            baCol.isTrigger = true;
+            
+            var baRb = basicAttackObj.AddComponent<Rigidbody>();
+            baRb.isKinematic = true; 
+            
+            var baProj = basicAttackObj.AddComponent<BasicAttackProjectile>();
+            
+            string basicAttackPath = "Assets/_Project/Prefabs/Abilities/BasicAttackProjectile.prefab";
+            GameObject savedBasicAttack = PrefabUtility.SaveAsPrefabAsset(basicAttackObj, basicAttackPath);
+            Object.DestroyImmediate(basicAttackObj);
+
             // 2. Build Ground Smash VFX
             GameObject smashObj = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
             smashObj.name = "GroundSmashVFX";
