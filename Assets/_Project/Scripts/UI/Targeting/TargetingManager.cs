@@ -4,14 +4,6 @@ using MobaGameplay.Abilities;
 
 namespace MobaGameplay.UI.Targeting
 {
-    public enum IndicatorType
-    {
-        None,
-        Circle,
-        Line,
-        Cone
-    }
-
     public class TargetingManager : MonoBehaviour
     {
         public static TargetingManager Instance { get; private set; }
