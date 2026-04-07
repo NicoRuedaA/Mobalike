@@ -28,11 +28,16 @@ namespace MobaGameplay.Abilities
             {
                 Vector3 spawnPos = ownerEntity.transform.position + Vector3.up * 1f + dir * 1f;
                 GameObject projObj = Instantiate(projectilePrefab, spawnPos, Quaternion.identity);
+                Debug.Log($"[FireballAbility] Launched fireball at {spawnPos} facing {dir}");
                 if (projObj.TryGetComponent(out LinearProjectile proj))
                 {
                     float totalDamage = baseDamage + (ownerEntity.AbilityPower * apRatio);
                     proj.Initialize(dir, totalDamage, DamageType.Magical, ownerEntity);
                 }
+            }
+            else
+            {
+                Debug.LogError("[FireballAbility] projectilePrefab is null!");
             }
 
             CancelTargeting();

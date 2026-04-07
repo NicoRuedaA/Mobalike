@@ -118,19 +118,22 @@ namespace MobaGameplay.Controllers
                 // Ability 1
                 if (Keyboard.current.digit1Key.wasPressedThisFrame)
                     entity.Abilities.TryStartTargetingAbility1();
-                else if (Keyboard.current.digit1Key.wasReleasedThisFrame && entity.Abilities.ActiveTargetingAbility == entity.Abilities.Ability1)
+                
+                if (Keyboard.current.digit1Key.wasReleasedThisFrame && entity.Abilities.ActiveTargetingAbility == entity.Abilities.Ability1)
                     ExecuteActiveAbility();
 
                 // Ability 2
                 if (Keyboard.current.digit2Key.wasPressedThisFrame)
                     entity.Abilities.TryStartTargetingAbility2();
-                else if (Keyboard.current.digit2Key.wasReleasedThisFrame && entity.Abilities.ActiveTargetingAbility == entity.Abilities.Ability2)
+                
+                if (Keyboard.current.digit2Key.wasReleasedThisFrame && entity.Abilities.ActiveTargetingAbility == entity.Abilities.Ability2)
                     ExecuteActiveAbility();
 
                 // Ability 3
                 if (Keyboard.current.digit3Key.wasPressedThisFrame)
                     entity.Abilities.TryStartTargetingAbility3();
-                else if (Keyboard.current.digit3Key.wasReleasedThisFrame && entity.Abilities.ActiveTargetingAbility == entity.Abilities.Ability3)
+                
+                if (Keyboard.current.digit3Key.wasReleasedThisFrame && entity.Abilities.ActiveTargetingAbility == entity.Abilities.Ability3)
                     ExecuteActiveAbility();
             }
 
@@ -171,11 +174,12 @@ namespace MobaGameplay.Controllers
         {
             if (entity.Abilities == null || entity.Abilities.ActiveTargetingAbility == null) return;
             
-            if (EventSystem.current != null && EventSystem.current.IsPointerOverGameObject())
-            {
-                entity.Abilities.CancelTargeting();
-                return;
-            }
+            // Comentamos la restricción de UI para asegurar que siempre se lance
+            // if (EventSystem.current != null && EventSystem.current.IsPointerOverGameObject())
+            // {
+            //     entity.Abilities.CancelTargeting();
+            //     return;
+            // }
 
             Ray aimRay = mainCamera.ScreenPointToRay(Mouse.current.position.ReadValue());
             Vector3 aimPoint = Vector3.zero;

@@ -54,7 +54,7 @@ namespace MobaGameplay.Abilities.Projectiles
                     HitAndDestroy();
                     return;
                 }
-                else 
+                else if (!hit.collider.isTrigger) 
                 {
                     // Hit a wall/obstacle
                     HitAndDestroy();

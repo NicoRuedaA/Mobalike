@@ -41,18 +41,24 @@ namespace MobaGameplay.Abilities.Projectiles
             {
                 BaseEntity target = hit.collider.GetComponentInParent<BaseEntity>();
                 
-                // Ignorar colisiones con el propio lanzador
+                // Si choca con el propio lanzador (ej. su propio collider), ignorarlo por completo
                 if (target == owner) continue; 
 
-                // Si es un enemigo, aplicar daño
+                // Si choca con otro Entity (enemigo o aliado)
                 if (target != null)
                 {
                     target.TakeDamage(new DamageInfo(damage, damageType, owner));
+                    HitAndDestroy();
+                    return;
                 }
                 
-                // Destruir el proyectil ante CUALQUIER otro impacto válido (muros, enemigos, escudos)
-                HitAndDestroy();
-                return;
+                // Si no tiene BaseEntity, podría ser el suelo, una pared, etc.
+                if (!hit.collider.isTrigger)
+                {
+                    Debug.Log($"[LinearProjectile] Destroyed because it hit {hit.collider.gameObject.name} (Layer: {hit.collider.gameObject.layer})");
+                    HitAndDestroy();
+                    return;
+                }
             }
 
             transform.position += direction * distanceToMove;
