@@ -202,6 +202,10 @@ MonoBehaviour:
   lowHealthColor: {r: 0.9, g: 0.2, b: 0.2, a: 1}
   recentDamageColor: {r: 1, g: 0.68, b: 0.15, a: 0.9}
   missingHealthColor: {r: 0.33, g: 0.08, b: 0.08, a: 0.95}
+  showTickMarks: 1
+  tickColor: {r: 0, g: 0, b: 0, a: 0.7}
+  tickInterval: 0.1
+  tickWidth: 0.005
 --- !u!1 &6964321008226320048
 GameObject:
   m_ObjectHideFlags: 0

@@ -15,13 +15,15 @@ namespace MobaGameplay.Combat
         public DamageType Type;
         public Core.BaseEntity Source;
         public Vector3 HitPoint;
+        public bool IsCritical;
 
-        public DamageInfo(float amount, DamageType type, Core.BaseEntity source)
+        public DamageInfo(float amount, DamageType type, Core.BaseEntity source, bool isCritical = false)
         {
             Amount = amount;
             Type = type;
             Source = source;
             HitPoint = Vector3.zero;
+            IsCritical = isCritical;
         }
     }
 }

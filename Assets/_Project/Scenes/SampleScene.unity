@@ -2506,6 +2506,53 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 932998794}
   m_CullTransparentMesh: 1
+--- !u!1 &1035714042
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1035714044}
+  - component: {fileID: 1035714043}
+  m_Layer: 0
+  m_Name: FloatingTextManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1035714043
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1035714042}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 06dfd183a6b5d1844a20e8ac9193fd2d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MobaGameplay.UI.FloatingTextManager
+  damageTextPrefab: {fileID: 123456789012345682, guid: 9bb92a865a1b56b4cb6f9600396444fb, type: 3}
+  jitterRadius: 0.4
+  verticalOffset: 2
+--- !u!4 &1035714044
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1035714042}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1039749575
 GameObject:
   m_ObjectHideFlags: 0
@@ -2994,6 +3041,8 @@ MonoBehaviour:
   PhysicalArmor: 30
   MagicResistance: 30
   MovementSpeed: 5
+  criticalChance: 0.15
+  criticalMultiplier: 1.5
 --- !u!23 &1177391311
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -6671,6 +6720,7 @@ GameObject:
   - component: {fileID: 5521050719080623901}
   - component: {fileID: 5521050719080623900}
   - component: {fileID: 5521050719080623903}
+  - component: {fileID: 5521050719080623904}
   m_Layer: 0
   m_Name: Player
   m_TagString: Player
@@ -6749,6 +6799,8 @@ MonoBehaviour:
   PhysicalArmor: 30
   MagicResistance: 30
   MovementSpeed: 5
+  criticalChance: 0.15
+  criticalMultiplier: 1.5
   CurrentLevel: 1
   MaxLevel: 18
   CurrentExp: 0
@@ -7169,6 +7221,18 @@ CapsuleCollider:
   m_Height: 2
   m_Direction: 1
   m_Center: {x: 0, y: 1, z: 0}
+--- !u!114 &5521050719080623904
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5521050719080623884}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ebcccc4f85316ff44896a1f0101879fa, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MobaGameplay.Combat.MeleeCombat
 --- !u!4 &5583402631138559369
 Transform:
   m_ObjectHideFlags: 0
@@ -7994,3 +8058,4 @@ SceneRoots:
   - {fileID: 1177391314}
   - {fileID: 2094694055}
   - {fileID: 2011641864}
+  - {fileID: 1035714044}

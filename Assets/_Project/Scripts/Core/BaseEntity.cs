@@ -21,6 +21,10 @@ namespace MobaGameplay.Core
         public float MagicResistance = 30f;
         public float MovementSpeed = 5f;
 
+        [Header("Critical Hit")]
+        [SerializeField, Range(0f, 1f)] private float criticalChance = 0.15f;
+        [SerializeField] private float criticalMultiplier = 1.5f;
+
         public bool IsDead => CurrentHealth <= 0;
 
         public event Action<DamageInfo> OnTakeDamage;
@@ -47,12 +51,20 @@ namespace MobaGameplay.Core
             float actualDamage = CalculateDamageReduction(damageInfo);
             CurrentHealth -= actualDamage;
 
-            Debug.Log($"[{gameObject.name}] took {actualDamage:F1} {damageInfo.Type} damage from {(damageInfo.Source != null ? damageInfo.Source.gameObject.name : "Unknown")}. Health left: {CurrentHealth:F1}");
+            // Check critical hit
+            bool isCritical = damageInfo.IsCritical || (damageInfo.Source != null && UnityEngine.Random.value < damageInfo.Source.criticalChance);
+            if (isCritical)
+            {
+                actualDamage *= criticalMultiplier;
+                CurrentHealth -= actualDamage * (criticalMultiplier - 1f);
+            }
+
+            Debug.Log($"[{gameObject.name}] took {actualDamage:F1} {damageInfo.Type} damage from {(damageInfo.Source != null ? damageInfo.Source.gameObject.name : "Unknown")}.{(isCritical ? " CRITICAL!" : "")} Health left: {CurrentHealth:F1}");
 
             // Spawn floating damage text
             if (UI.FloatingTextManager.Instance != null)
             {
-                UI.FloatingTextManager.Instance.Spawn(transform.position + Vector3.up * 2f, actualDamage, damageInfo.Type);
+                UI.FloatingTextManager.Instance.Spawn(transform.position + Vector3.up * 2f, actualDamage, damageInfo.Type, isCritical);
             }
 
             OnTakeDamage?.Invoke(damageInfo);

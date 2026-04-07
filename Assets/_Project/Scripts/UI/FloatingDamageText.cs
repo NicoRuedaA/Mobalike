@@ -7,7 +7,7 @@ namespace MobaGameplay.UI
     [RequireComponent(typeof(Billboard))]
     public class FloatingDamageText : MonoBehaviour
     {
-        [SerializeField] private TextMeshPro _textMesh;
+        [SerializeField] private TextMeshProUGUI _textMesh;
         [SerializeField] private float launchSpeed = 4f;
         [SerializeField] private float gravity = -9f;
         [SerializeField] private float fadeDuration = 1f;
@@ -25,10 +25,21 @@ namespace MobaGameplay.UI
         private Vector3 velocity;
         private Color targetColor;
         private Vector3 baseScale;
+        private float originalFontSize;
+        private FontStyles originalFontStyle;
 
         public void Setup(float damageAmount, DamageType type, bool isCritical = false)
         {
-            if (_textMesh == null) _textMesh = GetComponentInChildren<TextMeshPro>();
+            if (_textMesh == null) _textMesh = GetComponentInChildren<TextMeshProUGUI>();
+            if (_textMesh == null)
+            {
+                Debug.LogError("FloatingDamageText: No TextMeshProUGUI found!");
+                Destroy(gameObject);
+                return;
+            }
+            
+            originalFontSize = _textMesh.fontSize;
+            originalFontStyle = _textMesh.fontStyle;
             
             _textMesh.text = Mathf.RoundToInt(damageAmount).ToString();
             
@@ -43,7 +54,7 @@ namespace MobaGameplay.UI
             if (isCritical)
             {
                 targetColor = criticalColor;
-                _textMesh.fontSize *= 1.6f;
+                _textMesh.fontSize = originalFontSize * 1.6f;
                 _textMesh.fontStyle = FontStyles.Bold;
             }
 
@@ -71,7 +82,7 @@ namespace MobaGameplay.UI
 
             fadeTimer -= Time.deltaTime;
             if (fadeTimer <= 0) Destroy(gameObject);
-            else
+            else if (_textMesh != null)
             {
                 float alpha = fadeTimer / fadeDuration;
                 _textMesh.color = new Color(targetColor.r, targetColor.g, targetColor.b, alpha);
