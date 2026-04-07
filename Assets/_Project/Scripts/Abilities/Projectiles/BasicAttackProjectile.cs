@@ -33,6 +33,20 @@ namespace MobaGameplay.Abilities.Projectiles
             isInitialized = true;
         }
 
+        /// <summary>
+        /// Scales the projectile for charged attacks: larger size, faster, more damage.
+        /// </summary>
+        public void ApplyChargeMultiplier(float sizeMultiplier, float speedMultiplier, float damageMultiplier)
+        {
+            collisionRadius *= sizeMultiplier;
+            speed *= speedMultiplier;
+            damage *= damageMultiplier;
+            maxDistance *= 1.2f; // Charged attacks travel slightly farther
+            
+            // Scale the visual mesh
+            transform.localScale *= sizeMultiplier;
+        }
+
         private void Update()
         {
             if (!isInitialized || direction == Vector3.zero) return;

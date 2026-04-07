@@ -137,12 +137,39 @@ namespace MobaGameplay.Controllers
                     ExecuteActiveAbility();
             }
 
-            // 5. COMBATE (Click Izquierdo solo para Auto-Ataque continuo)
+            // 5. COMBATE - Ataque Cargado (Click Izquierdo)
+            // Mantener click izq = cargar mientras apunta
+            // Soltar click izq = disparar (si no hay habilidad activa)
+            
+            // Actualizar carga si estamos cargando
+            var rangedCombat = entity.Combat as MobaGameplay.Combat.RangedCombat;
+            if (rangedCombat != null && rangedCombat.IsCharging)
+            {
+                rangedCombat.UpdateCharge();
+            }
+            
             if (Mouse.current.leftButton.isPressed)
             {
                 if (EventSystem.current == null || !EventSystem.current.IsPointerOverGameObject())
                 {
-                    if (entity.Combat != null && (entity.Abilities == null || entity.Abilities.ActiveTargetingAbility == null)) 
+                    // Si está apuntando (click derecho) y no hay habilidad activa, empezar a cargar
+                    if (isAiming && entity.Combat != null && (entity.Abilities == null || entity.Abilities.ActiveTargetingAbility == null))
+                    {
+                        if (rangedCombat != null && !rangedCombat.IsCharging)
+                        {
+                            rangedCombat.StartCharging();
+                        }
+                    }
+                }
+            }
+            
+            // Soltar click izq = disparar
+            if (Mouse.current.leftButton.wasReleasedThisFrame)
+            {
+                if (EventSystem.current == null || !EventSystem.current.IsPointerOverGameObject())
+                {
+                    // Si no hay habilidad activa y hay combate
+                    if (entity.Combat != null && (entity.Abilities == null || entity.Abilities.ActiveTargetingAbility == null))
                     {
                         entity.Combat.BasicAttack();
                     }
