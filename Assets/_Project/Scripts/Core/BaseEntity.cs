@@ -49,6 +49,12 @@ namespace MobaGameplay.Core
 
             Debug.Log($"[{gameObject.name}] took {actualDamage:F1} {damageInfo.Type} damage from {(damageInfo.Source != null ? damageInfo.Source.gameObject.name : "Unknown")}. Health left: {CurrentHealth:F1}");
 
+            // Spawn floating damage text
+            if (UI.FloatingTextManager.Instance != null)
+            {
+                UI.FloatingTextManager.Instance.Spawn(transform.position + Vector3.up * 2f, actualDamage, damageInfo.Type);
+            }
+
             OnTakeDamage?.Invoke(damageInfo);
 
             if (CurrentHealth <= 0)

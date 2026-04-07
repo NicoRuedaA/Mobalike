@@ -20,8 +20,37 @@ namespace MobaGameplay.UI
 
         private void Start()
         {
-            // Intentar encontrar al jugador en la escena
+            TryBindPlayer();
+        }
+
+        private void Update()
+        {
+            // Si el jugador se crea después del HUD, reintentar hasta enlazarlo
+            if (playerEntity == null)
+            {
+                TryBindPlayer();
+                if (playerEntity == null) return;
+            }
+
+            // Actualizar barras de recursos suavemente
+            if (healthBar != null)
+                healthBar.UpdateValue(playerEntity.CurrentHealth, playerEntity.MaxHealth);
+
+            if (manaBar != null)
+                manaBar.UpdateValue(playerEntity.CurrentMana, playerEntity.MaxMana);
+        }
+
+        private void TryBindPlayer()
+        {
+            // Intentar por nombre (compatibilidad con escena actual)
             GameObject playerGo = GameObject.Find("Player");
+
+            // Fallback por tag para no depender de un nombre fijo
+            if (playerGo == null)
+            {
+                playerGo = GameObject.FindGameObjectWithTag("Player");
+            }
+
             if (playerGo != null)
             {
                 playerEntity = playerGo.GetComponent<BaseEntity>();
@@ -38,23 +67,6 @@ namespace MobaGameplay.UI
                 {
                     Debug.LogWarning("[PlayerHUD] No AbilityController found on Player.");
                 }
-            }
-            else
-            {
-                Debug.LogWarning("[PlayerHUD] Player GameObject not found.");
-            }
-        }
-
-        private void Update()
-        {
-            if (playerEntity != null)
-            {
-                // Actualizar barras de recursos suavemente
-                if (healthBar != null)
-                    healthBar.UpdateValue(playerEntity.CurrentHealth, playerEntity.MaxHealth);
-
-                if (manaBar != null)
-                    manaBar.UpdateValue(playerEntity.CurrentMana, playerEntity.MaxMana);
             }
         }
     }

@@ -30,8 +30,8 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 345461249748534314}
   - {fileID: 6748080021868385794}
+  - {fileID: 345461249748534314}
   m_Father: {fileID: 8860212611365115417}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
@@ -189,7 +189,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::MobaGameplay.UI.FloatingStatusBar
   targetEntity: {fileID: 0}
   healthFill: {fileID: 2608011178667579681}
+  healthRecentDamageFill: {fileID: 0}
+  healthBackground: {fileID: 0}
   manaFill: {fileID: 5240869964491030628}
+  damageDelay: 0.16
+  damageLerpDuration: 0.35
+  healLerpDuration: 0.12
+  criticalThreshold: 0.3
+  mediumThreshold: 0.6
+  healthyColor: {r: 0.2, g: 0.85, b: 0.2, a: 1}
+  mediumHealthColor: {r: 0.93, g: 0.78, b: 0.2, a: 1}
+  lowHealthColor: {r: 0.9, g: 0.2, b: 0.2, a: 1}
+  recentDamageColor: {r: 1, g: 0.68, b: 0.15, a: 0.9}
+  missingHealthColor: {r: 0.33, g: 0.08, b: 0.08, a: 0.95}
 --- !u!1 &6964321008226320048
 GameObject:
   m_ObjectHideFlags: 0
