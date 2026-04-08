@@ -1,14 +1,52 @@
 using UnityEngine;
+using MobaGameplay.AI;
+using MobaGameplay.Game;
 
 namespace MobaGameplay.Core
 {
+    /// <summary>
+    /// Entidad de enemigo. Extiende BaseEntity con comportamiento específico de enemigo:
+    /// - Hover outline automático
+    /// - AI Controller automático
+    /// - Integración con GameStateManager
+    /// </summary>
     public class EnemyEntity : BaseEntity
     {
+        [Header("Enemy Settings")]
+        [Tooltip("Cantidad de oro que suelta al morir.")]
+        [SerializeField] private int goldReward = 10;
+        
+        [Tooltip("Experiencia que otorga al morir.")]
+        [SerializeField] private int experienceReward = 25;
+        
+        // Referencia al AI Controller
+        private EnemyAIController _aiController;
+        
+        // Referencia al Game State Manager
+        private GameStateManager _gameStateManager;
+        
         protected override void Awake()
         {
             base.Awake();
             
-            // Automatically add hover outline if not present
+            // Agregar Hover Outline automáticamente
+            SetupHoverOutline();
+            
+            // Agregar AI Controller automáticamente si no existe
+            SetupAIController();
+        }
+        
+        private void Start()
+        {
+            // Buscar GameStateManager
+            _gameStateManager = GameStateManager.Instance;
+        }
+        
+        /// <summary>
+        /// Configura el hover outline para este enemigo.
+        /// </summary>
+        private void SetupHoverOutline()
+        {
             var hoverOutline = GetComponent<MobaGameplay.UI.Targeting.HoverOutline>();
             if (hoverOutline == null)
             {
@@ -17,13 +55,96 @@ namespace MobaGameplay.Core
                 hoverOutline.outlineWidth = 0.02f;
             }
         }
-
+        
+        /// <summary>
+        /// Configura el AI Controller si no existe.
+        /// </summary>
+        private void SetupAIController()
+        {
+            _aiController = GetComponent<EnemyAIController>();
+            if (_aiController == null)
+            {
+                _aiController = gameObject.AddComponent<EnemyAIController>();
+                
+                // Configuración por defecto
+                // El AI Controller tiene valores default en el inspector
+                #if UNITY_EDITOR
+                Debug.Log($"[EnemyEntity] Added EnemyAIController to {gameObject.name}");
+                #endif
+            }
+        }
+        
         protected override void Die()
         {
             base.Die();
-            Debug.Log($"[EnemyEntity] {gameObject.name} has died.");
-            // Aquí podríamos reproducir animación, soltar oro, o destruir el objeto
-            Destroy(gameObject, 1f); // Destroy after 1 sec to let events fire
+            
+            Debug.Log($"[EnemyEntity] {gameObject.name} has died. Reward: {goldReward} gold, {experienceReward} XP");
+            
+            // Notificar al GameStateManager
+            if (_gameStateManager != null)
+            {
+                // El EnemyAIController maneja su propia limpieza y notifica al GSM
+                // Aquí solo manejamos recompensas
+                NotifyKillReward();
+            }
+            
+            // Deshabilitar AI
+            if (_aiController != null)
+            {
+                _aiController.enabled = false;
+            }
+            
+            // Destruir después de un delay para que los eventos disparen
+            Destroy(gameObject, 1f);
+        }
+        
+        /// <summary>
+        /// Notifica las recompensas al jugador/GSM.
+        /// </summary>
+        private void NotifyKillReward()
+        {
+            // Aquí se podría:
+            // 1. Award gold al jugador
+            // 2. Award XP al jugador
+            // 3. Notificar a sistemas de quest/logros
+            
+            // Por ahora solo log
+            // En el futuro, esto se conectará al HeroEntity y al inventory system
+        }
+        
+        /// <summary>
+        /// Obtiene la referencia al AI Controller.
+        /// </summary>
+        public EnemyAIController GetAIController()
+        {
+            return _aiController;
+        }
+        
+        /// <summary>
+        /// Establece el objetivo del AI.
+        /// </summary>
+        public void SetTarget(BaseEntity target)
+        {
+            if (_aiController != null)
+            {
+                _aiController.SetTarget(target);
+            }
+        }
+        
+        /// <summary>
+        /// Obtiene la cantidad de oro que suelta.
+        /// </summary>
+        public int GetGoldReward()
+        {
+            return goldReward;
+        }
+        
+        /// <summary>
+        /// Obtiene la experiencia que otorga.
+        /// </summary>
+        public int GetExperienceReward()
+        {
+            return experienceReward;
         }
     }
 }

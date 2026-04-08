@@ -26,7 +26,7 @@ namespace MobaGameplay.Core
 
         // Events
         public event Action<DamageInfo> OnTakeDamage;
-        public event Action<BaseEntity> OnDeath;
+        public event Action<BaseEntity, DamageInfo> OnDeath;
         public event Action<float, float> OnManaChanged;
 
         // Health
@@ -219,7 +219,7 @@ namespace MobaGameplay.Core
             Debug.Log($"[{gameObject.name}] died!");
             #endif
             
-            OnDeath?.Invoke(this);
+            OnDeath?.Invoke(this, new DamageInfo(0, DamageType.TrueDamage, null));
 
             // Disable colliders
             foreach (var col in GetComponentsInChildren<Collider>())
@@ -260,6 +260,38 @@ namespace MobaGameplay.Core
         {
             if (IsDead) return;
             CurrentMana += Mathf.Max(0, amount);
+        }
+
+        /// <summary>
+        /// Revive this entity with full health.
+        /// Used by GameStateManager for player respawn.
+        /// </summary>
+        public virtual void Revive()
+        {
+            currentHealth = maxHealth;
+            currentMana = maxMana;
+            
+            #if UNITY_EDITOR
+            Debug.Log($"[{gameObject.name}] revived!");
+            #endif
+            
+            // Re-enable components
+            if (Movement is MonoBehaviour monoMove) monoMove.enabled = true;
+            if (Combat != null) Combat.enabled = true;
+            if (Abilities != null) Abilities.enabled = true;
+            
+            // Re-enable colliders
+            foreach (var col in GetComponentsInChildren<Collider>())
+            {
+                col.enabled = true;
+            }
+            
+            // Show floating UI
+            var floatingUI = GetComponentInChildren<UI.FloatingStatusBar>();
+            if (floatingUI != null)
+            {
+                floatingUI.gameObject.SetActive(true);
+            }
         }
     }
 }
