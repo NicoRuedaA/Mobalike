@@ -2,6 +2,8 @@ using UnityEngine;
 using UnityEditor;
 using System.IO;
 using System.Linq;
+using MobaGameplay.Core;
+using MobaGameplay.Inventory;
 
 namespace MobaGameplay.Editor
 {
@@ -258,7 +260,7 @@ namespace MobaGameplay.Editor
             try
             {
                 // Buscar HeroEntity en la escena activa
-                HeroEntity hero = Object.FindObjectOfType<HeroEntity>();
+                HeroEntity hero = Object.FindFirstObjectByType<HeroEntity>();
                 
                 if (hero == null)
                 {
