@@ -1,7 +1,6 @@
 using UnityEngine;
 using MobaGameplay.AI;
 using MobaGameplay.Game;
-using MobaGameplay.Inventory;
 
 namespace MobaGameplay.Core
 {
@@ -58,21 +57,22 @@ namespace MobaGameplay.Core
         }
         
         /// <summary>
-        /// Configura el AI Controller si no existe.
+        /// Configura el AI Controller si no existe. Si hay duplicados los elimina.
         /// </summary>
         private void SetupAIController()
         {
-            _aiController = GetComponent<EnemyAIController>();
-            if (_aiController == null)
+            var controllers = GetComponents<EnemyAIController>();
+
+            if (controllers.Length > 1)
             {
-                _aiController = gameObject.AddComponent<EnemyAIController>();
-                
-                // Configuración por defecto
-                // El AI Controller tiene valores default en el inspector
-                #if UNITY_EDITOR
-                Debug.Log($"[EnemyEntity] Added EnemyAIController to {gameObject.name}");
-                #endif
+                // Keep only the first one and destroy duplicates added at runtime
+                for (int i = 1; i < controllers.Length; i++)
+                {
+                    Destroy(controllers[i]);
+                }
             }
+
+            _aiController = controllers.Length > 0 ? controllers[0] : gameObject.AddComponent<EnemyAIController>();
         }
         
         protected override void Die()
@@ -104,14 +104,13 @@ namespace MobaGameplay.Core
         /// </summary>
         private void NotifyKillReward()
         {
-            // 1. Generar drop de item
-            ItemDropSystem.DropRandomItem(transform.position);
+            // Aquí se podría:
+            // 1. Award gold al jugador
+            // 2. Award XP al jugador
+            // 3. Notificar a sistemas de quest/logros
             
-            // 2. Award gold al jugador (futuro)
-            // 3. Award XP al jugador (futuro)
-            // 4. Notificar a sistemas de quest/logros (futuro)
-            
-            Debug.Log($"[EnemyEntity] Kill reward processed for {gameObject.name}");
+            // Por ahora solo log
+            // En el futuro, esto se conectará al HeroEntity y al inventory system
         }
         
         /// <summary>

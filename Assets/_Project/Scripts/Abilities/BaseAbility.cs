@@ -74,6 +74,7 @@ namespace MobaGameplay.Abilities
         /// </summary>
         public virtual bool CanCast()
         {
+            if (ownerEntity == null) return false;
             return !IsOnCooldown && HasEnoughMana && !ownerEntity.IsDead;
         }
 
