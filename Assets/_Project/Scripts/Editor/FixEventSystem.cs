@@ -6,7 +6,7 @@ using UnityEngine.InputSystem.UI;
 public class FixEventSystem {
     [MenuItem("Tools/Fix UI Event System")]
     public static void Fix() {
-        EventSystem es = Object.FindObjectOfType<EventSystem>();
+        EventSystem es = Object.FindFirstObjectByType<EventSystem>();
         if (es == null) {
             GameObject esObj = new GameObject("EventSystem");
             es = esObj.AddComponent<EventSystem>();

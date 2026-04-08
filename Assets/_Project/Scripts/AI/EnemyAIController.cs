@@ -1,5 +1,6 @@
 using UnityEngine;
 using MobaGameplay.Core;
+using MobaGameplay.Combat;
 using System.Collections.Generic;
 
 namespace MobaGameplay.AI
@@ -17,8 +18,8 @@ namespace MobaGameplay.AI
         [Tooltip("Radio de detección del jugador.")]
         [SerializeField] private float detectionRadius = 15f;
         
-        [Tooltip("Capa del jugador para detección.")]
-        [SerializeField] private LayerMask playerLayer = 1 << 8; // Player layer por defecto
+        [Tooltip("Tag del jugador para detección.")]
+        [SerializeField] private string playerTag = "Player";
         
         [Header("Combate")]
         [Tooltip("Rango de ataque melee.")]
@@ -215,23 +216,47 @@ namespace MobaGameplay.AI
         
         /// <summary>
         /// Intenta detectar al jugador dentro del radio de detección.
+        /// También verifica si el target actual sigue en rango.
         /// </summary>
         private void TryDetectPlayer()
         {
-            // Ya tiene target y está vivo
-            if (TargetPlayer != null && !TargetPlayer.IsDead)
-                return;
+            // Si ya tiene target vivo, verificar si sigue en rango de detección
+            if (TargetPlayer != null)
+            {
+                if (TargetPlayer.IsDead)
+                {
+                    // Target murió, limpiar
+                    TargetPlayer = null;
+                }
+                else
+                {
+                    // Verificar distancia al target
+                    float distanceToTarget = Vector3.Distance(transform.position, TargetPlayer.transform.position);
+                    if (distanceToTarget > detectionRadius)
+                    {
+                        // Target salió del rango, perderlo
+                        TargetPlayer = null;
+                    }
+                    else
+                    {
+                        // Target sigue en rango, no buscar
+                        return;
+                    }
+                }
+            }
             
-            // Buscar jugadores
-            Collider[] hits = Physics.OverlapSpheres(
+            // Buscar jugadores por tag usando OverlapSphere
+            Collider[] hits = Physics.OverlapSphere(
                 transform.position,
-                detectionRadius,
-                playerLayer,
-                QueryTriggerInteraction.Ignore
+                detectionRadius
             );
             
             foreach (var hit in hits)
             {
+                // Verificar si tiene el tag del jugador
+                if (!hit.CompareTag(playerTag))
+                    continue;
+                    
                 var entity = hit.GetComponentInParent<BaseEntity>();
                 if (entity != null && !entity.IsDead && entity is HeroEntity)
                 {
@@ -288,11 +313,11 @@ namespace MobaGameplay.AI
             }
             
             // Moverse
-            Vector3 direction = (targetPoint.position - transform.position).normalized;
+            Vector3 direction = (targetPoint.transform.position - transform.position).normalized;
             direction.y = 0;
             
             // Detener si está muy cerca
-            float distance = Vector3.Distance(transform.position, targetPoint.position);
+            float distance = Vector3.Distance(transform.position, targetPoint.transform.position);
             if (distance < ARRIVAL_THRESHOLD)
             {
                 // Esperar en el punto
@@ -321,7 +346,7 @@ namespace MobaGameplay.AI
                 return;
             }
             
-            float distanceToPlayer = Vector3.Distance(transform.position, TargetPlayer.position);
+            float distanceToPlayer = Vector3.Distance(transform.position, TargetPlayer.transform.position);
             
             // Si está en rango de ataque
             if (distanceToPlayer <= attackRange)
@@ -338,7 +363,7 @@ namespace MobaGameplay.AI
             }
             
             // Perseguir
-            Vector3 direction = (TargetPlayer.position - transform.position).normalized;
+            Vector3 direction = (TargetPlayer.transform.position - transform.position).normalized;
             direction.y = 0;
             MoveToDirection(direction, chaseSpeed);
             RotateTowards(direction);
@@ -355,7 +380,7 @@ namespace MobaGameplay.AI
                 return;
             }
             
-            float distanceToPlayer = Vector3.Distance(transform.position, TargetPlayer.position);
+            float distanceToPlayer = Vector3.Distance(transform.position, TargetPlayer.transform.position);
             
             // Si salió del rango de ataque
             if (distanceToPlayer > attackRange)
@@ -381,7 +406,7 @@ namespace MobaGameplay.AI
             }
             
             // Rotar hacia el objetivo
-            Vector3 direction = (TargetPlayer.position - transform.position).normalized;
+            Vector3 direction = (TargetPlayer.transform.position - transform.position).normalized;
             direction.y = 0;
             RotateTowards(direction);
             
@@ -460,7 +485,7 @@ namespace MobaGameplay.AI
                 return;
             
             // Verificar que sigue en rango
-            float distance = Vector3.Distance(transform.position, TargetPlayer.position);
+            float distance = Vector3.Distance(transform.position, TargetPlayer.transform.position);
             if (distance > attackRange)
                 return;
             
@@ -480,7 +505,7 @@ namespace MobaGameplay.AI
             if (TargetPlayer != null && !TargetPlayer.IsDead)
             {
                 // alejarse del jugador
-                retreatDir = (transform.position - TargetPlayer.position).normalized;
+                retreatDir = (transform.position - TargetPlayer.transform.position).normalized;
             }
             else
             {
@@ -591,13 +616,13 @@ namespace MobaGameplay.AI
                     if (patrolPoints[i] == null)
                         continue;
                     
-                    Gizmos.DrawWireSphere(patrolPoints[i].position, 0.5f);
+                    Gizmos.DrawWireSphere(patrolPoints[i].transform.position, 0.5f);
                     
                     // Línea al siguiente punto
                     int nextIndex = (i + 1) % patrolPoints.Length;
                     if (patrolPoints[nextIndex] != null)
                     {
-                        Gizmos.DrawLine(patrolPoints[i].position, patrolPoints[nextIndex].position);
+                        Gizmos.DrawLine(patrolPoints[i].transform.position, patrolPoints[nextIndex].transform.position);
                     }
                 }
             }
@@ -606,7 +631,7 @@ namespace MobaGameplay.AI
             if (TargetPlayer != null)
             {
                 Gizmos.color = Color.magenta;
-                Gizmos.DrawLine(transform.position + Vector3.up, TargetPlayer.position + Vector3.up);
+                Gizmos.DrawLine(transform.position + Vector3.up, TargetPlayer.transform.position + Vector3.up);
             }
         }
     }

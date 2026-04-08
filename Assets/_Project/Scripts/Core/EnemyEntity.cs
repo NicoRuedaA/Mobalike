@@ -36,7 +36,7 @@ namespace MobaGameplay.Core
             SetupAIController();
         }
         
-        private void Start()
+        private new void Start()
         {
             // Buscar GameStateManager
             _gameStateManager = GameStateManager.Instance;

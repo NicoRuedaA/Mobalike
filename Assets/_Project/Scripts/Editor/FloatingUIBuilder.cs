@@ -83,7 +83,7 @@ namespace MobaGameplay.Editor
             Object.DestroyImmediate(canvasObj);
 
             // 7. Attach to all BaseEntities in Scene
-            BaseEntity[] entities = Object.FindObjectsOfType<BaseEntity>();
+            BaseEntity[] entities = Object.FindObjectsByType<BaseEntity>(FindObjectsSortMode.None);
             int attachedCount = 0;
             
             foreach (var ent in entities)

@@ -19,7 +19,7 @@ public class EnsureEventSystemAuto {
     static void RunCheck() {
         
         
-        EventSystem es = Object.FindObjectOfType<EventSystem>();
+        EventSystem es = Object.FindFirstObjectByType<EventSystem>();
         if (es == null) {
             GameObject esObj = new GameObject("EventSystem");
             esObj.AddComponent<EventSystem>();

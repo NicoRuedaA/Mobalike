@@ -1,6 +1,8 @@
 using UnityEngine;
 using System.Collections.Generic;
 using MobaGameplay.Core;
+using MobaGameplay.AI;
+using MobaGameplay.Combat;
 
 namespace MobaGameplay.Game
 {
