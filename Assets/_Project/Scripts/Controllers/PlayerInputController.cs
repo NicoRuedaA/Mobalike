@@ -481,7 +481,7 @@ namespace MobaGameplay.Controllers
 
         /// <summary>
         /// Attempts to start a charged attack.
-        /// Requires: aiming (right-click), combat available, not on cooldown.
+        /// Requires: aiming (right-click), combat available.
         /// </summary>
         /// <param name="isAiming">Whether the player is currently aiming.</param>
         private void TryStartCharging(bool isAiming)
@@ -489,9 +489,7 @@ namespace MobaGameplay.Controllers
             if (!isAiming) return;
             if (!CanCombat()) return;
             
-            if (cachedRangedCombat != null && 
-                !cachedRangedCombat.IsCharging && 
-                cachedRangedCombat.CanCharge)
+            if (cachedRangedCombat != null && !cachedRangedCombat.IsCharging)
             {
                 cachedRangedCombat.StartCharging();
             }

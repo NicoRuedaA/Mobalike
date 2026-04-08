@@ -36,19 +36,16 @@ namespace MobaGameplay.Combat
         [SerializeField] private float chargedSpeedMultiplier = 1.3f;
         [SerializeField] private float chargedSizeMultiplier = 1.5f;
         [SerializeField] private float maxChargeTime = DEFAULT_CHARGE_TIME;
-        [SerializeField] private float chargedCooldown = DEFAULT_COOLDOWN;
 
         // State
         private BaseEntity entity;
         private float lastAttackTime = float.MinValue;
-        private float lastChargedTime = float.MinValue;
 
         // Properties
         public bool IsCharging { get; private set; }
         public float ChargeProgress { get; private set; }
         public float MaxChargeTime => maxChargeTime;
-        public bool CanCharge => !IsOnChargedCooldown;
-        public bool IsOnChargedCooldown => Time.time < lastChargedTime + chargedCooldown;
+        public bool CanCharge => !IsCharging;
         public float ChargePercent => Mathf.Clamp01(ChargeProgress / maxChargeTime);
 
         // Properties for external access
@@ -85,7 +82,7 @@ namespace MobaGameplay.Combat
         /// </summary>
         public void StartCharging()
         {
-            if (IsOnChargedCooldown || entity?.IsDead == true) return;
+            if (entity?.IsDead == true) return;
             
             IsCharging = true;
             ChargeProgress = 0f;
@@ -171,7 +168,6 @@ namespace MobaGameplay.Combat
             float damageMult = Mathf.Lerp(1f, chargedDamageMultiplier, t);
             
             projectile.ApplyChargeMultiplier(sizeMult, speedMult, damageMult);
-            lastChargedTime = Time.time;
         }
 
         /// <summary>
