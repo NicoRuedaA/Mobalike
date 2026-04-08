@@ -57,12 +57,16 @@ namespace MobaGameplay.Controllers
         /// <summary>
         /// Caches the RangedCombat component reference for efficient access.
         /// Called once during Awake to avoid repeated type casting.
+        /// Uses GetComponent directly because entity.Combat might be a different combat type
+        /// (e.g., MeleeCombat) depending on component order.
         /// </summary>
         private void CacheCombatReference()
         {
-            if (entity?.Combat is RangedCombat ranged)
+            if (entity != null)
             {
-                cachedRangedCombat = ranged;
+                // Explicitly search for RangedCombat, don't rely on entity.Combat
+                // which might be MeleeCombat or another combat type
+                cachedRangedCombat = entity.GetComponent<RangedCombat>();
             }
         }
 
@@ -496,12 +500,21 @@ namespace MobaGameplay.Controllers
         /// <summary>
         /// Fires a basic attack.
         /// If was charging while aiming, fires a charged attack.
+        /// Uses cachedRangedCombat if available to ensure correct attack type.
         /// </summary>
         private void TryFireAttack()
         {
             if (!CanCombat()) return;
             
-            entity.Combat.BasicAttack();
+            // Use ranged combat specifically if available
+            if (cachedRangedCombat != null)
+            {
+                cachedRangedCombat.BasicAttack();
+            }
+            else if (entity.Combat != null)
+            {
+                entity.Combat.BasicAttack();
+            }
         }
 
         /// <summary>

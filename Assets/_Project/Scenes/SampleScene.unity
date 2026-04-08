@@ -1696,6 +1696,62 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 584126583}
   m_CullTransparentMesh: 1
+--- !u!21 &624249097
+Material:
+  serializedVersion: 8
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: Auto_Default_LineRenderer_Universal (Instance)
+  m_Shader: {fileID: 4800000, guid: 650dd9526735d5b46b79224bc6e94025, type: 3}
+  m_Parent: {fileID: 0}
+  m_ModifiedSerializedProperties: 0
+  m_ValidKeywords: []
+  m_InvalidKeywords: []
+  m_LightmapFlags: 4
+  m_EnableInstancingVariants: 0
+  m_DoubleSidedGI: 0
+  m_CustomRenderQueue: -1
+  stringTagMap:
+    RenderType: Opaque
+  disabledShaderPasses:
+  - MOTIONVECTORS
+  m_LockedProperties: 
+  m_SavedProperties:
+    serializedVersion: 3
+    m_TexEnvs:
+    - _BaseMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _MainTex:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    m_Ints: []
+    m_Floats:
+    - _AddPrecomputedVelocity: 0
+    - _AlphaClip: 0
+    - _AlphaToMask: 0
+    - _Blend: 0
+    - _BlendOp: 0
+    - _Cull: 2
+    - _Cutoff: 0.5
+    - _DstBlend: 0
+    - _DstBlendAlpha: 0
+    - _QueueOffset: 0
+    - _SampleGI: 0
+    - _SrcBlend: 1
+    - _SrcBlendAlpha: 1
+    - _Surface: 0
+    - _XRMotionVectorsPass: 1
+    - _ZWrite: 1
+    m_Colors:
+    - _BaseColor: {r: 1, g: 1, b: 1, a: 1}
+    - _Color: {r: 1, g: 1, b: 1, a: 1}
+  m_BuildTextureStacks: []
+  m_AllowLocking: 1
 --- !u!1 &631387699
 GameObject:
   m_ObjectHideFlags: 0
@@ -3031,17 +3087,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 13055446ecf70cc48a71c009557a552d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MobaGameplay.Core.EnemyEntity
-  MaxHealth: 1000
-  CurrentHealth: 692.3076
-  MaxMana: 500
+  maxHealth: 1000
+  currentHealth: 1000
+  maxMana: 500
   currentMana: 500
-  AttackDamage: 50
-  AbilityPower: 0
-  AttackSpeed: 1.5
-  PhysicalArmor: 30
-  MagicResistance: 30
-  MovementSpeed: 5
   manaRegen: 5
+  baseAttackDamage: 50
+  baseAbilityPower: 0
+  attackSpeed: 1.5
+  physicalArmor: 30
+  magicResistance: 30
   criticalChance: 0.15
   criticalMultiplier: 1.5
 --- !u!23 &1177391311
@@ -4557,62 +4612,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2017983331}
   m_CullTransparentMesh: 1
---- !u!21 &2047377449
-Material:
-  serializedVersion: 8
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_Name: Auto_Default_LineRenderer_Universal
-  m_Shader: {fileID: 4800000, guid: 650dd9526735d5b46b79224bc6e94025, type: 3}
-  m_Parent: {fileID: 0}
-  m_ModifiedSerializedProperties: 0
-  m_ValidKeywords: []
-  m_InvalidKeywords: []
-  m_LightmapFlags: 4
-  m_EnableInstancingVariants: 0
-  m_DoubleSidedGI: 0
-  m_CustomRenderQueue: -1
-  stringTagMap:
-    RenderType: Opaque
-  disabledShaderPasses:
-  - MOTIONVECTORS
-  m_LockedProperties: 
-  m_SavedProperties:
-    serializedVersion: 3
-    m_TexEnvs:
-    - _BaseMap:
-        m_Texture: {fileID: 0}
-        m_Scale: {x: 1, y: 1}
-        m_Offset: {x: 0, y: 0}
-    - _MainTex:
-        m_Texture: {fileID: 0}
-        m_Scale: {x: 1, y: 1}
-        m_Offset: {x: 0, y: 0}
-    m_Ints: []
-    m_Floats:
-    - _AddPrecomputedVelocity: 0
-    - _AlphaClip: 0
-    - _AlphaToMask: 0
-    - _Blend: 0
-    - _BlendOp: 0
-    - _Cull: 2
-    - _Cutoff: 0.5
-    - _DstBlend: 0
-    - _DstBlendAlpha: 0
-    - _QueueOffset: 0
-    - _SampleGI: 0
-    - _SrcBlend: 1
-    - _SrcBlendAlpha: 1
-    - _Surface: 0
-    - _XRMotionVectorsPass: 1
-    - _ZWrite: 1
-    m_Colors:
-    - _BaseColor: {r: 1, g: 1, b: 1, a: 1}
-    - _Color: {r: 1, g: 1, b: 1, a: 1}
-  m_BuildTextureStacks: []
-  m_AllowLocking: 1
 --- !u!1001 &2094694055
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -6741,6 +6740,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bd3fc9dea8aa8a74caeee03198cad3d0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MobaGameplay.Controllers.PlayerInputController
+  debugMode: 0
 --- !u!114 &5521050719080623886
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6790,17 +6790,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7813e59238d105947a0ec628e92c195e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MobaGameplay.Core.HeroEntity
-  MaxHealth: 1000
-  CurrentHealth: 500
-  MaxMana: 500
+  maxHealth: 1000
+  currentHealth: 1000
+  maxMana: 500
   currentMana: 500
-  AttackDamage: 50
-  AbilityPower: 0
-  AttackSpeed: 1.5
-  PhysicalArmor: 30
-  MagicResistance: 30
-  MovementSpeed: 5
   manaRegen: 5
+  baseAttackDamage: 50
+  baseAbilityPower: 0
+  attackSpeed: 1.5
+  physicalArmor: 30
+  magicResistance: 30
   criticalChance: 0.15
   criticalMultiplier: 1.5
   CurrentLevel: 1
@@ -6896,14 +6895,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 83f167e77869cff41a863d95da7d61fc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MobaGameplay.Abilities.Types.TargetedProjectileAbility
-  abilityName: Skill 3 - Veigar R
-  cooldown: 5
-  castTime: 0
-  manaCost: 0
-  TargetingType: 1
-  CastRange: 10
-  Range: 2
-  Width: 1
+  _abilityName: New Ability
+  _cooldown: 5
+  _castTime: 0
+  _manaCost: 0
+  _targetingType: 1
+  _castRange: 10
+  _range: 2
+  _width: 1
   projectilePrefab: {fileID: 2747305188469570397, guid: b08534305e3fead42b50a2e8e8cefd10, type: 3}
   spawnPoint: {fileID: 0}
   projectileSpeed: 15
@@ -6922,14 +6921,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d88a83bb9efaf744bb3c54e99cbbc111, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MobaGameplay.Abilities.Types.AreaOfEffectAbility
-  abilityName: Skill 2 - Explosion AoE
-  cooldown: 5
-  castTime: 0
-  manaCost: 0
-  TargetingType: 1
-  CastRange: 10
-  Range: 2
-  Width: 1
+  _abilityName: New Ability
+  _cooldown: 5
+  _castTime: 0
+  _manaCost: 0
+  _targetingType: 1
+  _castRange: 10
+  _range: 2
+  _width: 1
   aoePrefab: {fileID: 1215716349592562957, guid: 0ab1dee3b00cde64ea07da4ad897e9fd, type: 3}
   damage: 100
   radius: 3
@@ -6950,14 +6949,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1101d386611082b4ba61a5f283d592a5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MobaGameplay.Abilities.Types.ProjectileAbility
-  abilityName: Skill 1 - Proyectil Recto
-  cooldown: 5
-  castTime: 0
-  manaCost: 0
-  TargetingType: 1
-  CastRange: 10
-  Range: 2
-  Width: 1
+  _abilityName: New Ability
+  _cooldown: 5
+  _castTime: 0
+  _manaCost: 0
+  _targetingType: 1
+  _castRange: 10
+  _range: 2
+  _width: 1
   projectilePrefab: {fileID: 1659227643650796056, guid: 36c3a8322706eda4aa35b7f4e7916287, type: 3}
   spawnPoint: {fileID: 0}
   projectileSpeed: 20
@@ -6990,14 +6989,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 64d175393641ec74e94d9744245d3d86, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MobaGameplay.Abilities.DashAbility
-  abilityName: New Ability
-  cooldown: 5
-  castTime: 0
-  manaCost: 30
-  TargetingType: 1
-  CastRange: 10
-  Range: 2
-  Width: 1
+  _abilityName: New Ability
+  _cooldown: 5
+  _castTime: 0
+  _manaCost: 0
+  _targetingType: 1
+  _castRange: 10
+  _range: 2
+  _width: 1
   dashSpeed: 20
   dashDuration: 0.2
 --- !u!114 &5521050719080623898
@@ -7012,14 +7011,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 618fa641ded66a0468d9cf6deddaae29, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MobaGameplay.Abilities.GroundSmashAbility
-  abilityName: New Ability
-  cooldown: 5
-  castTime: 0
-  manaCost: 80
-  TargetingType: 1
-  CastRange: 10
-  Range: 2
-  Width: 1
+  _abilityName: New Ability
+  _cooldown: 5
+  _castTime: 0
+  _manaCost: 0
+  _targetingType: 1
+  _castRange: 10
+  _range: 2
+  _width: 1
   baseDamage: 100
   adRatio: 0.8
   vfxPrefab: {fileID: 2987217871762459909, guid: 37030b197ed8eec479acc2791096ccc5, type: 3}
@@ -7035,14 +7034,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2e5935fef719174428276b73d1136f0d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MobaGameplay.Abilities.FireballAbility
-  abilityName: New Ability
-  cooldown: 5
-  castTime: 0
-  manaCost: 50
-  TargetingType: 1
-  CastRange: 10
-  Range: 2
-  Width: 1
+  _abilityName: New Ability
+  _cooldown: 5
+  _castTime: 0
+  _manaCost: 0
+  _targetingType: 1
+  _castRange: 10
+  _range: 2
+  _width: 1
   projectilePrefab: {fileID: 1210754999178854918, guid: 62d2ced362fb20249a36ff74f39d4ccb, type: 3}
   baseDamage: 80
   apRatio: 0.6
@@ -7062,6 +7061,8 @@ MonoBehaviour:
   hitLayers:
     serializedVersion: 2
     m_Bits: 0
+  normalColor: {r: 0.3, g: 0.9, b: 0.3, a: 0.5}
+  chargedColor: {r: 1, g: 0.4, b: 0.1, a: 0.8}
 --- !u!114 &5521050719080623901
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -7081,6 +7082,11 @@ MonoBehaviour:
   hitLayers:
     serializedVersion: 2
     m_Bits: 4294967295
+  chargedDamageMultiplier: 1.5
+  chargedSpeedMultiplier: 1.3
+  chargedSizeMultiplier: 1.5
+  maxChargeTime: 1
+  chargedCooldown: 2
 --- !u!120 &5521050719080623902
 LineRenderer:
   serializedVersion: 3
@@ -7107,7 +7113,7 @@ LineRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2047377449}
+  - {fileID: 624249097}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
