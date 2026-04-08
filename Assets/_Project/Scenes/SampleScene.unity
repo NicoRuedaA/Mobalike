@@ -7311,7 +7311,7 @@ MonoBehaviour:
   ability1: {fileID: 5521050719080623899}
   ability2: {fileID: 5521050719080623898}
   ability3: {fileID: 5521050719080623897}
-  ability4: {fileID: 5521050719080623905}
+  ability4: {fileID: 5521050719080623898}
 --- !u!114 &5521050719080623897
 MonoBehaviour:
   m_ObjectHideFlags: 0
