@@ -57,21 +57,22 @@ namespace MobaGameplay.Core
         }
         
         /// <summary>
-        /// Configura el AI Controller si no existe.
+        /// Configura el AI Controller si no existe. Si hay duplicados los elimina.
         /// </summary>
         private void SetupAIController()
         {
-            _aiController = GetComponent<EnemyAIController>();
-            if (_aiController == null)
+            var controllers = GetComponents<EnemyAIController>();
+
+            if (controllers.Length > 1)
             {
-                _aiController = gameObject.AddComponent<EnemyAIController>();
-                
-                // Configuración por defecto
-                // El AI Controller tiene valores default en el inspector
-                #if UNITY_EDITOR
-                Debug.Log($"[EnemyEntity] Added EnemyAIController to {gameObject.name}");
-                #endif
+                // Keep only the first one and destroy duplicates added at runtime
+                for (int i = 1; i < controllers.Length; i++)
+                {
+                    Destroy(controllers[i]);
+                }
             }
+
+            _aiController = controllers.Length > 0 ? controllers[0] : gameObject.AddComponent<EnemyAIController>();
         }
         
         protected override void Die()

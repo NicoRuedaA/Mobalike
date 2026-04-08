@@ -14,6 +14,7 @@ namespace MobaGameplay.UI
         [SerializeField] private AbilitySlotUI slot1;
         [SerializeField] private AbilitySlotUI slot2;
         [SerializeField] private AbilitySlotUI slot3;
+        [SerializeField] private AbilitySlotUI slot4;
 
         private BaseEntity playerEntity;
         private AbilityController playerAbilities;
@@ -62,6 +63,7 @@ namespace MobaGameplay.UI
                     if (slot1 != null) slot1.AssignAbility(playerAbilities.Ability1);
                     if (slot2 != null) slot2.AssignAbility(playerAbilities.Ability2);
                     if (slot3 != null) slot3.AssignAbility(playerAbilities.Ability3);
+                    if (slot4 != null) slot4.AssignAbility(playerAbilities.Ability4);
                 }
                 else
                 {

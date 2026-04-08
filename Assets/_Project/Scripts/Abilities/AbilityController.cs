@@ -13,13 +13,14 @@ namespace MobaGameplay.Abilities
     public class AbilityController : MonoBehaviour
     {
         // Constants
-        private const int MAX_ABILITIES = 3;
+        private const int MAX_ABILITIES = 4;
 
         // Serializable Fields
         [Header("Equipped Abilities")]
         [SerializeField] private BaseAbility ability1;
         [SerializeField] private BaseAbility ability2;
         [SerializeField] private BaseAbility ability3;
+        [SerializeField] private BaseAbility ability4;
 
         // State
         private BaseEntity entity;
@@ -31,6 +32,7 @@ namespace MobaGameplay.Abilities
         public BaseAbility Ability1 => ability1;
         public BaseAbility Ability2 => ability2;
         public BaseAbility Ability3 => ability3;
+        public BaseAbility Ability4 => ability4;
         public bool HasActiveTargeting => activeTargetingAbility != null;
 
         // Events
@@ -41,12 +43,8 @@ namespace MobaGameplay.Abilities
         private void Awake()
         {
             entity = GetComponent<BaseEntity>();
-            SetupKeyBindings();
-        }
-
-        private void Start()
-        {
             InitializeAbilities();
+            SetupKeyBindings();
         }
 
         private void SetupKeyBindings()
@@ -55,6 +53,7 @@ namespace MobaGameplay.Abilities
             if (ability1 != null) keyBindings[KeyCode.Alpha1] = ability1;
             if (ability2 != null) keyBindings[KeyCode.Alpha2] = ability2;
             if (ability3 != null) keyBindings[KeyCode.Alpha3] = ability3;
+            if (ability4 != null) keyBindings[KeyCode.Alpha4] = ability4;
         }
 
         private void InitializeAbilities()
@@ -62,11 +61,13 @@ namespace MobaGameplay.Abilities
             if (ability1 != null) ability1.Initialize(entity);
             if (ability2 != null) ability2.Initialize(entity);
             if (ability3 != null) ability3.Initialize(entity);
+            if (ability4 != null) ability4.Initialize(entity);
         }
 
         public void TryStartTargetingAbility1() => StartTargeting(ability1);
         public void TryStartTargetingAbility2() => StartTargeting(ability2);
         public void TryStartTargetingAbility3() => StartTargeting(ability3);
+        public void TryStartTargetingAbility4() => StartTargeting(ability4);
 
         public bool TryStartTargetingByKey(KeyCode key)
         {
@@ -147,7 +148,7 @@ namespace MobaGameplay.Abilities
         }
 
         /// <summary>
-        /// Get ability by index (1-3).
+        /// Get ability by index (1-4).
         /// </summary>
         public BaseAbility GetAbility(int index)
         {
@@ -156,6 +157,7 @@ namespace MobaGameplay.Abilities
                 1 => ability1,
                 2 => ability2,
                 3 => ability3,
+                4 => ability4,
                 _ => null
             };
         }
@@ -167,7 +169,8 @@ namespace MobaGameplay.Abilities
         {
             return (ability1?.IsOnCooldown ?? false) ||
                    (ability2?.IsOnCooldown ?? false) ||
-                   (ability3?.IsOnCooldown ?? false);
+                   (ability3?.IsOnCooldown ?? false) ||
+                   (ability4?.IsOnCooldown ?? false);
         }
 
         /// <summary>
@@ -177,11 +180,12 @@ namespace MobaGameplay.Abilities
         {
             float total = 0f;
             int count = 0;
-            
+
             if (ability1 != null) { total += ability1.CooldownPercent; count++; }
             if (ability2 != null) { total += ability2.CooldownPercent; count++; }
             if (ability3 != null) { total += ability3.CooldownPercent; count++; }
-            
+            if (ability4 != null) { total += ability4.CooldownPercent; count++; }
+
             return count > 0 ? total / count : 0f;
         }
     }

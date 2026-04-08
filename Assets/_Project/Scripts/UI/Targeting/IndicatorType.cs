@@ -8,6 +8,7 @@ namespace MobaGameplay.UI.Targeting
         None,
         Circle,
         Line,
-        Cone
+        Cone,
+        Trail
     }
 }

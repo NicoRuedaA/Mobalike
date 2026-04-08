@@ -104,6 +104,10 @@ namespace MobaGameplay.Game
         [Tooltip("Puntos de spawn para enemigos.")]
         [SerializeField] private Transform[] enemySpawnPoints;
         
+        [Header("Debug")]
+        [Tooltip("Si es true, inicia el juego automáticamente al entrar en Play Mode. Útil para pruebas rápidas.")]
+        [SerializeField] private bool autoStartGame = false;
+        
         [Header("Puntuación")]
         [Tooltip("Puntos awarded por muerte de enemigo.")]
         [SerializeField] private int scorePerKill = 10;
@@ -212,6 +216,12 @@ namespace MobaGameplay.Game
             
             // Actualizar oleadas
             UpdateWaveState();
+        }
+        
+        private void Start()
+        {
+            if (autoStartGame)
+                StartGame();
         }
         
         // ==================== CONTROL DE ESTADO ====================
@@ -331,33 +341,22 @@ namespace MobaGameplay.Game
             WaveData config = waveConfigs[CurrentWaveNumber - 1];
             _enemiesToSpawn = config.enemyCount;
             EnemiesRemaining = config.enemyCount;
-            _spawnTimer = 0f;
-            _waveTimer = timeBetweenWaves;
+            // Start timer at spawnInterval so the first enemy spawns after one interval, not immediately.
+            _spawnTimer = config.spawnInterval;
             
-            // Empezar spawning después del countdown
-            StartCoroutine(PrepareWaveCoroutine());
+            // Empezar spawning después del countdown de preparación
+            StartCoroutine(PrepareWaveCoroutine(config.preparationTime));
         }
         
-        /// <summary>Coroutine para countdown de preparación.</summary>
-        private System.Collections.IEnumerator PrepareWaveCoroutine()
+        /// <summary>Coroutine para countdown de preparación antes de empezar a spawnear.</summary>
+        private System.Collections.IEnumerator PrepareWaveCoroutine(float preparationTime)
         {
-            yield return new WaitForSeconds(_waveTimer);
+            yield return new WaitForSeconds(preparationTime);
             
             if (CurrentGameState != GameState.Playing)
                 yield break;
             
             TransitionToWaveState(WaveState.Spawning);
-            StartSpawningEnemies();
-        }
-        
-        /// <summary>Comienza el spawn de enemigos.</summary>
-        private void StartSpawningEnemies()
-        {
-            if (waveConfigs == null || CurrentWaveNumber < 1 || CurrentWaveNumber > waveConfigs.Length)
-                return;
-            
-            WaveData config = waveConfigs[CurrentWaveNumber - 1];
-            _enemiesToSpawn = config.enemyCount;
         }
         
         /// <summary>Actualiza el estado de oleadas.</summary>

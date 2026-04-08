@@ -360,6 +360,9 @@ namespace MobaGameplay.Controllers
             ProcessAbilityInput(KeyCode.Alpha3, entity.Abilities.Ability3,
                 () => entity.Abilities.TryStartTargetingAbility3());
 
+            ProcessAbilityInput(KeyCode.Alpha4, entity.Abilities.Ability4,
+                () => entity.Abilities.TryStartTargetingAbility4());
+
             // Cancel targeting on right-click (if not over UI)
             if (Mouse.current.rightButton.wasPressedThisFrame && !IsPointerOverUI())
             {

@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 5747202387294953362}
   - component: {fileID: 4272356151595493190}
   - component: {fileID: 7998869791617655119}
+  - component: {fileID: 1774717221137077282}
   m_Layer: 0
   m_Name: Enemy_Dummy
   m_TagString: Untagged
@@ -128,4 +129,41 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MobaGameplay.Core.EnemyEntity
   maxHealth: 500
+  currentHealth: 1000
+  maxMana: 500
+  currentMana: 500
   manaRegen: 0
+  baseAttackDamage: 50
+  baseAbilityPower: 0
+  attackSpeed: 1.5
+  physicalArmor: 30
+  magicResistance: 30
+  criticalChance: 0.15
+  criticalMultiplier: 1.5
+  goldReward: 10
+  experienceReward: 25
+--- !u!114 &1774717221137077282
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8832458663741099829}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c36736e6a869edc49bff64c7bdd2ad2f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MobaGameplay.AI.EnemyAIController
+  detectionRadius: 15
+  playerTag: Player
+  attackRange: 2
+  attackCooldown: 1.5
+  attackDamage: 20
+  chaseSpeed: 5
+  patrolSpeed: 2
+  patrolPoints: []
+  waitAtPatrolPoint: 1
+  maxChaseDuration: 8
+  retreatThreshold: 0.25
+  retreatRecoveryThreshold: 0.5
+  retreatDistance: 8
