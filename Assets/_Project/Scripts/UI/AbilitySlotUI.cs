@@ -17,7 +17,13 @@ namespace MobaGameplay.UI
         public void AssignAbility(BaseAbility newAbility)
         {
             ability = newAbility;
-            // Podríamos asignar el icono si la habilidad tuviera uno: iconImage.sprite = ability.icon;
+            
+            // Asignar el icono de la habilidad si existe
+            if (ability != null && iconImage != null)
+            {
+                iconImage.sprite = ability.AbilityIcon;
+                iconImage.enabled = ability.AbilityIcon != null;
+            }
             
             // Inicializar UI limpia
             if (cooldownOverlay != null) cooldownOverlay.fillAmount = 0f;

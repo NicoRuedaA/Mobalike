@@ -28,6 +28,10 @@ namespace MobaGameplay.Abilities
         [SerializeField] private float _range = 2f;
         [SerializeField] private float _width = 1f;
 
+        [Header("Visuals")]
+        [SerializeField] private Sprite _abilityIcon;
+        public Sprite AbilityIcon { get => _abilityIcon; set => _abilityIcon = value; }
+
         // State
         private float currentCooldown = 0f;
         protected BaseEntity ownerEntity;
