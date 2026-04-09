@@ -2,7 +2,7 @@ using UnityEngine;
 using UnityEditor;
 using System.IO;
 using System.Collections.Generic;
-using MMORPG.Inventory;
+using MobaGameplay.Inventory;
 
 public class MassItemGenerator : EditorWindow
 {
@@ -14,7 +14,7 @@ public class MassItemGenerator : EditorWindow
         public string filename;
     }
 
-    [MenuItem("Tools/MMORPG/Generate Mass Wiki Items")]
+    [MenuItem("Tools/MobaGameplay/Generate Mass Wiki Items")]
     public static void GenerateMassWikiItems()
     {
         string jsonPath = "Assets/_Project/Art/Icons/Equipment/items_data.json";

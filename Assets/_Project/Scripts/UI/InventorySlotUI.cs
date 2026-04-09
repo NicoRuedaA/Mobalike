@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-namespace MMORPG.UI
+namespace MobaGameplay.UI.Inventory
 {
     public class InventorySlotUI : MonoBehaviour, IDropHandler
     {

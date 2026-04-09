@@ -164,10 +164,10 @@ namespace MobaGameplay.Core
 
         private void Update()
         {
-            // Mana regeneration
-            if (manaRegen > 0f && currentMana < MaxMana)
+            // Mana regeneration — use property setter to fire OnManaChanged event
+            if (manaRegen > 0f && CurrentMana < MaxMana)
             {
-                currentMana = Mathf.Min(MaxMana, currentMana + manaRegen * Time.deltaTime);
+                CurrentMana = Mathf.Min(MaxMana, CurrentMana + manaRegen * Time.deltaTime);
             }
         }
 
@@ -176,18 +176,17 @@ namespace MobaGameplay.Core
             if (IsDead) return;
 
             float actualDamage = CalculateDamageReduction(damageInfo);
-            currentHealth -= actualDamage;
 
-            // Check critical hit
+            // Check critical hit — apply multiplier BEFORE subtracting health
             bool isCritical = damageInfo.IsCritical || 
                 (damageInfo.Source != null && UnityEngine.Random.value < damageInfo.Source.criticalChance);
             
             if (isCritical)
             {
-                float bonusDamage = actualDamage * (criticalMultiplier - 1f);
-                currentHealth -= bonusDamage;
                 actualDamage *= criticalMultiplier;
             }
+
+            currentHealth -= actualDamage;
 
             // Debug logging (strip in production)
             #if UNITY_EDITOR

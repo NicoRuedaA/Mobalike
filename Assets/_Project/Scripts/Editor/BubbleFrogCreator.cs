@@ -1,12 +1,12 @@
 using UnityEditor;
 using UnityEngine;
-using MMORPG.Inventory;
+using MobaGameplay.Inventory;
 
-namespace MMORPG.Editor
+namespace MobaGameplay.Editor
 {
     public static class BubbleFrogCreator
     {
-        [MenuItem("Tools/MMORPG/Create Bubble Frog Item")]
+        [MenuItem("Tools/MobaGameplay/Create Bubble Frog Item")]
         public static void CreateBubbleFrog()
         {
             string path = "Assets/_Project/ScriptableObjects/Items/BubbleFrog.asset";

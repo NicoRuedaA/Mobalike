@@ -1,10 +1,10 @@
 using UnityEngine;
 using UnityEditor;
-using MMORPG.Inventory;
+using MobaGameplay.Inventory;
 
 public class AssignBubbleFrogIcon
 {
-    [MenuItem("Tools/MMORPG/Assign Bubble Frog Icon")]
+    [MenuItem("Tools/MobaGameplay/Assign Bubble Frog Icon")]
     public static void AssignIcon()
     {
         string iconPath = "Assets/_Project/Art/Icons/BubbleFrog.png";

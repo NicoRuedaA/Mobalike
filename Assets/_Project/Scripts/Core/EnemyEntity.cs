@@ -40,8 +40,10 @@ namespace MobaGameplay.Core
             SetupAIController();
         }
         
-        private new void Start()
+        protected override void Start()
         {
+            base.Start(); // Ensure BaseEntity.Start() runs (sets manaInitialized, etc.)
+            
             // Buscar GameStateManager
             _gameStateManager = GameStateManager.Instance;
         }
@@ -81,7 +83,7 @@ namespace MobaGameplay.Core
         
         protected override void Die()
         {
-            base.Die();
+            base.Die(); // BaseEntity.Die() already calls Destroy(gameObject, 3f)
             
             Debug.Log($"[EnemyEntity] {gameObject.name} has died. Reward: {goldReward} gold, {experienceReward} XP");
             
@@ -99,8 +101,8 @@ namespace MobaGameplay.Core
                 _aiController.enabled = false;
             }
             
-            // Destruir después de un delay para que los eventos disparen
-            Destroy(gameObject, 1f);
+            // BaseEntity.Die() already handles destruction with a 3s delay
+            // No need for a separate Destroy call here
         }
         
         /// <summary>

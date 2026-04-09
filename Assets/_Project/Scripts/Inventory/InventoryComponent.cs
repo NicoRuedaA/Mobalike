@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-namespace MMORPG.Inventory
+namespace MobaGameplay.Inventory
 {
     public class InventoryComponent : MonoBehaviour
     {

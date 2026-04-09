@@ -93,14 +93,14 @@ namespace MobaGameplay.AI
         private const float ROTATION_SPEED = 10f;
         private const float ARRIVAL_THRESHOLD = 0.5f;
         
-        // ==================== EVENTOS ====================
+// ==================== EVENTOS ====================
         
         /// <summary>Cuando cambia el estado.</summary>
         public System.Action<EnemyState, EnemyState> OnStateChanged;
         
         /// <summary>Cuando el enemigo muere.</summary>
         public System.Action<EnemyAIController> OnDeath;
-        
+
         // ==================== UNITY LIFECYCLE ====================
         
         private void Awake()
@@ -574,12 +574,6 @@ namespace MobaGameplay.AI
         }
         
         // ==================== EVENTOS ====================
-        
-        /// <summary>Maneja la muerte de la entidad.</summary>
-        private void HandleDamageDealt(DamageInfo damageInfo)
-        {
-            // Opcional: responder a recibir daño (ej: rugido de dolor, contraataque)
-        }
         
         /// <summary>Maneja la muerte del enemigo.</summary>
         private void HandleDeath(BaseEntity entity, DamageInfo damageInfo)

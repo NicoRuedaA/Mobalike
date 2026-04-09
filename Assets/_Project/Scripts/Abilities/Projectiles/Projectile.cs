@@ -1,5 +1,6 @@
 using UnityEngine;
 using MobaGameplay.Core;
+using MobaGameplay.Combat;
 
 namespace MobaGameplay.Abilities.Projectiles
 {
@@ -55,8 +56,11 @@ namespace MobaGameplay.Abilities.Projectiles
                 return;
             }
 
-            // In the future, here we apply damage: hitEntity.TakeDamage(damage);
-            Debug.Log($"Projectile hit: {other.gameObject.name} for {damage} damage.");
+            // Apply damage to the hit entity
+            if (hitEntity != null && !hitEntity.IsDead)
+            {
+                hitEntity.TakeDamage(new DamageInfo(damage, DamageType.Physical, owner));
+            }
 
             // Spawn hit effect if available
             if (hitEffectPrefab != null)

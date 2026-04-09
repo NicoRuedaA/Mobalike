@@ -13,16 +13,10 @@ namespace MobaGameplay.Combat
             entity = GetComponent<BaseEntity>();
         }
 
-public override void BasicAttack()
-{
-    // Ya no detenemos el movimiento aquí para poder caminar y atacar a la vez.
-    // if (entity.Movement != null)
-    // {
-    //     entity.Movement.Stop();
-    // }
-
-    // Disparamos el evento (esto avisará al animador)
-    base.BasicAttack();
-}
+        public override void BasicAttack()
+        {
+            // Movement is not stopped here to allow walking and attacking simultaneously
+            base.BasicAttack();
+        }
     }
 }

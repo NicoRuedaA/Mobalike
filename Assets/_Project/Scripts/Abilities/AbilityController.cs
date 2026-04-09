@@ -103,32 +103,17 @@ namespace MobaGameplay.Abilities
         {
             if (ability == null) return;
             
-            // Use reflection to set the private _abilityIcon field
-            var iconField = typeof(BaseAbility).GetField("_abilityIcon", 
-                System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
-            
-            if (iconField != null)
+            // Use public property setters instead of reflection
+            if (ability.AbilityIcon == null && icon != null)
             {
-                bool needsFix = false;
-                var currentIcon = iconField.GetValue(ability) as Sprite;
-                if (currentIcon == null && icon != null)
-                {
-                    needsFix = true;
-                    iconField.SetValue(ability, icon);
-                    Debug.Log($"[AbilityController] Assigned icon '{icon.name}' to {typeName}");
-                }
-                
-                // Also fix the name if it's the default "New Ability"
-                var nameField = typeof(BaseAbility).GetField("_abilityName",
-                    System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
-                if (nameField != null)
-                {
-                    var currentName = nameField.GetValue(ability) as string;
-                    if (string.IsNullOrEmpty(currentName) || currentName == "New Ability")
-                    {
-                        nameField.SetValue(ability, displayName);
-                    }
-                }
+                ability.AbilityIcon = icon;
+                Debug.Log($"[AbilityController] Assigned icon '{icon.name}' to {typeName}");
+            }
+            
+            // Fix the name if it's the default "New Ability"
+            if (string.IsNullOrEmpty(ability.abilityName) || ability.abilityName == "New Ability")
+            {
+                ability.abilityName = displayName;
             }
         }
 

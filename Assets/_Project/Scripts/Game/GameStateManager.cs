@@ -452,18 +452,8 @@ namespace MobaGameplay.Game
         /// <summary>Actualiza la oleada activa (combate).</summary>
         private void UpdateActiveWave()
         {
-            // Verificar si todos los enemigos murieron
-            if (EnemiesRemaining <= 0 && _enemiesToSpawn <= 0)
-            {
-                TransitionToWaveState(WaveState.Cleared);
-                OnWaveCleared?.Invoke(CurrentWaveNumber);
-                
-                // Award puntos
-                AddScore(scorePerWaveComplete);
-                
-                // Configurar timer para siguiente oleada
-                _waveTimer = timeBetweenWaves;
-            }
+            // Wave clear is handled by HandleEnemyDeath() to avoid duplicate triggers.
+            // Only check for player-related state here.
         }
         
         /// <summary>Maneja la muerte de un enemigo.</summary>
@@ -487,6 +477,9 @@ namespace MobaGameplay.Game
                 TransitionToWaveState(WaveState.Cleared);
                 OnWaveCleared?.Invoke(CurrentWaveNumber);
                 AddScore(scorePerWaveComplete);
+                
+                // Configurar timer para siguiente oleada
+                _waveTimer = timeBetweenWaves;
             }
         }
         

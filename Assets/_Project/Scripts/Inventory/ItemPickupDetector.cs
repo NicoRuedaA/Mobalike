@@ -1,5 +1,5 @@
 using UnityEngine;
-using MMORPG.Inventory;
+using MobaGameplay.Inventory;
 
 namespace MobaGameplay.Inventory
 {

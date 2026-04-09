@@ -1,5 +1,5 @@
-using MMORPG.UI;
-using MMORPG.Inventory;
+using MobaGameplay.UI.Inventory;
+using MobaGameplay.Inventory;
 using UnityEngine;
 using UnityEditor;
 using UnityEngine.UI;
@@ -7,7 +7,7 @@ using UnityEditor.SceneManagement;
 
 public class AddBubbleFrogToInventory
 {
-    [MenuItem("Tools/MMORPG/Add Bubble Frog To First Slot")]
+    [MenuItem("Tools/MobaGameplay/Add Bubble Frog To First Slot")]
     public static void AddItem()
     {
         GameObject dummyItem = GameObject.Find("DummyItem_0");

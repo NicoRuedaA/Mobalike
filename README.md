@@ -113,9 +113,9 @@ COMBAT FLOW (Charged Attack):
 
 | Tecnología | Versión Mínima | Versión Recomendada | Notas |
 |------------|-----------------|---------------------|-------|
-| Unity Editor | 2022.3 LTS | 2022.3.35f1 | LTS preferred |
-| Input System Package | 1.6.0 | 1.7.0 | New Input System |
-| URP | 14.0.0 | 14.0.10 | Universal Render Pipeline |
+| Unity Editor | 2022.3 LTS | 6000.3 (Unity 6) | LTS preferred; project uses Unity 6 |
+| Input System Package | 1.6.0 | 1.19.0 | New Input System |
+| URP | 14.0.0 | 17.3.0 | Universal Render Pipeline |
 | C# | 9.0 | 10.0 | .NET Standard 2.1 |
 | IDE | VS 2022 | Rider 2024.1 | Recomendado para debugging |
 

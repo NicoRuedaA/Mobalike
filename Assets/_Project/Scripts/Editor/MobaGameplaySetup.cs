@@ -272,10 +272,10 @@ namespace MobaGameplay.Editor
                 bool modified = false;
 
                 // Verificar InventoryComponent
-                var inventory = heroObject.GetComponent<MMORPG.Inventory.InventoryComponent>();
+                var inventory = heroObject.GetComponent<MobaGameplay.Inventory.InventoryComponent>();
                 if (inventory == null)
                 {
-                    inventory = heroObject.AddComponent<MMORPG.Inventory.InventoryComponent>();
+                    inventory = heroObject.AddComponent<MobaGameplay.Inventory.InventoryComponent>();
                     Debug.Log("[MobaGameplaySetup] Agregado InventoryComponent a HeroEntity");
                     modified = true;
                 }

@@ -1,7 +1,7 @@
 using UnityEngine;
 using System.Collections.Generic;
 using MobaGameplay.Inventory;
-using MMORPG.Inventory;
+using MobaGameplay.Inventory;
 
 namespace MobaGameplay.Game
 {

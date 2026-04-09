@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-namespace MMORPG.UI
+namespace MobaGameplay.UI.Inventory
 {
     public class HUDManager : MonoBehaviour
     {

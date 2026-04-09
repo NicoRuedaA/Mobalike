@@ -1,14 +1,14 @@
 using UnityEngine;
 using UnityEditor;
 using UnityEngine.UI;
-using MMORPG.Inventory;
-using MMORPG.UI;
+using MobaGameplay.Inventory;
+using MobaGameplay.UI.Inventory;
 
-namespace MMORPG.EditorScripts
+namespace MobaGameplay.Editor
 {
     public class SetupMMORPGInventory
     {
-        [MenuItem("Tools/Create MMORPG HUD")]
+        [MenuItem("Tools/MobaGameplay/Create MMORPG HUD")]
         public static void CreateHUD()
         {
             // Setup Player Object

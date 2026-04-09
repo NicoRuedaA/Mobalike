@@ -2,11 +2,11 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-namespace MMORPG.UI
+namespace MobaGameplay.UI.Inventory
 {
     public class DraggableItemUI : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler
     {
-        public MMORPG.Inventory.ItemData itemData;
+        public MobaGameplay.Inventory.ItemData itemData;
         public Transform parentAfterDrag;
         public Image image;
 

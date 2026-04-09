@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace MMORPG.Inventory
+namespace MobaGameplay.Inventory
 {
     public enum ItemType 
     { 
@@ -18,7 +18,7 @@ namespace MMORPG.Inventory
         Pants
     }
 
-    [CreateAssetMenu(fileName = "NewItemData", menuName = "MMORPG/Item Data")]
+    [CreateAssetMenu(fileName = "NewItemData", menuName = "MobaGameplay/Item Data")]
     public class ItemData : ScriptableObject
     {
         public string itemName;

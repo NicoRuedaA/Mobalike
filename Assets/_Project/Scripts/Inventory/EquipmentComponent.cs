@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using MobaGameplay.Core;
 
-namespace MMORPG.Inventory
+namespace MobaGameplay.Inventory
 {
     public class EquipmentComponent : MonoBehaviour
     {
@@ -19,7 +19,7 @@ namespace MMORPG.Inventory
         // Referencia al owner para aplicar stats
         private BaseEntity _owner;
 
-        // Stats base del owner para poder restaurarlos
+        // Stats base del owner para poder restaurarlos (incluye bonuses de nivel)
         private float _baseMaxHealth;
         private float _baseAttackDamage;
 
@@ -28,10 +28,25 @@ namespace MMORPG.Inventory
             _owner = GetComponent<BaseEntity>();
             
             // Guardar stats base si existe el owner
-            if (_owner != null)
+            RefreshBaseStats();
+        }
+
+        private void Start()
+        {
+            // Suscribirse al level-up si el owner es un HeroEntity
+            // (Start ensures HeroEntity.Awake and Start have already run)
+            if (_owner is HeroEntity hero)
             {
-                _baseMaxHealth = _owner.MaxHealth;
-                _baseAttackDamage = _owner.AttackDamage;
+                hero.OnLevelUp += OnOwnerLevelUp;
+            }
+        }
+
+        private void OnDestroy()
+        {
+            // Desuscribirse para evitar memory leaks
+            if (_owner is HeroEntity hero)
+            {
+                hero.OnLevelUp -= OnOwnerLevelUp;
             }
         }
 
@@ -43,6 +58,30 @@ namespace MMORPG.Inventory
         private void OnDisable()
         {
             OnStatsChanged -= ApplyStatsToOwner;
+        }
+
+        /// <summary>
+        /// Refreshes cached base stats from the owner, stripping equipment bonuses.
+        /// This ensures level-up bonuses are included in the base values.
+        /// Call this when: Awake, after level-up, or whenever base stats change externally.
+        /// </summary>
+        private void RefreshBaseStats()
+        {
+            if (_owner == null) return;
+
+            // Strip current equipment bonuses to get the "naked" base (which includes level-ups)
+            _baseMaxHealth = _owner.MaxHealth - (TotalHP * 10f);
+            _baseAttackDamage = _owner.AttackDamage - (TotalSTR * 2f);
+        }
+
+        /// <summary>
+        /// Called when the owner levels up. Refreshes base stats and recalculates equipment bonuses
+        /// so level-up stat gains are preserved properly.
+        /// </summary>
+        private void OnOwnerLevelUp(int newLevel)
+        {
+            RefreshBaseStats();
+            RecalculateStats();
         }
 
         public void EquipItem(ItemData item, out ItemData previousItem)
@@ -75,12 +114,12 @@ namespace MMORPG.Inventory
 
         private void RecalculateStats()
         {
-            // Restaurar stats base antes de recalcular
-            if (_owner != null)
-            {
-                _owner.MaxHealth = _baseMaxHealth;
-                _owner.AttackDamage = _baseAttackDamage;
-            }
+            // Refresh base stats first (includes level-up bonuses, strips old equipment)
+            RefreshBaseStats();
+
+            // Restore base values before computing new bonuses
+            _owner.MaxHealth = _baseMaxHealth;
+            _owner.AttackDamage = _baseAttackDamage;
 
             TotalHP = 0;
             TotalSTR = 0;
@@ -104,26 +143,28 @@ namespace MMORPG.Inventory
         /// HP bonus = 10 por punto de HP del item (añadido a MaxHealth)
         /// STR bonus = 2 por punto de STR del item (añadido a AttackDamage)
         /// AGI bonus = reservado para futuro (AttackSpeed)
+        /// 
+        /// IMPORTANT: Uses assignment (=) not accumulation (+=) because
+        /// RecalculateStats() already restores base stats before calling this.
         /// </summary>
         private void ApplyStatsToOwner(int hp, int str, int agi)
         {
             if (_owner == null) return;
 
-            // Aplicar HP como bonus a MaxHealth
-            // HP bonus = 10 por punto de HP del item
-            _owner.MaxHealth += hp * 10f;
+            // Aplicar HP como bonus a MaxHealth (assignment, NOT accumulation)
+            // RecalculateStats() already restored _baseMaxHealth, so we set the final value
+            _owner.MaxHealth = _baseMaxHealth + (hp * 10f);
 
-            // Aplicar STR como AttackDamage
-            // STR bonus = 2 por punto de STR del item
-            _owner.AttackDamage += str * 2f;
+            // Aplicar STR como AttackDamage (assignment, NOT accumulation)
+            _owner.AttackDamage = _baseAttackDamage + (str * 2f);
 
-            // Aplicar AGI como... (dejar comentado para futuro, o como AttackSpeed)
-            // _owner.AttackSpeed += agi * 0.1f;
+            // TODO: AGI bonus reserved for future AttackSpeed implementation
+            // When AttackSpeed is a settable property: _owner.AttackSpeed = _baseAttackSpeed + (agi * 0.1f);
 
             #if UNITY_EDITOR
             Debug.Log($"[Equipment] Stats applied to {_owner.gameObject.name}: " +
-                     $"HP Bonus: +{hp * 10} (Total: {_owner.MaxHealth}), " +
-                     $"STR Bonus: +{str * 2} (Total: {_owner.AttackDamage})");
+                     $"HP: {_baseMaxHealth} + {hp * 10} = {_owner.MaxHealth}, " +
+                     $"AD: {_baseAttackDamage} + {str * 2} = {_owner.AttackDamage}");
             #endif
         }
 

@@ -3,11 +3,11 @@ using UnityEditor;
 using UnityEngine.UI;
 using UnityEditor.SceneManagement;
 
-namespace MMORPG.EditorScripts
+namespace MobaGameplay.Editor
 {
     public class FixEquipmentLayout
     {
-        [MenuItem("Tools/MMORPG/Fix Equipment Layout")]
+        [MenuItem("Tools/MobaGameplay/Fix Equipment Layout")]
         public static void FixLayout()
         {
             GameObject equipPanelObj = GameObject.Find("EquipmentPanel");

@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEditor;
-using MMORPG.Inventory;
-using MMORPG.UI;
+using MobaGameplay.Inventory;
+using MobaGameplay.UI.Inventory;
 
 public class AssignDummyItemData
 {

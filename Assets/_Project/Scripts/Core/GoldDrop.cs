@@ -22,6 +22,10 @@ namespace MobaGameplay.Core
         [Tooltip("Tiempo antes de auto-destruirse si no se recoge (segundos).")]
         [SerializeField] private float lifetime = 3f;
 
+        [Header("Reward")]
+        [Tooltip("Cantidad de oro que otorga al ser recogido.")]
+        [SerializeField] private int goldAmount = 5;
+
         // Referencia al héroe (caché)
         private HeroEntity _hero;
         private float _lifetimeTimer;
@@ -77,11 +81,16 @@ namespace MobaGameplay.Core
 
         /// <summary>
         /// Llamado cuando el drop es recogido por el jugador.
+        /// Otorga oro al héroe y se destruye.
         /// </summary>
         private void OnCollected()
         {
-            // Efecto visual opcional podría ir aquí
-            Debug.Log("[GoldDrop] Collected by player!");
+            // Otorgar oro al héroe
+            if (_hero != null)
+            {
+                _hero.AddGold(goldAmount);
+                Debug.Log($"[GoldDrop] Collected by player! +{goldAmount} gold");
+            }
             
             // Destruir el drop
             Destroy(gameObject);
