@@ -123,6 +123,27 @@ namespace MobaGameplay.Core
         public BaseCombat Combat { get; private set; }
         public AbilityController Abilities { get; private set; }
 
+        #if UNITY_EDITOR
+        /// <summary>
+        /// Debug: Muestra el estado actual de todos los stats en la consola.
+        /// Útil para verificar que el equipamiento modifica correctamente los valores.
+        /// </summary>
+        [ContextMenu("Debug: Show Current Stats")]
+        public void DebugShowStats()
+        {
+            Debug.Log($"=== {gameObject.name} Stats ===\n" +
+                     $"Health: {currentHealth:F0} / {maxHealth:F0}\n" +
+                     $"Mana: {currentMana:F0} / {maxMana:F0}\n" +
+                     $"Attack Damage: {baseAttackDamage:F1}\n" +
+                     $"Ability Power: {baseAbilityPower:F1}\n" +
+                     $"Attack Speed: {attackSpeed:F2}\n" +
+                     $"Armor: {physicalArmor:F1}\n" +
+                     $"Magic Resist: {magicResistance:F1}\n" +
+                     $"Crit Chance: {criticalChance:P0}\n" +
+                     $"Crit Multiplier: {criticalMultiplier:F2}x");
+        }
+        #endif
+
         // Private
         private bool manaInitialized = false;
 

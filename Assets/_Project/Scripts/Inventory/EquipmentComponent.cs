@@ -119,6 +119,92 @@ namespace MMORPG.Inventory
 
             // Aplicar AGI como... (dejar comentado para futuro, o como AttackSpeed)
             // _owner.AttackSpeed += agi * 0.1f;
+
+            #if UNITY_EDITOR
+            Debug.Log($"[Equipment] Stats applied to {_owner.gameObject.name}: " +
+                     $"HP Bonus: +{hp * 10} (Total: {_owner.MaxHealth}), " +
+                     $"STR Bonus: +{str * 2} (Total: {_owner.AttackDamage})");
+            #endif
+        }
+
+        #if UNITY_EDITOR
+        /// <summary>
+        /// Debug: Muestra todos los items equipados y sus stats.
+        /// </summary>
+        [ContextMenu("Debug: Show Equipped Items")]
+        public void DebugShowEquippedItems()
+        {
+            string output = $"=== Equipped Items on {gameObject.name} ===\n";
+            
+            if (equippedItems.Count == 0)
+            {
+                output += "No items equipped.\n";
+            }
+            else
+            {
+                foreach (var kvp in equippedItems)
+                {
+                    var item = kvp.Value;
+                    output += $"[{kvp.Key}] {item.itemName}: " +
+                             $"HP+{item.hpBonus}, STR+{item.strBonus}, AGI+{item.agiBonus}\n";
+                }
+            }
+            
+            output += $"\nTotal Bonuses: HP+{TotalHP}, STR+{TotalSTR}, AGI+{TotalAGI}\n";
+            output += $"Effective Stats: +{TotalHP * 10} MaxHealth, +{TotalSTR * 2} AttackDamage";
+            
+            Debug.Log(output);
+        }
+
+        /// <summary>
+        /// Debug: Equipar item de prueba (para testing rápido).
+        /// </summary>
+        [ContextMenu("Debug: Test Equip Random Item")]
+        public void DebugTestEquipRandomItem()
+        {
+            // Buscar items en el proyecto
+            var items = UnityEditor.AssetDatabase.FindAssets("t:ItemData");
+            if (items.Length > 0)
+            {
+                var randomGuid = items[UnityEngine.Random.Range(0, items.Length)];
+                var path = UnityEditor.AssetDatabase.GUIDToAssetPath(randomGuid);
+                var item = UnityEditor.AssetDatabase.LoadAssetAtPath<ItemData>(path);
+                
+                if (item != null && item.itemType == ItemType.Equipment)
+                {
+                    EquipItem(item, out var previous);
+                    Debug.Log($"[Equipment] Test equipped: {item.itemName}");
+                }
+            }
+            else
+            {
+                Debug.LogWarning("[Equipment] No ItemData assets found in project.");
+            }
+        }
+        #endif
+
+        /// <summary>
+        /// Obtiene el item equipado en un slot específico.
+        /// </summary>
+        public ItemData GetEquippedItem(EquipSlot slot)
+        {
+            return equippedItems.ContainsKey(slot) ? equippedItems[slot] : null;
+        }
+
+        /// <summary>
+        /// Verifica si hay un item equipado en el slot.
+        /// </summary>
+        public bool HasItemEquipped(EquipSlot slot)
+        {
+            return equippedItems.ContainsKey(slot) && equippedItems[slot] != null;
+        }
+
+        /// <summary>
+        /// Obtiene todos los slots que tienen items equipados.
+        /// </summary>
+        public IEnumerable<EquipSlot> GetEquippedSlots()
+        {
+            return equippedItems.Keys;
         }
     }
 }
