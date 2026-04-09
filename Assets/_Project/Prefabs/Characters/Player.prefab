@@ -1763,9 +1763,6 @@ GameObject:
   - component: {fileID: 1928526793861924043}
   - component: {fileID: 4061864499823474823}
   - component: {fileID: 7745366067835174942}
-  - component: {fileID: 2710092180309999886}
-  - component: {fileID: 3460101756857518297}
-  - component: {fileID: 7825457743654492599}
   - component: {fileID: 4740159637788050099}
   - component: {fileID: 6763124662680575649}
   - component: {fileID: 5834442027765518186}
@@ -1971,85 +1968,6 @@ MonoBehaviour:
   ability2: {fileID: 6763124662680575649}
   ability3: {fileID: 5834442027765518186}
   ability4: {fileID: 4061904594909135487}
---- !u!114 &2710092180309999886
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6008467741929148936}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1101d386611082b4ba61a5f283d592a5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::MobaGameplay.Abilities.Types.ProjectileAbility
-  _abilityName: New Ability
-  _cooldown: 5
-  _castTime: 0
-  _manaCost: 0
-  _targetingType: 1
-  _castRange: 10
-  _range: 2
-  _width: 1
-  projectilePrefab: {fileID: 1659227643650796056, guid: 36c3a8322706eda4aa35b7f4e7916287, type: 3}
-  spawnPoint: {fileID: 0}
-  projectileSpeed: 20
-  damage: 50
-  maxRange: 15
---- !u!114 &3460101756857518297
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6008467741929148936}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d88a83bb9efaf744bb3c54e99cbbc111, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::MobaGameplay.Abilities.Types.AreaOfEffectAbility
-  _abilityName: New Ability
-  _cooldown: 5
-  _castTime: 0
-  _manaCost: 0
-  _targetingType: 1
-  _castRange: 10
-  _range: 2
-  _width: 1
-  aoePrefab: {fileID: 1215716349592562957, guid: 0ab1dee3b00cde64ea07da4ad897e9fd, type: 3}
-  damage: 100
-  radius: 3
-  explosionDelay: 1
-  enemyLayer:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  maxCastRange: 10
---- !u!114 &7825457743654492599
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6008467741929148936}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 83f167e77869cff41a863d95da7d61fc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::MobaGameplay.Abilities.Types.TargetedProjectileAbility
-  _abilityName: New Ability
-  _cooldown: 5
-  _castTime: 0
-  _manaCost: 0
-  _targetingType: 1
-  _castRange: 10
-  _range: 2
-  _width: 1
-  projectilePrefab: {fileID: 2747305188469570397, guid: b08534305e3fead42b50a2e8e8cefd10, type: 3}
-  spawnPoint: {fileID: 0}
-  projectileSpeed: 15
-  turnSpeed: 10
-  damage: 150
-  castRange: 8
 --- !u!114 &4740159637788050099
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2062,7 +1980,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2e5935fef719174428276b73d1136f0d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MobaGameplay.Abilities.FireballAbility
-  _abilityName: New Ability
+  _abilityName: Fireball
   _cooldown: 5
   _castTime: 0
   _manaCost: 0
@@ -2086,7 +2004,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 618fa641ded66a0468d9cf6deddaae29, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MobaGameplay.Abilities.GroundSmashAbility
-  _abilityName: New Ability
+  _abilityName: Ground Smash
   _cooldown: 5
   _castTime: 0
   _manaCost: 0
@@ -2110,7 +2028,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 64d175393641ec74e94d9744245d3d86, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MobaGameplay.Abilities.DashAbility
-  _abilityName: New Ability
+  _abilityName: Dash
   _cooldown: 5
   _castTime: 0
   _manaCost: 0

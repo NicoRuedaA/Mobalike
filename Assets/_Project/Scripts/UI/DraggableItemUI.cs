@@ -17,10 +17,20 @@ namespace MMORPG.UI
 
         private void Start()
         {
+            UpdateIcon();
+        }
+
+        public void UpdateIcon()
+        {
             if (itemData != null && itemData.icon != null)
             {
                 image.sprite = itemData.icon;
                 image.color = Color.white;
+            }
+            else
+            {
+                // Asegurar que la imagen siga visible incluso sin ícono
+                image.color = new Color(1, 1, 1, 0.3f); // Semi-transparente como placeholder
             }
         }
 

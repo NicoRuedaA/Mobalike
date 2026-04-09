@@ -77,6 +77,9 @@ namespace MobaGameplay.UI.Editor
             GameObject slot3Obj = CreateAbilitySlot("AbilitySlot_2", abilitiesContainer.transform);
             playerHUDSO.FindProperty("slot3").objectReferenceValue = slot3Obj.GetComponent<AbilitySlotUI>();
 
+            GameObject slot4Obj = CreateAbilitySlot("AbilitySlot_3", abilitiesContainer.transform);
+            playerHUDSO.FindProperty("slot4").objectReferenceValue = slot4Obj.GetComponent<AbilitySlotUI>();
+
             playerHUDSO.ApplyModifiedProperties();
 
             // Save Prefab
