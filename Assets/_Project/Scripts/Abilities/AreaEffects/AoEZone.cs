@@ -1,5 +1,6 @@
 using UnityEngine;
 using MobaGameplay.Core;
+using MobaGameplay.Combat;
 
 namespace MobaGameplay.Abilities.AreaEffects
 {
@@ -56,7 +57,7 @@ namespace MobaGameplay.Abilities.AreaEffects
                 // Si golpeó a una entidad y no es el dueño
                 if (hitEntity != null && hitEntity != owner)
                 {
-                    // En el futuro: hitEntity.TakeDamage(damage);
+                    hitEntity.TakeDamage(new DamageInfo(damage, DamageType.Magical, owner));
                     Debug.Log($"[AoE] {hitEntity.gameObject.name} hit by explosion for {damage} damage!");
                 }
             }

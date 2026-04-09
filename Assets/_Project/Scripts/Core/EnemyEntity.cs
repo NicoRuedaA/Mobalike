@@ -19,6 +19,10 @@ namespace MobaGameplay.Core
         [Tooltip("Experiencia que otorga al morir.")]
         [SerializeField] private int experienceReward = 25;
         
+        [Header("Loot Settings")]
+        [Tooltip("Prefab del drop visual de oro que aparece al morir.")]
+        [SerializeField] private GameObject goldDropPrefab;
+        
         // Referencia al AI Controller
         private EnemyAIController _aiController;
         
@@ -101,16 +105,23 @@ namespace MobaGameplay.Core
         
         /// <summary>
         /// Notifica las recompensas al jugador/GSM.
+        /// Otorga oro y experiencia al HeroEntity y spawnea un drop visual.
         /// </summary>
         private void NotifyKillReward()
         {
-            // Aquí se podría:
-            // 1. Award gold al jugador
-            // 2. Award XP al jugador
-            // 3. Notificar a sistemas de quest/logros
+            // Buscar HeroEntity
+            var hero = FindObjectOfType<HeroEntity>();
+            if (hero != null)
+            {
+                hero.AddGold(goldReward);
+                hero.AddExp(experienceReward);
+            }
             
-            // Por ahora solo log
-            // En el futuro, esto se conectará al HeroEntity y al inventory system
+            // Spawnear drop visual
+            if (goldDropPrefab != null)
+            {
+                Instantiate(goldDropPrefab, transform.position + Vector3.up, Quaternion.identity);
+            }
         }
         
         /// <summary>
