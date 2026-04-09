@@ -18,45 +18,25 @@ namespace MobaGameplay.Tests
 
         /// <summary>
         /// Concrete test subclass since BaseEntity is abstract.
-        /// Adds a BoxCollider so Die() can find and disable it.
+        /// Uses only public properties to access and modify state.
         /// </summary>
         private class TestEntity : BaseEntity
         {
-            // Expose for test assertions
-            public float PublicCurrentHealth => currentHealth;
-            public float PublicMaxHealth => maxHealth;
-            public float PublicCurrentMana => currentMana;
-            public float PublicMaxMana => maxMana;
-            public float PublicManaRegen => manaRegen;
-            public bool PublicManaInitialized => manaInitialized;
-
-            // Test helpers
-            public int OnTakeDamageCallCount { get; private set; }
-            public int OnDeathCallCount { get; private set; }
-
             protected override void Start()
             {
                 // Call base Start to initialize health/mana
                 base.Start();
             }
 
+            /// <summary>
+            /// Force-initialize health and mana for EditMode tests
+            /// where Unity lifecycle (Start) may not run.
+            /// Uses public property setters which fire events.
+            /// </summary>
             public void ForceInitialize()
             {
-                // Manually initialize for tests that can't rely on Unity lifecycle
-                currentHealth = maxHealth;
-                currentMana = maxMana;
-                manaInitialized = true;
-            }
-
-            public void SetOnTakeDamageCallback(System.Action<DamageInfo> callback)
-            {
-                OnTakeDamage += callback;
-            }
-
-            // Override Awake to set up test defaults before base.Awake
-            protected override void Awake()
-            {
-                base.Awake();
+                CurrentHealth = MaxHealth;
+                CurrentMana = MaxMana;
             }
         }
 
@@ -67,8 +47,7 @@ namespace MobaGameplay.Tests
             _gameObject.AddComponent<BoxCollider>(); // Needed by Die()
             _entity = _gameObject.AddComponent<TestEntity>();
 
-            // BaseEntity.Start() sets currentHealth/maxHealth, but in EditMode tests
-            // Unity lifecycle may not run Start. Force initialize.
+            // Force initialize since Start() may not run in EditMode tests
             _entity.ForceInitialize();
         }
 
@@ -88,21 +67,17 @@ namespace MobaGameplay.Tests
         [Test]
         public void TakeDamage_NormalDamage_ReducesHealth()
         {
-            // Arrange: entity starts at MaxHealth (1000 by default)
             float healthBefore = _entity.CurrentHealth;
             float damageAmount = 100f;
 
-            // Act
             _entity.TakeDamage(new DamageInfo(damageAmount, DamageType.TrueDamage, null));
 
-            // Assert: health reduced by damage amount
             Assert.AreEqual(healthBefore - damageAmount, _entity.CurrentHealth, 0.01f);
         }
 
         [Test]
         public void TakeDamage_TrueDamage_FullAmount()
         {
-            // True damage bypasses all reduction
             float healthBefore = _entity.CurrentHealth;
 
             _entity.TakeDamage(new DamageInfo(200f, DamageType.TrueDamage, null));
@@ -113,10 +88,9 @@ namespace MobaGameplay.Tests
         [Test]
         public void TakeDamage_PhysicalDamage_ReducedByArmor()
         {
-            // With 30 armor: reduction = 100 / (100 + 30) = 0.769...
-            // Damage = 100 * 0.769 = 76.9
+            // With 30 armor (default): reduction = 100 / (100 + 30) ≈ 0.769
             float healthBefore = _entity.CurrentHealth;
-            float expectedDamage = 100f * (100f / (100f + 30f));
+            float expectedDamage = 100f * (100f / (100f + _entity.PhysicalArmor));
 
             _entity.TakeDamage(new DamageInfo(100f, DamageType.Physical, null));
 
@@ -126,9 +100,9 @@ namespace MobaGameplay.Tests
         [Test]
         public void TakeDamage_MagicalDamage_ReducedByMR()
         {
-            // With 30 MR: reduction = 100 / (100 + 30) = 0.769...
+            // With 30 MR (default): reduction = 100 / (100 + 30) ≈ 0.769
             float healthBefore = _entity.CurrentHealth;
-            float expectedDamage = 100f * (100f / (100f + 30f));
+            float expectedDamage = 100f * (100f / (100f + _entity.MagicResistance));
 
             _entity.TakeDamage(new DamageInfo(100f, DamageType.Magical, null));
 
@@ -143,19 +117,15 @@ namespace MobaGameplay.Tests
         public void TakeDamage_CriticalHit_AppliesMultiplierOnce()
         {
             // This test verifies the Phase 1 fix: critical multiplier applied ONCE.
-            // Before the fix, damage was applied twice (subtract + bonus subtract + multiply).
-            // After: multiplier applied BEFORE subtracting health.
+            // Before: damage subtracted THEN bonus subtracted THEN multiplied = ~2.5x
+            // After: multiplier applied BEFORE subtracting health = 1.5x
             float healthBefore = _entity.CurrentHealth;
             float damageAmount = 100f;
 
-            // Use IsCritical = true with 1.5x multiplier (default)
             var critDamage = new DamageInfo(damageAmount, DamageType.TrueDamage, null, isCritical: true);
-
             _entity.TakeDamage(critDamage);
 
-            // Expected: 100 * 1.5 = 150 damage. Health = 1000 - 150 = 850.
-            // Bug would have been: 100 + (100*0.5) = 150 subtracted, then actualDamage *= 1.5
-            // making it look like 150 total but actually doing ~250 damage.
+            // 100 * 1.5 = 150 total damage. Health = 1000 - 150 = 850.
             float expectedHealth = healthBefore - (damageAmount * _entity.CriticalMultiplier);
             Assert.AreEqual(expectedHealth, _entity.CurrentHealth, 0.01f,
                 $"Critical hit should do {damageAmount * _entity.CriticalMultiplier:F1} total damage, not more");
@@ -164,13 +134,23 @@ namespace MobaGameplay.Tests
         [Test]
         public void TakeDamage_CriticalHit_ExactMultiplier()
         {
-            // Verify the exact multiplier value (1.5x default)
             float healthBefore = _entity.CurrentHealth;
 
             _entity.TakeDamage(new DamageInfo(200f, DamageType.TrueDamage, null, isCritical: true));
 
             // 200 * 1.5 = 300 true damage
             Assert.AreEqual(healthBefore - 300f, _entity.CurrentHealth, 0.01f);
+        }
+
+        [Test]
+        public void TakeDamage_NonCritical_NoMultiplier()
+        {
+            float healthBefore = _entity.CurrentHealth;
+
+            _entity.TakeDamage(new DamageInfo(200f, DamageType.TrueDamage, null, isCritical: false));
+
+            // No multiplier — 200 damage exactly
+            Assert.AreEqual(healthBefore - 200f, _entity.CurrentHealth, 0.01f);
         }
 
         // ============================================================
@@ -190,17 +170,15 @@ namespace MobaGameplay.Tests
         [Test]
         public void TakeDamage_DoesNotDamageDeadEntity()
         {
-            // Kill the entity
             _entity.TakeDamage(new DamageInfo(9999f, DamageType.TrueDamage, null));
             Assert.IsTrue(_entity.IsDead);
 
             float healthAfterDeath = _entity.CurrentHealth;
 
-            // Try to damage again
             _entity.TakeDamage(new DamageInfo(100f, DamageType.TrueDamage, null));
 
-            // Health should not change (early return in TakeDamage when IsDead)
-            Assert.AreEqual(healthAfterDeath, _entity.CurrentHealth, 0.01f);
+            Assert.AreEqual(healthAfterDeath, _entity.CurrentHealth, 0.01f,
+                "Dead entity should not take more damage");
         }
 
         // ============================================================
@@ -230,22 +208,20 @@ namespace MobaGameplay.Tests
         }
 
         // ============================================================
-        // Mana — Regeneration (Bug #6 fix verification)
+        // Mana — Property setter fires event (Bug #6 fix verification)
         // ============================================================
 
         [Test]
         public void CurrentMana_Setter_FiresOnManaChanged()
         {
-            // Verify that the property setter fires the event (Phase 1 fix)
             float? oldMana = null;
             float? newMana = null;
             _entity.OnManaChanged += (oldVal, newVal) => { oldMana = oldVal; newMana = newVal; };
 
-            // Reduce mana manually to trigger a change
             _entity.CurrentMana = 400f;
 
             Assert.IsNotNull(oldMana, "OnManaChanged should have fired");
-            Assert.IsNotNull(newMana, "OnManaChanged should have fired");
+            Assert.AreEqual(400f, newMana.Value, 0.01f, "New mana value should be 400");
         }
 
         // ============================================================
@@ -305,6 +281,30 @@ namespace MobaGameplay.Tests
             var dmg = new DamageInfo(50f, DamageType.Physical, null, isCritical: true);
 
             Assert.IsTrue(dmg.IsCritical, "Explicitly critical DamageInfo should be critical");
+        }
+
+        // ============================================================
+        // Initial state
+        // ============================================================
+
+        [Test]
+        public void Entity_StartsAtMaxHealth()
+        {
+            Assert.AreEqual(_entity.MaxHealth, _entity.CurrentHealth, 0.01f,
+                "Entity should start at full health after initialization");
+        }
+
+        [Test]
+        public void Entity_StartsAtMaxMana()
+        {
+            Assert.AreEqual(_entity.MaxMana, _entity.CurrentMana, 0.01f,
+                "Entity should start at full mana after initialization");
+        }
+
+        [Test]
+        public void Entity_StartsAlive()
+        {
+            Assert.IsFalse(_entity.IsDead, "Entity should start alive");
         }
     }
 }
