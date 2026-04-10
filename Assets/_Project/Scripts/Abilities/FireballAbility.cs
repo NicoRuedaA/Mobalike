@@ -8,9 +8,14 @@ namespace MobaGameplay.Abilities
     public class FireballAbility : BaseAbility
     {
         [Header("Fireball Settings")]
-        public GameObject projectilePrefab;
-        public float baseDamage = 80f;
-        public float apRatio = 0.6f;
+        [SerializeField] private GameObject projectilePrefab;
+        [SerializeField] private float baseDamage = 80f;
+        [SerializeField] private float apRatio = 0.6f;
+
+        // Public read-only properties
+        public GameObject ProjectilePrefab => projectilePrefab;
+        public float BaseDamage => baseDamage;
+        public float ApRatio => apRatio;
 
         public override void ExecuteCast(Vector3 targetPosition, BaseEntity targetEntity)
         {

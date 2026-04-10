@@ -6,7 +6,10 @@ namespace MobaGameplay.UI.Targeting
     public class LineIndicator : MonoBehaviour
     {
         private LineRenderer lineRenderer;
-        public float lineWidth = 0.2f;
+        [SerializeField] private float lineWidth = 0.2f;
+
+        // Public read-only property
+        public float LineWidth => lineWidth;
 
         private void Awake()
         {

@@ -6,8 +6,12 @@ namespace MobaGameplay.Abilities
     public class DashAbility : BaseAbility
     {
         [Header("Dash Settings")]
-        public float dashSpeed = 20f;
-        public float dashDuration = 0.2f;
+        [SerializeField] private float dashSpeed = 20f;
+        [SerializeField] private float dashDuration = 0.2f;
+
+        // Public read-only properties
+        public float DashSpeed => dashSpeed;
+        public float DashDuration => dashDuration;
 
         public override void ExecuteCast(Vector3 targetPosition, BaseEntity targetEntity)
         {

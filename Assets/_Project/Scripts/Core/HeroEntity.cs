@@ -7,19 +7,33 @@ namespace MobaGameplay.Core
     public class HeroEntity : BaseEntity
     {
         [Header("Hero Progression")]
-        public int CurrentLevel = 1;
-        public int MaxLevel = 18;
-        public float CurrentExp = 0f;
-        public float ExpToNextLevel = 100f;
-        public float CurrentGold = 0f;
+        [SerializeField] private int currentLevel = 1;
+        [SerializeField] private int maxLevel = 18;
+        [SerializeField] private float currentExp;
+        [SerializeField] private float expToNextLevel = 100f;
+        [SerializeField] private float currentGold;
+        [SerializeField] private float expScaleMultiplier = 1.2f;
 
         [Header("Stat Scaling (Per Level)")]
-        public float HealthPerLevel = 85f;
-        public float ManaPerLevel = 30f;
-        public float ADPerLevel = 3.5f;
-        public float APPerLevel = 0f;
-        public float ArmorPerLevel = 4f;
-        public float MRPerLevel = 1.25f;
+        [SerializeField] private float healthPerLevel = 85f;
+        [SerializeField] private float manaPerLevel = 30f;
+        [SerializeField] private float adPerLevel = 3.5f;
+        [SerializeField] private float apPerLevel = 0f;
+        [SerializeField] private float armorPerLevel = 4f;
+        [SerializeField] private float mrPerLevel = 1.25f;
+
+        // Public read-only properties
+        public int CurrentLevel => currentLevel;
+        public int MaxLevel => maxLevel;
+        public float CurrentExp => currentExp;
+        public float ExpToNextLevel => expToNextLevel;
+        public float CurrentGold => currentGold;
+        public float HealthPerLevel => healthPerLevel;
+        public float ManaPerLevel => manaPerLevel;
+        public float ADPerLevel => adPerLevel;
+        public float APPerLevel => apPerLevel;
+        public float ArmorPerLevel => armorPerLevel;
+        public float MRPerLevel => mrPerLevel;
 
         public event Action<int> OnLevelUp;
         public event Action<float, float> OnExpGained;
@@ -34,12 +48,12 @@ namespace MobaGameplay.Core
 
         public void AddExp(float amount)
         {
-            if (CurrentLevel >= MaxLevel) return;
+            if (currentLevel >= maxLevel) return;
             
-            CurrentExp += amount;
-            OnExpGained?.Invoke(CurrentExp, ExpToNextLevel);
+            currentExp += amount;
+            OnExpGained?.Invoke(currentExp, expToNextLevel);
 
-            while (CurrentExp >= ExpToNextLevel && CurrentLevel < MaxLevel)
+            while (currentExp >= expToNextLevel && currentLevel < maxLevel)
             {
                 LevelUp();
             }
@@ -47,27 +61,27 @@ namespace MobaGameplay.Core
 
         public void AddGold(float amount)
         {
-            CurrentGold += amount;
-            OnGoldGained?.Invoke(CurrentGold);
+            currentGold += amount;
+            OnGoldGained?.Invoke(currentGold);
         }
 
         private void LevelUp()
         {
-            CurrentExp -= ExpToNextLevel;
-            CurrentLevel++;
-            ExpToNextLevel *= 1.2f;
+            currentExp -= expToNextLevel;
+            currentLevel++;
+            expToNextLevel *= expScaleMultiplier;
 
-            MaxHealth += HealthPerLevel;
-            CurrentHealth += HealthPerLevel;
-            MaxMana += ManaPerLevel;
-            CurrentMana += ManaPerLevel;
-            AttackDamage += ADPerLevel;
-            AbilityPower += APPerLevel;
-            PhysicalArmor += ArmorPerLevel;
-            MagicResistance += MRPerLevel;
+            MaxHealth += healthPerLevel;
+            CurrentHealth += healthPerLevel;
+            MaxMana += manaPerLevel;
+            CurrentMana += manaPerLevel;
+            AttackDamage += adPerLevel;
+            AbilityPower += apPerLevel;
+            PhysicalArmor += armorPerLevel;
+            MagicResistance += mrPerLevel;
 
-            OnLevelUp?.Invoke(CurrentLevel);
-            Debug.Log($"[HeroEntity] Leveled up to {CurrentLevel}!");
+            OnLevelUp?.Invoke(currentLevel);
+            Debug.Log($"[HeroEntity] Leveled up to {currentLevel}!");
         }
     }
 }

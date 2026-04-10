@@ -57,8 +57,8 @@ namespace MobaGameplay.Core
             if (hoverOutline == null)
             {
                 hoverOutline = gameObject.AddComponent<MobaGameplay.UI.Targeting.HoverOutline>();
-                hoverOutline.outlineColor = Color.red;
-                hoverOutline.outlineWidth = 0.02f;
+                hoverOutline.OutlineColor = Color.red;
+                hoverOutline.SetOutlineWidth(0.02f);
             }
         }
         

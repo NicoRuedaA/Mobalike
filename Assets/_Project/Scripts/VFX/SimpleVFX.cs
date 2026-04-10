@@ -4,8 +4,13 @@ namespace MobaGameplay.VFX
 {
     public class SimpleVFX : MonoBehaviour
     {
-        public float duration = 1f;
-        public float maxScale = 5f;
+        [SerializeField] private float duration = 1f;
+        [SerializeField] private float maxScale = 5f;
+
+        // Public read-only properties
+        public float Duration => duration;
+        public float MaxScale => maxScale;
+
         private float time;
 
         private void Update()

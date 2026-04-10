@@ -6,8 +6,12 @@ namespace MobaGameplay.UI.Targeting
     public class CircleIndicator : MonoBehaviour
     {
         private LineRenderer lineRenderer;
-        public int segments = 50;
-        public float lineWidth = 0.2f;
+        [SerializeField] private int segments = 50;
+        [SerializeField] private float lineWidth = 0.2f;
+
+        // Public read-only properties
+        public int Segments => segments;
+        public float LineWidth => lineWidth;
 
         private void Awake()
         {

@@ -34,7 +34,7 @@ namespace MobaGameplay.Editor
             col.isTrigger = true;
             
             var rb = fireballObj.AddComponent<Rigidbody>();
-            rb.isKinematic = true; // Use raycasts/SphereCast in Update instead of physics engine forces
+            rb.isKinematic = true;
             
             var trail = fireballObj.AddComponent<TrailRenderer>();
             trail.time = 0.5f;
@@ -43,10 +43,10 @@ namespace MobaGameplay.Editor
             trail.material = orangeMat;
             
             var proj = fireballObj.AddComponent<LinearProjectile>();
-            proj.speed = 20f;
-            proj.maxDistance = 25f;
-            proj.collisionRadius = 0.5f;
-            proj.hitLayers = ~0; // Hit everything for now
+            SetSerializedField(proj, "speed", 20f);
+            SetSerializedField(proj, "maxDistance", 25f);
+            SetSerializedField(proj, "collisionRadius", 0.5f);
+            SetSerializedField(proj, "hitLayers", ~0);
             
             string fireballPath = "Assets/_Project/Prefabs/Abilities/FireballProjectile.prefab";
             GameObject savedFireball = PrefabUtility.SaveAsPrefabAsset(fireballObj, fireballPath);
@@ -64,7 +64,7 @@ namespace MobaGameplay.Editor
             var baRb = basicAttackObj.AddComponent<Rigidbody>();
             baRb.isKinematic = true; 
             
-            var baProj = basicAttackObj.AddComponent<BasicAttackProjectile>();
+            basicAttackObj.AddComponent<BasicAttackProjectile>();
             
             string basicAttackPath = "Assets/_Project/Prefabs/Abilities/BasicAttackProjectile.prefab";
             GameObject savedBasicAttack = PrefabUtility.SaveAsPrefabAsset(basicAttackObj, basicAttackPath);
@@ -78,8 +78,8 @@ namespace MobaGameplay.Editor
             Object.DestroyImmediate(smashObj.GetComponent<Collider>());
             
             var vfx = smashObj.AddComponent<SimpleVFX>();
-            vfx.duration = 0.3f;
-            vfx.maxScale = 3f;
+            SetSerializedField(vfx, "duration", 0.3f);
+            SetSerializedField(vfx, "maxScale", 3f);
             
             string smashPath = "Assets/_Project/Prefabs/Abilities/GroundSmashVFX.prefab";
             GameObject savedSmash = PrefabUtility.SaveAsPrefabAsset(smashObj, smashPath);
@@ -87,10 +87,6 @@ namespace MobaGameplay.Editor
 
             // 3. Build Player Template (ONLY AS PREFAB, NO SCENE CHANGES)
             GameObject heroObj = new GameObject("PlayerHero_Template");
-            
-            // Note: We deliberately do NOT add visual meshes, rigidbodies, colliders, or movement
-            // scripts so you can easily copy-paste these components into your existing Player object
-            // or just use this as a reference without it crashing due to missing components.
             
             var heroEntity = heroObj.AddComponent<HeroEntity>();
             heroEntity.MaxHealth = 1500f;
@@ -109,25 +105,25 @@ namespace MobaGameplay.Editor
             fbAbility.CastRange = 15f;
             fbAbility.Range = 15f;
             fbAbility.Width = 1f;
-            fbAbility.projectilePrefab = savedFireball;
-            fbAbility.baseDamage = 80f;
+            SetSerializedField(fbAbility, "projectilePrefab", savedFireball);
+            SetSerializedField(fbAbility, "baseDamage", 80f);
             
             var smashAbility = heroObj.AddComponent<GroundSmashAbility>();
             smashAbility.abilityName = "Ground Smash";
             smashAbility.cooldown = 8f;
             smashAbility.manaCost = 80f;
             smashAbility.TargetingType = UI.Targeting.IndicatorType.Circle;
-            smashAbility.CastRange = 10f; // Can cast up to 10m away
-            smashAbility.Range = 3f; // AoE radius is 3m
-            smashAbility.vfxPrefab = savedSmash;
-            smashAbility.baseDamage = 120f;
+            smashAbility.CastRange = 10f;
+            smashAbility.Range = 3f;
+            SetSerializedField(smashAbility, "vfxPrefab", savedSmash);
+            SetSerializedField(smashAbility, "baseDamage", 120f);
             
             var dashAbility = heroObj.AddComponent<DashAbility>();
             dashAbility.abilityName = "Dash";
             dashAbility.cooldown = 6f;
             dashAbility.manaCost = 30f;
-            dashAbility.TargetingType = UI.Targeting.IndicatorType.None; // Instant cast
-            dashAbility.dashSpeed = 30f;
+            dashAbility.TargetingType = UI.Targeting.IndicatorType.None;
+            SetSerializedField(dashAbility, "dashSpeed", 30f);
             
             var so = new SerializedObject(abilityController);
             so.FindProperty("ability1").objectReferenceValue = fbAbility;
@@ -140,6 +136,45 @@ namespace MobaGameplay.Editor
             Object.DestroyImmediate(heroObj);
 
             Debug.Log("Successfully built isolated Prefabs safely!");
+        }
+
+        /// <summary>
+        /// Helper to set private serialized fields via SerializedObject.
+        /// Used because fields are [SerializeField] private for encapsulation.
+        /// </summary>
+        public static void SetSerializedField(Object target, string fieldName, object value)
+        {
+            var so = new SerializedObject(target);
+            var prop = so.FindProperty(fieldName);
+            if (prop == null)
+            {
+                Debug.LogWarning($"[HeroBuilder] Field '{fieldName}' not found on {target.GetType().Name}");
+                return;
+            }
+
+            switch (value)
+            {
+                case float f:
+                    prop.floatValue = f;
+                    break;
+                case int i:
+                    prop.intValue = i;
+                    break;
+                case bool b:
+                    prop.boolValue = b;
+                    break;
+                case LayerMask lm:
+                    prop.intValue = lm;
+                    break;
+                case Object obj:
+                    prop.objectReferenceValue = obj;
+                    break;
+                default:
+                    Debug.LogWarning($"[HeroBuilder] Unsupported type for field '{fieldName}': {value.GetType().Name}");
+                    return;
+            }
+
+            so.ApplyModifiedProperties();
         }
     }
 }

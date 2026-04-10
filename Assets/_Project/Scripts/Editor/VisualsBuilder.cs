@@ -30,7 +30,7 @@ namespace MobaGameplay.Editor
             col.isTrigger = true;
             
             var rb = fireballObj.AddComponent<Rigidbody>();
-            rb.isKinematic = true; // Use raycasts/SphereCast in Update instead of physics engine forces
+            rb.isKinematic = true;
             
             var trail = fireballObj.AddComponent<TrailRenderer>();
             trail.time = 0.5f;
@@ -39,13 +39,13 @@ namespace MobaGameplay.Editor
             trail.material = orangeMat;
             
             var proj = fireballObj.AddComponent<LinearProjectile>();
-            proj.speed = 20f;
-            proj.maxDistance = 25f;
-            proj.collisionRadius = 0.5f;
-            proj.hitLayers = ~0; // Hit everything for now
+            HeroBuilderSafe.SetSerializedField(proj, "speed", 20f);
+            HeroBuilderSafe.SetSerializedField(proj, "maxDistance", 25f);
+            HeroBuilderSafe.SetSerializedField(proj, "collisionRadius", 0.5f);
+            HeroBuilderSafe.SetSerializedField(proj, "hitLayers", (int)~0);
             
             string fireballPath = "Assets/_Project/Prefabs/Abilities/FireballProjectile.prefab";
-            GameObject savedFireball = PrefabUtility.SaveAsPrefabAsset(fireballObj, fireballPath);
+            PrefabUtility.SaveAsPrefabAsset(fireballObj, fireballPath);
             Object.DestroyImmediate(fireballObj);
 
             // 2. Build Ground Smash VFX
@@ -56,11 +56,11 @@ namespace MobaGameplay.Editor
             Object.DestroyImmediate(smashObj.GetComponent<Collider>());
             
             var vfx = smashObj.AddComponent<SimpleVFX>();
-            vfx.duration = 0.3f;
-            vfx.maxScale = 3f;
+            HeroBuilderSafe.SetSerializedField(vfx, "duration", 0.3f);
+            HeroBuilderSafe.SetSerializedField(vfx, "maxScale", 3f);
             
             string smashPath = "Assets/_Project/Prefabs/Abilities/GroundSmashVFX.prefab";
-            GameObject savedSmash = PrefabUtility.SaveAsPrefabAsset(smashObj, smashPath);
+            PrefabUtility.SaveAsPrefabAsset(smashObj, smashPath);
             Object.DestroyImmediate(smashObj);
 
             Debug.Log("Successfully built isolated Ability Visuals!");

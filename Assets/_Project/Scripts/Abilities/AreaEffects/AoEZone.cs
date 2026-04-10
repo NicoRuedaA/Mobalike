@@ -7,11 +7,18 @@ namespace MobaGameplay.Abilities.AreaEffects
     public class AoEZone : MonoBehaviour
     {
         [Header("Zone Settings")]
-        public float delay = 1.0f;
-        public float radius = 3.0f;
-        public float damage = 100f;
-        public GameObject explosionEffectPrefab;
-        public LayerMask targetLayer = ~0; // Por defecto golpea todo, ajustable en inspector
+        [SerializeField] private float delay = 1.0f;
+        [SerializeField] private float radius = 3.0f;
+        [SerializeField] private float damage = 100f;
+        [SerializeField] private GameObject explosionEffectPrefab;
+        [SerializeField] private LayerMask targetLayer = ~0; // Por defecto golpea todo, ajustable en inspector
+
+        // Public read-only properties
+        public float Delay => delay;
+        public float Radius => radius;
+        public float Damage => damage;
+        public GameObject ExplosionEffectPrefab => explosionEffectPrefab;
+        public LayerMask TargetLayer => targetLayer;
 
         private float timer;
         private BaseEntity owner;

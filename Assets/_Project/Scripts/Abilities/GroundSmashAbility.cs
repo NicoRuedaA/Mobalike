@@ -7,9 +7,14 @@ namespace MobaGameplay.Abilities
     public class GroundSmashAbility : BaseAbility
     {
         [Header("Smash Settings")]
-        public float baseDamage = 100f;
-        public float adRatio = 0.8f;
-        public GameObject vfxPrefab;
+        [SerializeField] private float baseDamage = 100f;
+        [SerializeField] private float adRatio = 0.8f;
+        [SerializeField] private GameObject vfxPrefab;
+
+        // Public read-only properties
+        public float BaseDamage => baseDamage;
+        public float AdRatio => adRatio;
+        public GameObject VfxPrefab => vfxPrefab;
 
         public override void ExecuteCast(Vector3 targetPosition, BaseEntity targetEntity)
         {

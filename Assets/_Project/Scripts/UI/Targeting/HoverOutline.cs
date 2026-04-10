@@ -10,8 +10,8 @@ namespace MobaGameplay.UI.Targeting
     public class HoverOutline : MonoBehaviour
     {
         // Serializable Fields
-        [SerializeField] public Color outlineColor = Color.red;
-        [SerializeField] public float outlineWidth = 0.015f;
+        [SerializeField] private Color outlineColor = Color.red;
+        [SerializeField] private float outlineWidth = 0.015f;
 
         // Shader name constant
         private const string OUTLINE_SHADER_NAME = "Custom/Outline";

@@ -6,10 +6,17 @@ namespace MobaGameplay.Abilities.Projectiles
 {
     public class LinearProjectile : MonoBehaviour
     {
-        public float speed = 15f;
-        public float maxDistance = 20f;
-        public float collisionRadius = 0.5f;
-        public LayerMask hitLayers;
+        [Header("Projectile Settings")]
+        [SerializeField] private float speed = 15f;
+        [SerializeField] private float maxDistance = 20f;
+        [SerializeField] private float collisionRadius = 0.5f;
+        [SerializeField] private LayerMask hitLayers;
+
+        // Public read-only properties
+        public float Speed => speed;
+        public float MaxDistance => maxDistance;
+        public float CollisionRadius => collisionRadius;
+        public LayerMask HitLayers => hitLayers;
 
         private Vector3 startPos;
         private Vector3 direction;
