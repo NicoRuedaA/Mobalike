@@ -80,6 +80,13 @@
 | Proyectiles pasan por enemigos | `RangedCombat.cs` | `hitLayers` inicializado correctamente |
 | Quick Cast tap no funciona | `PlayerInputController.cs` | `else if` → `if` independiente para release |
 
+### ✅ ARREGLADOS (Cooldown Bugfix - 2026-04-10)
+
+| Bug | Archivo | Fix |
+|----|---------|-----|
+| Cooldown overlay y texto no se muestran | `AbilitySlotUI.cs` | `Awake()` auto-busca hijos por nombre + llamada inmediata a `UpdateNewAbility()` |
+| Referencias UI nulas en runtime | `AbilitySlotUI.cs` | Auto-find de `cooldownOverlay` y `cooldownText` por nombre |
+
 ---
 
 ## 🎯 Roadmap de Trabajo

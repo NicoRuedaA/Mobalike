@@ -1,142 +1,209 @@
 # Memoria del Proyecto - MobaGameplay
 
-## Convenciones Generales
+> Estado actual del proyecto — Actualizado 2026-04-10
 
-### Namespace
-- **Principal**: `MobaGameplay.*` para todo el proyecto
-- **Excepción conocida (PENDIENTE FIX)**: 13 archivos usan `MMORPG.Inventory` y `MMORPG.UI` — falta migrar a `MobaGameplay.Inventory` y `MobaGameplay.UI.Inventory`
+---
 
-### Versión del Motor
-- **Real**: Unity 6 (6000.3.11f1) con URP 17.3.0
-- **Nota**: La documentación dice Unity 2022.3 LTS — está desactualizada
+## 📦 Estado del Proyecto
 
-### Estructura de Carpetas
+| Aspecto | Estado |
+|----------|--------|
+| **Versión Unity** | 6 (6000.3.11f1) con URP 17.3.0 |
+| **Namespace** | Unificado: `MobaGameplay.*` |
+| **Tests** | 62 tests pasando ✅ |
+| **Assembly Definitions** | 3 asmdef: `MobaGameplay.Runtime`, `MobaGameplay.Editor`, `MobaGameplay.Tests` |
+
+---
+
+## 🏗️ Estructura de Carpetas
+
 ```
 Assets/_Project/
-  Scripts/
-    Core/         # Entidades, combate, movimiento base
-    Abilities/    # Habilidades, proyectiles, efectos de área
-    AI/           # Controlador de IA enemiga (6 estados)
-    Animation/    # CharacterAnimator, AnimationEventReceiver
-    Camera/       # CameraController
-    Combat/       # RangedCombat, MeleeCombat, DamageInfo
-    Controllers/  # PlayerInputController (input principal)
-    Editor/       # Scripts de editor (26 total, ~15 redundantes)
-    Game/         # GameStateManager, WaveData, ItemDropInitializer
-    Inventory/    # Sistema de inventario (MMORPG.Inventory)
-    Movement/     # XZPlaneMovement
-    Testing/      # EquipmentTester
-    UI/           # Interfaces, barras, targeting, HUD, inventario
-    VFX/          # SimpleVFX
-    Visuals/      # LaserSight
-  Prefabs/        # Player, Enemy, Abilities, Items, UI
-  Scenes/         # SampleScene
-  Art/            # Animations, Icons
-  Materials/      # Ground, TrailIndicator, TrailZone
-  Shaders/        # Outline, UIHealthBarTick
-  ScriptableObjects/  # Items (42 equipables), Waves (3)
+├── Scripts/
+│   ├── Core/           # BaseEntity, HeroEntity, EnemyEntity
+│   ├── Abilities/      # Habilidades (legacy + data-driven)
+│   │   ├── Core/       # AbilitySystem, AbilityData, AbilityInstance
+│   │   ├── Behaviors/  # AbilityBehaviorFactory
+│   │   └── Types/      # Projectile, AoE, Trail abilities
+│   ├── AI/             # EnemyAIController (6 estados)
+│   ├── Animation/      # CharacterAnimator
+│   ├── Camera/        # CameraController
+│   ├── Combat/        # RangedCombat, MeleeCombat, DamageInfo
+│   ├── Controllers/   # PlayerInputController
+│   ├── Editor/        # Herramientas editor
+│   ├── Game/          # GameStateManager, ItemDropInitializer
+│   ├── Inventory/     # EquipmentComponent
+│   ├── Movement/      # XZPlaneMovement
+│   ├── UI/            # HUD, AbilitySlotUI, ResourceBarUI, FloatingText
+│   └── VFX/           # SimpleVFX
+├── Prefabs/           # Player, Enemies, Abilities
+├── Scenes/           # SampleScene
+├── Art/               # Animations, Icons
+├── Materials/         # Ground, TrailIndicator
+├── Shaders/           # Outline, UIHealthBarTick
+└── Data/              # AbilityData ScriptableObjects
 ```
 
-## Entidades Principales
+---
+
+## 🎮 Entidades Principales
 
 ### BaseEntity (318 líneas)
-- Clase abstracta base para todos los personajes
-- Maneja vida, maná, stats de combate, muerte/revive
-- Eventos: `OnTakeDamage`, `OnDeath`, `OnManaChanged`
-- **BUG CONOCIDO**: `TakeDamage()` aplica daño crítico 2 veces (doble resta)
-- **BUG CONOCIDO**: `Update()` regenera mana sin pasar por setter (no dispara evento)
+- **Responsabilidades**: Vida, maná, stats, muerte/revive
+- **Eventos**: `OnTakeDamage`, `OnDeath`, `OnManaChanged`, `OnHealed`
+- **Properties**: `CurrentHealth`, `CurrentMana`, `IsDead`
 
 ### HeroEntity (73 líneas)
 - Extiende `BaseEntity`
-- Sistema de progresión: nivel, experiencia, oro
-- Métodos: `AddGold()`, `AddExp()`, `LevelUp()`
-- **BUG CONOCIDO**: `Awake()` acopla a `TargetingManager.Instance`
-- Campos públicos sin `[SerializeField]` ni propiedades
+- **Sistema de progresión**: nivel, experiencia, oro
+- **Métodos**: `AddGold()`, `AddExp()`, `LevelUp()`
 
 ### EnemyEntity (162 líneas)
-- Extiende `BaseEntity` con recompensas y AI automática
-- `NotifyKillReward()` — ARREGLADO, otorga oro/XP y spawnea GoldDrop
-- **BUG CONOCIDO**: `Die()` llama `Destroy(1f)` pero base llama `Destroy(3f)` → double destroy
-- **BUG CONOCIDO**: Usa `new void Start()` en vez de `override`, oculta base
+- Extiende `BaseEntity` con recompensas
+- **IA automática**: `EnemyAIController` attached
+- **Recompensas**: `goldReward`, `experienceReward`
 
-## Sistemas Core
+---
+
+## ⚔️ Sistemas Core
 
 ### Combate
-- `RangedCombat.cs` (182 líneas) — Charged attacks, cooldowns ✅
-- `MeleeCombat.cs` (28 líneas) — Básico, código muerto comentado ⚠️
-- `DamageInfo.cs` (29 líneas) — Struct con tipos y críticos ✅
+| Sistema | Archivo | Estado |
+|---------|---------|---------|
+| Charged attacks | `RangedCombat.cs` | ✅ Completo |
+| Melee attacks | `MeleeCombat.cs` | ✅ Completo |
+| Damage info | `DamageInfo.cs` | ✅ Completo |
 
-### IA Enemiga (639 líneas)
-- `EnemyAIController` — State machine: Idle→Patrol→Chase→Attack→Retreat→Dead
-- `Physics.OverlapSphere` por frame para detectar jugador — rendimiento ⚠️
-- `HandleDamageDealt()` vacío, nunca llamado — código muerto
+### Habilidades (Dual System)
+| Sistema | Tipo | Estado |
+|--------|------|--------|
+| `AbilityController` | Legacy (MonoBehaviour) | ✅ Mantenido por compatibilidad |
+| `AbilitySystem` | Nuevo (data-driven) | ✅ ACTIVO — usa AbilityData SOs |
 
-### GameStateManager (630 líneas)
-- Singleton con DontDestroyOnLoad
-- Sistema de oleadas, respawn, puntuación
-- **BUG CONOCIDO**: `OnWaveCleared` se disporta 2 veces (detección duplicada)
+**Habilidades implementadas (ambas versiones)**:
+- Fireball (Projectile)
+- Ground Smash (AoE)
+- Dash (Movement)
+- Ground Trail (Trail Zone)
 
-### GoldDrop (90 líneas)
-- Se mueve hacia el jugador cuando está en rango (5u)
-- Se recoge automáticamente al estar cerca (1.5u)
-- **BUG CONOCIDO**: `OnCollected()` no llama `hero.AddGold()` — NO SUMA ORO
-- Usa `FindObjectOfType<HeroEntity>()` en Start — rendimiento ⚠️
+### IA Enemiga
+- **Estado**: 6 estados → Idle → Patrol → Chase → Attack → Retreat → Dead
+- **Archivo**: `EnemyAIController.cs` (639 líneas)
 
-### Abilities
-- `AbilityController` (277 líneas) — 4 slots, targeting, cooldowns
-- `BaseAbility` (169 líneas) — Clase abstracta con cooldown, mana, targeting
-- 4 habilidades implementadas: Fireball, Dash, GroundSmash, GroundTrail
-- `Projectile.cs` base tiene daño COMENTADO — no aplica daño por sí misma
-- `LinearProjectile` y `BasicAttackProjectile` sí aplican daño correctamente
+### Game Loop
+- **Archivo**: `GameStateManager.cs` (630 líneas)
+- **Features**: Oleadas, respawn, puntuación, wave configs
 
-### EquipmentComponent (210 líneas)
-- Calcula stats de items equipados y aplica al héroe
-- **BUG CONOCIDO**: `ApplyStatsToOwner()` usa `+=` en vez de `=` → acumula al re-equipar
-- **BUG CONOCIDO**: `_baseMaxHealth` se captura en `Awake()` — no se actualiza con level-ups
-- AGI bonus comentado (línea 121): `// _owner.AttackSpeed += agi * 0.1f;`
+---
 
-## Bugs Críticos — ARREGLADOS (2026-04-09, Fase 1)
+## 🐛 Bugs Críticos — ARREGLADOS
 
-1. ✅ **Daño crítico duplicado** — multiplicador ANTES de restar vida, una sola resta
-2. ✅ **GoldDrop no suma oro** — agregado `goldAmount` y `_hero.AddGold()`
-3. ✅ **Double Destroy** — eliminado `Destroy(1f)` de EnemyEntity, solo base `Destroy(3f)`
-4. ✅ **Wave clear duplicado** — lógica duplicada eliminada de `UpdateActiveWave()`
-5. ✅ **Equipment acumula stats** — `+=` → `=` en `ApplyStatsToOwner()`
-6. ✅ **Mana regen sin evento** — `currentMana` → `CurrentMana` (usa setter)
-7. ✅ **EnemyEntity.Start() oculta base** — `new void Start()` → `protected override`
+### Fase 1 (2026-04-09)
+| # | Bug | Fix |
+|---|-----|------|
+| 1 | Daño crítico duplicado (2.5x vs 1.5x) | Multiplicador ANTES de restar, una sola resta |
+| 2 | GoldDrop no suma oro | Agregado `goldAmount` + `AddGold()` |
+| 3 | Double Destroy (1s + 3s) | Eliminado `Destroy(1f)`, solo `Destroy(3f)` |
+| 4 | Wave clear dispara 2 veces | Lógica duplicada eliminada |
+| 5 | Equipment stats acumulan | `+=` → `=` en `ApplyStatsToOwner()` |
+| 6 | Mana regen sin evento | `currentMana` → `CurrentMana` (setter) |
+| 7 | EnemyEntity.Start() oculta base | `new void Start()` → `protected override` |
 
-## Deuda Técnica — ARREGLADA (2026-04-09, Fases 2-3)
+### Fase 2 (2026-04-09)
+| # | Bug | Fix |
+|---|-----|------|
+| 8 | Equipment pierde stats al subir nivel | `RefreshBaseStats()` + suscripción a `OnLevelUp` |
+| 9 | Namespace MMORPG inconsistente | `MMORPG.*` → `MobaGameplay.*` (20 archivos) |
+| 10 | Projectile.cs daño comentado | Descomentado con check `!hitEntity.IsDead` |
 
-8. ✅ **Equipment + Level-up** — `EquipmentComponent` se suscribe a `OnLevelUp`, `RefreshBaseStats()` calcula valores reales
-9. ✅ **Namespace MMORPG** — 20 archivos migrados a `MobaGameplay.*`
-10. ✅ **Projectile.cs daño comentado** — descomentado y corregido con `DamageInfo`
-11. ✅ **Reflexión en AbilityController** — reemplazado con propiedades públicas
-12. ✅ **5 editor scripts eliminados** — FixAbilityIcons, AttachMeleeCombat, FixEventSystem, GroundItemPrefabCreator, CleanupPlayerAbilities
-13. ✅ **Código muerto limpiado** — MeleeCombat, EnemyAIController.HandleDamageDealt, EquipmentComponent AGI TODO
-14. ✅ **8 archivos basura eliminados** — cookies.txt, mcp files, scripts Python, Django template
-15. ✅ **README.md actualizado** — Unity 6 (6000.3), URP 17.3
+### Fase 3 (2026-04-09)
+| # | Bug | Fix |
+|---|-----|------|
+| 11 | Editor scripts redundantes | Eliminados 5 scripts one-time |
+| 12 | AbilityController usa reflexión | Reemplazado por propiedades públicas |
+| 13 | Código muerto | Removido métodos vacíos y comentarios |
+| 14 | Archivos basura en raíz | Eliminados cookies, MCP logs, Python scripts |
 
-## Bugs Arreglados (2026-04-08)
+### Post-Fase 3 (2026-04-10)
+| # | Bug | Fix |
+|---|-----|------|
+| 15 | Íconos de abilities como gray boxes | `AutoFixAbilityIcons()` en Awake |
+| 16 | HUD duplicate objects | Removidos duplicados de escena |
+| 17 | PlayerHUD late binding null | `TryBindPlayer()` en Update con fallback por tag |
+| 18 | Floating health bar no actualiza | Auto-wire en Awake + `RefreshBars()` en Update |
+| 19 | Proyectiles pasan por enemigos | `hitLayers` inicializado correctamente |
+| 20 | Quick Cast tap no funciona | `else if` → `if` independientes |
 
-1. ✅ `EnemyEntity.NotifyKillReward()` — implementado, da oro/XP y spawnea drop
-2. ✅ `AoEZone.cs` — daño descomentado y funcional
-3. ✅ `EquipmentComponent` — stats aplicados al héroe (con bug de acumulación)
-4. ✅ `GoldDrop` — recolección funciona por distancia (sin depender de collider del jugador)
-5. ✅ `GroundTrailAbility` — TrailZone con BoxCollider trigger y OverlapBox de respaldo
-6. ✅ FloatingStatusBar — chip damage verde fijo, tick marks shader
-7. ✅ Ability icons — asignados por AutoFixAbilityIcons (usa reflexión)
-8. ✅ GroundTrailAbility — asignada al slot 4 del prefab del jugador
+### Fase 4 - Bugfix Cooldown (2026-04-10)
+| # | Bug | Fix |
+|---|-----|------|
+| 21 | Cooldown overlay no se muestra | `Awake()` auto-busca hijos + called a `UpdateNewAbility()` |
 
-## Notas Técnicas
-- El jugador no tiene Collider en su prefab base — GoldDrop usa detección por distancia
-- TrailZone requiere BoxCollider con isTrigger=true
-- El proyecto usa Unity 6 (6000.3.11f1), NO Unity 2022.3 LTS
-- Namespace unificado: todo usa `MobaGameplay.*` (antes `MMORPG.*` migrado)
-- 21 editor scripts restantes (5 eliminados en limpieza)
-- 0 tests unitarios
-- MCP para Unity configurado pero con problemas de sesión HTTP (solo SSE continuo)
-- Projectile.cs (clase base) ahora aplica daño correctamente
-- AbilityController ya no usa reflexión — usa propiedades públicas
+---
 
-## Última actualización
-2026-04-09 — Fases 1-3 completadas: 7 bugs críticos + deuda técnica resuelta
+## 🧪 Testing (Fase 4)
+
+**62 tests pasando** ✅
+
+| Suite | Tests | Cobertura |
+|-------|-------|-----------|
+| BaseEntityTest | 22 | TakeDamage, críticos, death, heal, mana |
+| HeroEntityTest | 16 | AddGold, AddExp, LevelUp, stat scaling |
+| EquipmentComponentTest | 12 | equip/unequip, acumulación, level-up |
+| GameStateManagerTest | 12 | estados, transiciones, score, restart |
+
+### Lecciones de EditMode Testing
+- `Start()` no ejecuta en EditMode → flags como `manaInitialized` quedan en `false`
+- `Destroy()` no funciona → usar `LogAssert.Expect(LogType.Error, ...)`
+- Singleton persiste entre tests → resetear via reflection en TearDown
+
+---
+
+## 📋 Documentación del Proyecto
+
+| Archivo | Estado | Descripción |
+|---------|--------|-------------|
+| `roadmap.md` | ✅ Actualizado | Estado general y plan de fases |
+| `memoria.md` | ✅ Actualizado | Convenciones y aprendizajes |
+| `README.md` | ⚠️ Parcial | Input system (necesita actualización) |
+| `MOBAGAMEPLAY_SETUP.md` | ✅ | Guía de setup |
+| `HOW_TO_CREATE_ITEMS.md` | ✅ | Creación de items |
+| `docs/DEPLOYMENT.md` | ⚠️ | Deployment (revisar) |
+
+---
+
+## 🔧 Configuración Técnica
+
+### Assembly Definitions
+| Archivo | Assembly | Propósito |
+|---------|----------|-----------|
+| `MobaGameplay.Runtime.asmdef` | MobaGameplay.Runtime | Todo el código del juego |
+| `MobaGameplay.Editor.asmdef` | MobaGameplay.Editor | Herramientas Editor |
+| `MobaGameplay.Tests.asmdef` | MobaGameplay.Tests | Tests (referencia Runtime + NUnit) |
+
+### Paquetes Requeridos
+- `Unity.InputSystem`
+- `Unity.TextMeshPro`
+- `com.unity.render-pipelines.universal` (URP 17.3.0)
+
+---
+
+## 📝 Notas Importantes
+
+1. **Input System**: `else if (wasReleasedThisFrame)` rompe Quick Cast → usar `if` independientes
+2. **LayerMask**: `hitLayers` por defecto es `0` (Nothing) → siempre inicializar con `~0`
+3. **Projectiles**: Spawn a `Y = 1.0f`, dirección `dir.y = 0` para intersectar hurtboxes
+4. **Equipment stats**: Usar `=` no `+=` para evitar acumulación
+5. **Critical damage**: Multiplicador ANTES de restar vida, una sola resta
+6. **Namespace ≠ Assembly**: `UnityEngine.InputSystem` ≠ `Unity.InputSystem`
+
+---
+
+## ���� Limpieza Realizada (2026-04-10)
+- Eliminados objetos `HealthBackground` y `HealthRecentDamageFill` de la raíz de la escena
+- Limpiados debug logs de `AbilitySlotUI.cs` y `PlayerHUD.cs`
+
+---
+
+## 📅 Último Update
+**2026-04-10** — Cooldown bugfix + cleanup + 62 tests pasando ✅
