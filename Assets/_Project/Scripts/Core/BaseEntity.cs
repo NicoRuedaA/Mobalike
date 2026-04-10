@@ -47,6 +47,14 @@ namespace MobaGameplay.Core
         [SerializeField] private float currentMana = DEFAULT_MAX_MANA;
         [SerializeField] private float manaRegen = DEFAULT_MANA_REGEN;
         
+        // Health Regen (NEW)
+        [Header("Health Regen")]
+        [SerializeField] private float healthRegen = 1f;
+        
+        // Movement
+        [Header("Movement")]
+        [SerializeField] private float movementSpeed = 5f;
+        
         // Combat Stats
         [Header("Combat Stats")]
         [SerializeField] private float baseAttackDamage = DEFAULT_ATTACK_DAMAGE;
@@ -122,6 +130,24 @@ namespace MobaGameplay.Core
         
         public float CriticalChance => criticalChance;
         public float CriticalMultiplier => criticalMultiplier;
+
+        public float HealthRegen
+        {
+            get => healthRegen;
+            set => healthRegen = Mathf.Max(0f, value);
+        }
+
+        public float ManaRegen
+        {
+            get => manaRegen;
+            set => manaRegen = Mathf.Max(0f, value);
+        }
+
+        public float MovementSpeed
+        {
+            get => movementSpeed;
+            set => movementSpeed = Mathf.Max(0f, value);
+        }
 
         public bool IsDead => currentHealth <= 0f;
 

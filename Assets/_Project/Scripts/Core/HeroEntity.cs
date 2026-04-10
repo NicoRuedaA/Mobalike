@@ -95,13 +95,13 @@ namespace MobaGameplay.Core
             PhysicalArmor = heroClass.baseArmor;
             MagicResistance = heroClass.baseMagicResist;
             
-            // Override attack damage (can't set via BaseEntity directly, use field)
+            // Override attack damage and movement speed
             AttackDamage = heroClass.baseAttackDamage;
             MovementSpeed = heroClass.baseMoveSpeed;
             
             // Set health/mana regen
-            healthRegenRate = heroClass.healthRegen;
-            manaRegenRate = heroClass.manaRegen;
+            HealthRegen = heroClass.healthRegen;
+            ManaRegen = heroClass.manaRegen;
 
             Debug.Log($"[HeroEntity] Applied class: {heroClass.className}");
         }
