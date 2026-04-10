@@ -26,7 +26,7 @@ namespace MobaGameplay.Core
         [Tooltip("Cantidad de oro que otorga al ser recogido.")]
         [SerializeField] private int goldAmount = 5;
 
-        // Referencia al héroe (caché)
+        // Referencia al héroe (cacheada via singleton)
         private HeroEntity _hero;
         private float _lifetimeTimer;
         private bool _isMoving = false;
@@ -35,8 +35,8 @@ namespace MobaGameplay.Core
         {
             _lifetimeTimer = lifetime;
             
-            // Buscar el héroe en la escena
-            _hero = FindObjectOfType<HeroEntity>();
+            // Usar singleton en vez de FindObjectOfType (evita full scene scan)
+            _hero = HeroEntity.Instance;
             
             if (_hero == null)
             {
@@ -54,8 +54,12 @@ namespace MobaGameplay.Core
                 return;
             }
 
-            // Si no hay héroe, no hacer nada
-            if (_hero == null) return;
+            // Si no hay héroe, intentar recuperar la referencia (por si spawnó tarde)
+            if (_hero == null)
+            {
+                _hero = HeroEntity.Instance;
+                if (_hero == null) return;
+            }
 
             float distanceToHero = Vector3.Distance(transform.position, _hero.transform.position);
 

@@ -111,8 +111,8 @@ namespace MobaGameplay.Core
         /// </summary>
         private void NotifyKillReward()
         {
-            // Buscar HeroEntity
-            var hero = FindObjectOfType<HeroEntity>();
+            // Buscar HeroEntity via singleton en vez de FindObjectOfType (evita full scene scan)
+            var hero = HeroEntity.Instance;
             if (hero != null)
             {
                 hero.AddGold(goldReward);

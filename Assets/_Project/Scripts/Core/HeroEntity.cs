@@ -6,6 +6,12 @@ namespace MobaGameplay.Core
 {
     public class HeroEntity : BaseEntity
     {
+        /// <summary>
+        /// Singleton instance of the hero. Set in Awake, cleared in OnDestroy.
+        /// Use instead of FindObjectOfType&lt;HeroEntity&gt;() for performance.
+        /// </summary>
+        public static HeroEntity Instance { get; private set; }
+
         [Header("Hero Progression")]
         [SerializeField] private int currentLevel = 1;
         [SerializeField] private int maxLevel = 18;
@@ -41,9 +47,27 @@ namespace MobaGameplay.Core
 
         protected override void Awake()
         {
+            // Singleton setup — prevent duplicates
+            if (Instance != null && Instance != this)
+            {
+                Debug.LogWarning($"[HeroEntity] Duplicate hero detected: {gameObject.name}. Destroying.");
+                Destroy(gameObject);
+                return;
+            }
+            Instance = this;
+
             base.Awake();
             if (TargetingManager.Instance != null)
                 TargetingManager.Instance.Initialize(transform);
+        }
+
+        protected override void OnDestroy()
+        {
+            // Clear singleton reference when destroyed
+            if (Instance == this)
+            {
+                Instance = null;
+            }
         }
 
         public void AddExp(float amount)
