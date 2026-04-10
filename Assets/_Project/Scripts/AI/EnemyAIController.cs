@@ -39,6 +39,10 @@ namespace MobaGameplay.AI
         [SerializeField] private float patrolSpeed = 2f;
         
         [Header("Patrulla")]
+        [Tooltip("Tiempo de espera en Idle antes de patrullar (segundos).")]
+        [SerializeField] private float idleWaitTime = 2f;
+        
+        [Header("Patrulla")]
         [Tooltip("Puntos de patrulla. Si está vacío, no patrulla.")]
         [SerializeField] private Transform[] patrolPoints;
         
@@ -282,7 +286,7 @@ namespace MobaGameplay.AI
             }
             
             // Si hay puntos de patrulla, ir a patrol después de esperar
-            if (HasPatrolPoints() && _timeInCurrentState > 2f)
+            if (HasPatrolPoints() && _timeInCurrentState > idleWaitTime)
             {
                 TransitionTo(EnemyState.Patrol);
             }

@@ -16,6 +16,15 @@ namespace MobaGameplay.Movement
         private const float PATHING_STOP_DISTANCE = 0.1f;
         private const float MIN_VERTICAL_VELOCITY = -20f;
         private const float GROUND_BASELINE = -2f;
+        private const float GROUND_CHECK_OFFSET = 0.1f;
+
+        // CharacterController tuning (exposed for Inspector adjustment)
+        [Header("Character Controller")]
+        [SerializeField] private float controllerCenterY = 0.93f;
+        [SerializeField] private float controllerRadius = 0.28f;
+        [SerializeField] private float controllerHeight = 1.8f;
+        [SerializeField] private float controllerMinMoveDistance = 0.001f;
+        [SerializeField] private float controllerStepOffset = 0.3f;
         
         // Movement Settings
         [Header("Movement Settings")]
@@ -89,11 +98,11 @@ namespace MobaGameplay.Movement
         {
             if (controller == null) return;
             
-            controller.center = new Vector3(0f, 0.93f, 0f);
-            controller.radius = 0.28f;
-            controller.height = 1.8f;
-            controller.minMoveDistance = 0.001f;
-            controller.stepOffset = 0.3f;
+            controller.center = new Vector3(0f, controllerCenterY, 0f);
+            controller.radius = controllerRadius;
+            controller.height = controllerHeight;
+            controller.minMoveDistance = controllerMinMoveDistance;
+            controller.stepOffset = controllerStepOffset;
         }
 
         public override void MoveTo(Vector3 destination)
@@ -317,7 +326,7 @@ namespace MobaGameplay.Movement
             // Extra ground check
             Vector3 spherePosition = new Vector3(
                 transform.position.x,
-                transform.position.y + controller.radius - 0.1f,
+                transform.position.y + controller.radius - GROUND_CHECK_OFFSET,
                 transform.position.z
             );
             

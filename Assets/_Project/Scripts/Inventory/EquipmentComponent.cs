@@ -7,6 +7,10 @@ namespace MobaGameplay.Inventory
 {
     public class EquipmentComponent : MonoBehaviour
     {
+        // Stat multipliers: how much each stat point adds to the hero's base stats
+        private const int HP_PER_STAT_POINT = 10;  // Each HP point = +10 MaxHealth
+        private const int AD_PER_STR_POINT = 2;     // Each STR point = +2 AttackDamage
+
         private Dictionary<EquipSlot, ItemData> equippedItems = new Dictionary<EquipSlot, ItemData>();
 
         public event Action<EquipSlot, ItemData> OnEquipmentChanged;
@@ -70,8 +74,8 @@ namespace MobaGameplay.Inventory
             if (_owner == null) return;
 
             // Strip current equipment bonuses to get the "naked" base (which includes level-ups)
-            _baseMaxHealth = _owner.MaxHealth - (TotalHP * 10f);
-            _baseAttackDamage = _owner.AttackDamage - (TotalSTR * 2f);
+            _baseMaxHealth = _owner.MaxHealth - (TotalHP * HP_PER_STAT_POINT);
+            _baseAttackDamage = _owner.AttackDamage - (TotalSTR * AD_PER_STR_POINT);
         }
 
         /// <summary>
@@ -153,18 +157,18 @@ namespace MobaGameplay.Inventory
 
             // Aplicar HP como bonus a MaxHealth (assignment, NOT accumulation)
             // RecalculateStats() already restored _baseMaxHealth, so we set the final value
-            _owner.MaxHealth = _baseMaxHealth + (hp * 10f);
+            _owner.MaxHealth = _baseMaxHealth + (hp * HP_PER_STAT_POINT);
 
             // Aplicar STR como AttackDamage (assignment, NOT accumulation)
-            _owner.AttackDamage = _baseAttackDamage + (str * 2f);
+            _owner.AttackDamage = _baseAttackDamage + (str * AD_PER_STR_POINT);
 
             // TODO: AGI bonus reserved for future AttackSpeed implementation
             // When AttackSpeed is a settable property: _owner.AttackSpeed = _baseAttackSpeed + (agi * 0.1f);
 
             #if UNITY_EDITOR
-            Debug.Log($"[Equipment] Stats applied to {_owner.gameObject.name}: " +
-                     $"HP: {_baseMaxHealth} + {hp * 10} = {_owner.MaxHealth}, " +
-                     $"AD: {_baseAttackDamage} + {str * 2} = {_owner.AttackDamage}");
+Debug.Log($"[Equipment] Stats applied to {_owner.gameObject.name}: " +
+                      $"HP: {_baseMaxHealth} + {hp * HP_PER_STAT_POINT} = {_owner.MaxHealth}, " +
+                      $"AD: {_baseAttackDamage} + {str * AD_PER_STR_POINT} = {_owner.AttackDamage}");
             #endif
         }
 
@@ -192,7 +196,7 @@ namespace MobaGameplay.Inventory
             }
             
             output += $"\nTotal Bonuses: HP+{TotalHP}, STR+{TotalSTR}, AGI+{TotalAGI}\n";
-            output += $"Effective Stats: +{TotalHP * 10} MaxHealth, +{TotalSTR * 2} AttackDamage";
+            output += $"Effective Stats: +{TotalHP * HP_PER_STAT_POINT} MaxHealth, +{TotalSTR * AD_PER_STR_POINT} AttackDamage";
             
             Debug.Log(output);
         }

@@ -24,6 +24,13 @@ namespace MobaGameplay.Core
         private const float DEFAULT_CRIT_MULT = 1.5f;
         private const float DEATH_DESTROY_DELAY = 3f;
 
+        // Damage formula constants
+        private const float ARMOR_SCALING_BASE = 100f;    // 100 / (100 + armor) reduction formula
+
+        // Visual offsets
+        [Header("Visual Settings")]
+        [SerializeField] private float floatingTextOffsetY = 2f;
+
         // Events
         public event Action<DamageInfo> OnTakeDamage;
         public event Action<BaseEntity, DamageInfo> OnDeath;
@@ -197,7 +204,7 @@ namespace MobaGameplay.Core
 
             // Spawn floating damage text
             UI.FloatingTextManager.Instance?.Spawn(
-                transform.position + Vector3.up * 2f, 
+                transform.position + Vector3.up * floatingTextOffsetY, 
                 actualDamage, 
                 damageInfo.Type, 
                 isCritical
@@ -218,10 +225,10 @@ namespace MobaGameplay.Core
             switch (info.Type)
             {
                 case DamageType.Physical:
-                    reduction = 100f / (100f + Mathf.Max(0, physicalArmor));
+                    reduction = ARMOR_SCALING_BASE / (ARMOR_SCALING_BASE + Mathf.Max(0, physicalArmor));
                     break;
                 case DamageType.Magical:
-                    reduction = 100f / (100f + Mathf.Max(0, magicResistance));
+                    reduction = ARMOR_SCALING_BASE / (ARMOR_SCALING_BASE + Mathf.Max(0, magicResistance));
                     break;
                 case DamageType.TrueDamage:
                     // No reduction
