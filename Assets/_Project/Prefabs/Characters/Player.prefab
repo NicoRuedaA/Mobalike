@@ -1772,6 +1772,7 @@ GameObject:
   - component: {fileID: 4847629327448039079}
   - component: {fileID: 2699752725528429416}
   - component: {fileID: 4061904594909135487}
+  - component: {fileID: 2415874948099366170}
   m_Layer: 0
   m_Name: Player
   m_TagString: Player
@@ -1809,6 +1810,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7813e59238d105947a0ec628e92c195e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MobaGameplay.Core.HeroEntity
+  floatingTextOffsetY: 2
   maxHealth: 1000
   currentHealth: 1000
   maxMana: 500
@@ -1821,17 +1823,18 @@ MonoBehaviour:
   magicResistance: 30
   criticalChance: 0.15
   criticalMultiplier: 1.5
-  CurrentLevel: 1
-  MaxLevel: 18
-  CurrentExp: 0
-  ExpToNextLevel: 100
-  CurrentGold: 0
-  HealthPerLevel: 85
-  ManaPerLevel: 30
-  ADPerLevel: 3.5
-  APPerLevel: 0
-  ArmorPerLevel: 4
-  MRPerLevel: 1.25
+  currentLevel: 1
+  maxLevel: 18
+  currentExp: 0
+  expToNextLevel: 100
+  currentGold: 0
+  expScaleMultiplier: 1.2
+  healthPerLevel: 85
+  manaPerLevel: 30
+  adPerLevel: 3.5
+  apPerLevel: 0
+  armorPerLevel: 4
+  mrPerLevel: 1.25
 --- !u!114 &1976888291177775249
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1844,6 +1847,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ce4f036231ba284408cd7d7865503578, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MobaGameplay.Movement.XZPlaneMovement
+  controllerCenterY: 0.93
+  controllerRadius: 0.28
+  controllerHeight: 1.8
+  controllerMinMoveDistance: 0.001
+  controllerStepOffset: 0.3
   walkSpeed: 5
   sprintSpeed: 8
   aimSpeed: 3
@@ -2262,6 +2270,27 @@ MonoBehaviour:
   zoneDuration: 3
   zoneCount: 6
   spawnDelay: 0.12
+--- !u!114 &2415874948099366170
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6008467741929148936}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 114eece13224f0a42ba538d1a54614c4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: MobaGameplay.Runtime::MobaGameplay.Abilities.AbilitySystem
+  equippedAbilities:
+  - {fileID: 11400000, guid: e9e83171e7c6b7643a6c11ae62e563ce, type: 2}
+  - {fileID: 11400000, guid: 97cb18c324d38484ea2765f499a3b17d, type: 2}
+  - {fileID: 11400000, guid: dff993a34d5d5b6429c8e176a18a0bc3, type: 2}
+  - {fileID: 11400000, guid: 54c5292b53a841d4fa934f8b881b5ee7, type: 2}
+  slot1Key: 49
+  slot2Key: 50
+  slot3Key: 51
+  slot4Key: 52
 --- !u!1 &6190752681374902677
 GameObject:
   m_ObjectHideFlags: 0

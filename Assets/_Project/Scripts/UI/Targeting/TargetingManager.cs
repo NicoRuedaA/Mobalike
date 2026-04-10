@@ -23,6 +23,7 @@ namespace MobaGameplay.UI.Targeting
         private TrailIndicator activeTrail;
         
         private BaseAbility currentAimingAbility;
+        private AbilityData currentAimingData;
         private Transform playerTransform;
 
         private void Awake()
@@ -45,6 +46,7 @@ namespace MobaGameplay.UI.Targeting
             if (ability.TargetingType == IndicatorType.None) return;
             
             currentAimingAbility = ability;
+            currentAimingData = null; // Clear data reference
             HideIndicator();
 
             if (ability.TargetingType == IndicatorType.Circle)
@@ -76,10 +78,50 @@ namespace MobaGameplay.UI.Targeting
             }
         }
 
+        /// <summary>
+        /// Start targeting mode using AbilityData (data-driven system).
+        /// </summary>
+        public void StartTargetingForData(AbilityData data)
+        {
+            if (data == null || data.targetingType == IndicatorType.None) return;
+
+            currentAimingData = data;
+            currentAimingAbility = null; // Clear ability reference
+            HideIndicator();
+
+            if (data.targetingType == IndicatorType.Circle)
+            {
+                activeIndicatorObj = Instantiate(circleIndicatorPrefab);
+                activeCircle = activeIndicatorObj.GetComponent<CircleIndicator>();
+                activeCircle.SetRadius(data.range);
+                activeCircle.SetColor(friendlyColor);
+            }
+            else if (data.targetingType == IndicatorType.Line)
+            {
+                activeIndicatorObj = Instantiate(lineIndicatorPrefab);
+                activeLine = activeIndicatorObj.GetComponent<LineIndicator>();
+                activeLine.SetDimensions(data.range, data.width);
+                activeLine.SetColor(friendlyColor);
+            }
+            else if (data.targetingType == IndicatorType.Trail)
+            {
+                GameObject sourcePrefab = trailIndicatorPrefab != null ? trailIndicatorPrefab : lineIndicatorPrefab;
+                activeIndicatorObj = Instantiate(sourcePrefab);
+
+                activeTrail = activeIndicatorObj.GetComponent<TrailIndicator>();
+                if (activeTrail == null)
+                    activeTrail = activeIndicatorObj.AddComponent<TrailIndicator>();
+
+                activeTrail.SetDimensions(data.range, data.width);
+                activeTrail.SetColor(new Color(1f, 0.4f, 0f, 0.7f));
+            }
+        }
+
         public void CancelTargeting()
         {
             HideIndicator();
             currentAimingAbility = null;
+            currentAimingData = null;
         }
 
         private void HideIndicator()
@@ -95,8 +137,24 @@ namespace MobaGameplay.UI.Targeting
 
         private void Update()
         {
-            if (activeIndicatorObj == null || currentAimingAbility == null || playerTransform == null) return;
+            if (activeIndicatorObj == null || playerTransform == null) return;
+            if (currentAimingAbility == null && currentAimingData == null) return;
             if (Camera.main == null || Mouse.current == null) return;
+
+            // Determine active targeting parameters from either system
+            IndicatorType targetType;
+            float targetCastRange;
+            if (currentAimingData != null)
+            {
+                targetType = currentAimingData.targetingType;
+                targetCastRange = currentAimingData.castRange;
+            }
+            else if (currentAimingAbility != null)
+            {
+                targetType = currentAimingAbility.TargetingType;
+                targetCastRange = currentAimingAbility.CastRange;
+            }
+            else return;
 
             // Get mouse position on ground plane
             Ray ray = Camera.main.ScreenPointToRay(Mouse.current.position.ReadValue());
@@ -106,17 +164,17 @@ namespace MobaGameplay.UI.Targeting
             {
                 Vector3 targetPoint = ray.GetPoint(hitDist);
 
-                if (currentAimingAbility.TargetingType == IndicatorType.Circle)
+                if (targetType == IndicatorType.Circle)
                 {
                     // Circle can be moved with mouse within cast range
                     Vector3 direction = targetPoint - playerTransform.position;
-                    if (direction.magnitude > currentAimingAbility.CastRange)
+                    if (direction.magnitude > targetCastRange)
                     {
-                        targetPoint = playerTransform.position + direction.normalized * currentAimingAbility.CastRange;
+                        targetPoint = playerTransform.position + direction.normalized * targetCastRange;
                     }
                     activeIndicatorObj.transform.position = targetPoint + Vector3.up * 0.1f;
                 }
-                else if (currentAimingAbility.TargetingType == IndicatorType.Line)
+                else if (targetType == IndicatorType.Line)
                 {
                     // Line originates from player and rotates towards mouse
                     activeIndicatorObj.transform.position = playerTransform.position + Vector3.up * 0.1f;
@@ -127,7 +185,7 @@ namespace MobaGameplay.UI.Targeting
                         activeIndicatorObj.transform.rotation = Quaternion.LookRotation(lookDir);
                     }
                 }
-                else if (currentAimingAbility.TargetingType == IndicatorType.Trail)
+                else if (targetType == IndicatorType.Trail)
                 {
                     // Trail: same positioning as Line — originates at player, rotates to mouse
                     activeIndicatorObj.transform.position = playerTransform.position + Vector3.up * 0.1f;

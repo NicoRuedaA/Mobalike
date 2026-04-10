@@ -130,6 +130,12 @@ namespace MobaGameplay.Core
         public BaseCombat Combat { get; private set; }
         public AbilityController Abilities { get; private set; }
 
+        /// <summary>
+        /// Data-driven ability system (new). Takes priority over AbilityController when present.
+        /// Added during migration — will replace Abilities entirely once complete.
+        /// </summary>
+        public AbilitySystem AbilitySystem { get; private set; }
+
         #if UNITY_EDITOR
         /// <summary>
         /// Debug: Muestra el estado actual de todos los stats en la consola.
@@ -159,6 +165,7 @@ namespace MobaGameplay.Core
             Movement = GetComponent<BaseMovement>();
             Combat = GetComponent<BaseCombat>();
             Abilities = GetComponent<AbilityController>();
+            AbilitySystem = GetComponent<AbilitySystem>();
         }
 
         protected virtual void Start()
@@ -259,6 +266,7 @@ namespace MobaGameplay.Core
             if (Movement is MonoBehaviour monoMove) monoMove.enabled = false;
             if (Combat != null) Combat.enabled = false;
             if (Abilities != null) Abilities.enabled = false;
+            if (AbilitySystem != null) AbilitySystem.enabled = false;
 
             // Hide floating UI
             var floatingUI = GetComponentInChildren<UI.FloatingStatusBar>();
@@ -306,6 +314,7 @@ namespace MobaGameplay.Core
             if (Movement is MonoBehaviour monoMove) monoMove.enabled = true;
             if (Combat != null) Combat.enabled = true;
             if (Abilities != null) Abilities.enabled = true;
+            if (AbilitySystem != null) AbilitySystem.enabled = true;
             
             // Re-enable colliders
             foreach (var col in GetComponentsInChildren<Collider>())

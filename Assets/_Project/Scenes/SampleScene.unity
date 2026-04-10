@@ -6752,13 +6752,9 @@ GameObject:
   - component: {fileID: 5521050719080623889}
   - component: {fileID: 5521050719080623892}
   - component: {fileID: 5521050719080623891}
-  - component: {fileID: 5521050719080623896}
   - component: {fileID: 5521050719080623895}
   - component: {fileID: 5521050719080623894}
   - component: {fileID: 5521050719080623893}
-  - component: {fileID: 5521050719080623899}
-  - component: {fileID: 5521050719080623898}
-  - component: {fileID: 5521050719080623897}
   - component: {fileID: 5521050719080623902}
   - component: {fileID: 5521050719080623901}
   - component: {fileID: 5521050719080623900}
@@ -6810,6 +6806,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ce4f036231ba284408cd7d7865503578, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MobaGameplay.Movement.XZPlaneMovement
+  controllerCenterY: 0.93
+  controllerRadius: 0.28
+  controllerHeight: 1.8
+  controllerMinMoveDistance: 0.001
+  controllerStepOffset: 0.3
   walkSpeed: 5
   sprintSpeed: 8
   aimSpeed: 3
@@ -6834,6 +6835,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7813e59238d105947a0ec628e92c195e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MobaGameplay.Core.HeroEntity
+  floatingTextOffsetY: 2
   maxHealth: 1000
   currentHealth: 1000
   maxMana: 500
@@ -6846,17 +6848,18 @@ MonoBehaviour:
   magicResistance: 30
   criticalChance: 0.15
   criticalMultiplier: 1.5
-  CurrentLevel: 1
-  MaxLevel: 18
-  CurrentExp: 0
-  ExpToNextLevel: 100
-  CurrentGold: 0
-  HealthPerLevel: 85
-  ManaPerLevel: 30
-  ADPerLevel: 3.5
-  APPerLevel: 0
-  ArmorPerLevel: 4
-  MRPerLevel: 1.25
+  currentLevel: 1
+  maxLevel: 18
+  currentExp: 0
+  expToNextLevel: 100
+  currentGold: 0
+  expScaleMultiplier: 1.2
+  healthPerLevel: 85
+  manaPerLevel: 30
+  adPerLevel: 3.5
+  apPerLevel: 0
+  armorPerLevel: 4
+  mrPerLevel: 1.25
 --- !u!143 &5521050719080623889
 CharacterController:
   m_ObjectHideFlags: 0
@@ -7009,93 +7012,6 @@ MonoBehaviour:
   projectileSpeed: 20
   damage: 50
   maxRange: 15
---- !u!114 &5521050719080623896
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5521050719080623884}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4621aa8ad4d54dc4cb6c6814352a8c48, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::MobaGameplay.Abilities.AbilityController
-  ability1: {fileID: 5521050719080623899}
-  ability2: {fileID: 5521050719080623898}
-  ability3: {fileID: 5521050719080623897}
-  ability4: {fileID: 5521050719080623905}
---- !u!114 &5521050719080623897
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5521050719080623884}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 64d175393641ec74e94d9744245d3d86, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::MobaGameplay.Abilities.DashAbility
-  _abilityName: New Ability
-  _cooldown: 5
-  _castTime: 0
-  _manaCost: 0
-  _targetingType: 1
-  _castRange: 10
-  _range: 2
-  _width: 1
-  _abilityIcon: {fileID: 0}
-  dashSpeed: 20
-  dashDuration: 0.2
---- !u!114 &5521050719080623898
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5521050719080623884}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 618fa641ded66a0468d9cf6deddaae29, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::MobaGameplay.Abilities.GroundSmashAbility
-  _abilityName: New Ability
-  _cooldown: 5
-  _castTime: 0
-  _manaCost: 0
-  _targetingType: 1
-  _castRange: 10
-  _range: 2
-  _width: 1
-  _abilityIcon: {fileID: 0}
-  baseDamage: 100
-  adRatio: 0.8
-  vfxPrefab: {fileID: 2987217871762459909, guid: 37030b197ed8eec479acc2791096ccc5, type: 3}
---- !u!114 &5521050719080623899
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5521050719080623884}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2e5935fef719174428276b73d1136f0d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::MobaGameplay.Abilities.FireballAbility
-  _abilityName: New Ability
-  _cooldown: 5
-  _castTime: 0
-  _manaCost: 0
-  _targetingType: 1
-  _castRange: 10
-  _range: 2
-  _width: 1
-  _abilityIcon: {fileID: 0}
-  projectilePrefab: {fileID: 1210754999178854918, guid: 62d2ced362fb20249a36ff74f39d4ccb, type: 3}
-  baseDamage: 80
-  apRatio: 0.6
 --- !u!114 &5521050719080623900
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -7300,25 +7216,18 @@ MonoBehaviour:
   m_GameObject: {fileID: 5521050719080623884}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c0345e873505d2e4b91b04592ff74c30, type: 3}
+  m_Script: {fileID: 11500000, guid: 114eece13224f0a42ba538d1a54614c4, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::MobaGameplay.Abilities.GroundTrailAbility
-  _abilityName: Ground Trail
-  _cooldown: 12
-  _castTime: 0
-  _manaCost: 80
-  _targetingType: 4
-  _castRange: 25
-  _range: 20
-  _width: 3
-  _abilityIcon: {fileID: 0}
-  trailZonePrefab: {fileID: 6525115495502403156, guid: ebb4de5c57e0d0641a6f175cd0491936, type: 3}
-  trailLength: 20
-  trailWidth: 3
-  damagePerSecond: 40
-  zoneDuration: 3
-  zoneCount: 6
-  spawnDelay: 0.12
+  m_EditorClassIdentifier: MobaGameplay.Runtime::MobaGameplay.Abilities.AbilitySystem
+  equippedAbilities:
+  - {fileID: 11400000, guid: e9e83171e7c6b7643a6c11ae62e563ce, type: 2}
+  - {fileID: 11400000, guid: 97cb18c324d38484ea2765f499a3b17d, type: 2}
+  - {fileID: 11400000, guid: dff993a34d5d5b6429c8e176a18a0bc3, type: 2}
+  - {fileID: 11400000, guid: 54c5292b53a841d4fa934f8b881b5ee7, type: 2}
+  slot1Key: 49
+  slot2Key: 50
+  slot3Key: 51
+  slot4Key: 52
 --- !u!4 &5583402631138559369
 Transform:
   m_ObjectHideFlags: 0

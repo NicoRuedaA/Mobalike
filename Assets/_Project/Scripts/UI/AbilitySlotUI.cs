@@ -5,6 +5,10 @@ using MobaGameplay.Abilities;
 
 namespace MobaGameplay.UI
 {
+    /// <summary>
+    /// UI slot for displaying an ability icon with cooldown overlay.
+    /// Supports both old BaseAbility (MonoBehaviour) and new AbilityData (data-driven).
+    /// </summary>
     public class AbilitySlotUI : MonoBehaviour
     {
         [Header("UI Elements")]
@@ -12,62 +16,216 @@ namespace MobaGameplay.UI
         [SerializeField] private Image cooldownOverlay; // Image Type = Filled, Radial 360
         [SerializeField] private TextMeshProUGUI cooldownText;
 
-        private BaseAbility ability;
+        private BaseAbility legacyAbility;
+        private AbilityData newAbilityData;
+        private AbilitySystem abilitySystem;
+        private int slotIndex = -1;
 
-        public BaseAbility GetAbility() => ability;
-
-        public void AssignAbility(BaseAbility newAbility)
+        private void Awake()
         {
-            ability = newAbility;
+            #if UNITY_EDITOR
+            Debug.Log($"[AbilitySlotUI] {name} Awake called!");
+            #endif
             
-            if (ability != null && iconImage != null)
+            // Auto-find child UI elements if not assigned
+            if (iconImage == null)
+                iconImage = GetComponentInChildren<Image>();
+            
+            // Look for cooldown overlay as sibling (not child, as it's used as fill)
+            if (cooldownOverlay == null)
             {
-                iconImage.sprite = ability.AbilityIcon;
-                iconImage.enabled = ability.AbilityIcon != null;
-                Debug.Log($"[AbilitySlotUI] Assigned '{ability.abilityName}' | Icon: {(ability.AbilityIcon != null ? ability.AbilityIcon.name : "NULL")} | Slot: {gameObject.name}");
-            }
-            else if (ability == null)
-            {
-                // No desactivar el iconImage completamente, solo limpiar el sprite
-                // Esto evita que el slot desaparezca visualmente
-                if (iconImage != null)
+                var images = GetComponentsInChildren<Image>();
+                foreach (var img in images)
                 {
-                    iconImage.sprite = null;
-                    // Mantener enabled en true para que el slot siga visible
+                    if (img.gameObject.name.Contains("CooldownOverlay"))
+                    {
+                        cooldownOverlay = img;
+                        break;
+                    }
                 }
             }
             
-            if (cooldownOverlay != null) cooldownOverlay.fillAmount = 0f;
-            if (cooldownText != null) cooldownText.text = "";
+            if (cooldownText == null)
+            {
+                var texts = GetComponentsInChildren<TMPro.TextMeshProUGUI>();
+                foreach (var txt in texts)
+                {
+                    if (txt.gameObject.name.Contains("CooldownText"))
+                    {
+                        cooldownText = txt;
+                        break;
+                    }
+                }
+            }
+            
+            #if UNITY_EDITOR
+            Debug.Log($"[AbilitySlotUI] {name} Awake complete: iconImage={iconImage != null}, overlay={cooldownOverlay != null}, text={cooldownText != null}");
+            #endif
+        }
+
+        // Legacy API (old system)
+        public BaseAbility GetAbility() => legacyAbility;
+
+        public void AssignAbility(BaseAbility newAbility)
+        {
+            legacyAbility = newAbility;
+            newAbilityData = null;
+            abilitySystem = null;
+            slotIndex = -1;
+            UpdateDisplay();
+        }
+
+        // New API (data-driven system)
+        public void AssignAbility(AbilityData data, AbilitySystem system, int index)
+        {
+            legacyAbility = null;
+            newAbilityData = data;
+            abilitySystem = system;
+            slotIndex = index;
+            
+            UpdateDisplay();
+            
+            // Force first update immediately so cooldown visualization works
+            UpdateNewAbility();
+        }
+
+        private void UpdateDisplay()
+        {
+            string name = "";
+            Sprite icon = null;
+            bool hasAbility = false;
+
+            if (legacyAbility != null)
+            {
+                name = legacyAbility.abilityName;
+                icon = legacyAbility.AbilityIcon;
+                hasAbility = true;
+            }
+            else if (newAbilityData != null)
+            {
+                name = newAbilityData.abilityName;
+                icon = newAbilityData.icon;
+                hasAbility = true;
+            }
+
+            if (hasAbility && iconImage != null)
+            {
+                iconImage.sprite = icon;
+                iconImage.enabled = icon != null;
+            }
+            else
+            {
+                if (iconImage != null)
+                {
+                    iconImage.sprite = null;
+                    iconImage.enabled = false;
+                }
+            }
+
+            // Ensure overlay is always enabled when there's an ability
+            if (cooldownOverlay != null)
+            {
+                cooldownOverlay.enabled = true; // Always enable, toggle visibility via fillAmount
+                cooldownOverlay.fillAmount = 0f; // Start at 0 (no cooldown)
+            }
+            if (cooldownText != null)
+            {
+                cooldownText.text = "";
+                cooldownText.enabled = false;
+            }
         }
 
         private void Update()
         {
-            if (ability == null) return;
-
-            if (ability.IsOnCooldown)
+            // Debug logging EVERY frame for a few frames
+            #if UNITY_EDITOR
+            if (Time.frameCount <= 10)
+                Debug.Log($"[AbilitySlotUI] {name} Update: legacy={legacyAbility != null}, sys={abilitySystem != null}, data={newAbilityData != null}, idx={slotIndex}");
+            #endif
+            
+            if (legacyAbility != null)
             {
-                if (cooldownOverlay != null)
-                {
-                    cooldownOverlay.fillAmount = ability.CurrentCooldown / ability.MaxCooldown;
-                }
-
-                if (cooldownText != null)
-                {
-                    cooldownText.text = ability.CurrentCooldown.ToString("F1");
-                }
+                UpdateLegacyAbility();
             }
-            else
+            else if (abilitySystem != null && slotIndex >= 0 && newAbilityData != null)
             {
-                if (cooldownOverlay != null && cooldownOverlay.fillAmount > 0)
-                {
-                    cooldownOverlay.fillAmount = 0f;
-                }
+                UpdateNewAbility();
+            }
+        }
 
-                if (cooldownText != null && cooldownText.text != "")
+        private void UpdateLegacyAbility()
+        {
+            if (legacyAbility == null) return;
+
+            bool onCd = legacyAbility.IsOnCooldown;
+            
+            if (cooldownOverlay != null)
+            {
+                cooldownOverlay.enabled = onCd || legacyAbility.MaxCooldown > 0;
+                if (onCd && legacyAbility.MaxCooldown > 0)
+                    cooldownOverlay.fillAmount = legacyAbility.CurrentCooldown / legacyAbility.MaxCooldown;
+                else
+                    cooldownOverlay.fillAmount = 0;
+            }
+                
+            if (cooldownText != null)
+            {
+                if (onCd)
+                {
+                    cooldownText.text = legacyAbility.CurrentCooldown.ToString("F1");
+                    cooldownText.enabled = true;
+                }
+                else
                 {
                     cooldownText.text = "";
+                    cooldownText.enabled = false;
                 }
+            }
+        }
+
+        private void UpdateNewAbility()
+        {
+            if (abilitySystem == null || newAbilityData == null || slotIndex < 0) return;
+
+            var instance = abilitySystem.GetAbilityInstance(slotIndex);
+            if (instance == null) return;
+
+            bool onCd = instance.IsOnCooldown;
+            
+            if (cooldownOverlay != null)
+            {
+                cooldownOverlay.enabled = true;
+                if (onCd && newAbilityData.cooldown > 0)
+                    cooldownOverlay.fillAmount = instance.CurrentCooldown / newAbilityData.cooldown;
+                else
+                    cooldownOverlay.fillAmount = 0;
+            }
+                
+            if (cooldownText != null)
+            {
+                if (onCd)
+                {
+                    cooldownText.text = instance.CurrentCooldown.ToString("F1");
+                    cooldownText.enabled = true;
+                }
+                else
+                {
+                    cooldownText.text = "";
+                    cooldownText.enabled = false;
+                }
+            }
+        }
+
+        private void ClearCooldownDisplay()
+        {
+            if (cooldownOverlay != null)
+            {
+                cooldownOverlay.fillAmount = 0f;
+            }
+            if (cooldownText != null)
+            {
+                cooldownText.text = "";
+                cooldownText.enabled = false;
             }
         }
     }
