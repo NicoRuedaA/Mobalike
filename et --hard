@@ -1,0 +1,945 @@
+[33mcommit b6a5914709f2698de7592dacda16dbcbfcbe8a1c[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m)[m
+Author: Nico <nico99rueda@gmail.com>
+Date:   Fri Apr 10 17:13:45 2026 +0200
+
+    player cleaned
+
+[33mcommit 5476027a95096c282c3d9379611c4d7dc7c697e2[m
+Author: Nico Rueda <34022939+NicoRuedaA@users.noreply.github.com>
+Date:   Fri Apr 10 16:46:39 2026 +0200
+
+    Update changelog dates and formatting
+
+[33mcommit c8924282cef206bb638bb223c0130c6ff9b351e2[m
+Author: Nico <nico99rueda@gmail.com>
+Date:   Fri Apr 10 16:38:00 2026 +0200
+
+    fix: add MovementSpeed, HealthRegen, ManaRegen to BaseEntity
+    
+    - Add movementSpeed field with property to BaseEntity
+    - Add healthRegen field with property to BaseEntity
+    - Add ManaRegen property to BaseEntity (was using field directly)
+    - Fix HeroEntity ApplyClassConfiguration to use correct property names
+
+[33mcommit 75561e20946de3c59068086c67a0af73773e6a40[m
+Author: Nico <nico99rueda@gmail.com>
+Date:   Fri Apr 10 16:30:57 2026 +0200
+
+    feat: add HeroClass system for RPG classes
+    
+    - Add HeroClass ScriptableObject: class definition with base stats,
+      abilities, model and animator
+    - Add HeroEntityVisuals: manages model swapping and animator
+    - Update HeroEntity: support HeroClass assignment with automatic
+      stat/application
+    - Update AbilitySystem: support HeroClass for automatic
+      ability loading
+    
+    System allows:
+    - Create classes as ScriptableObjects (Warrior, Mage, Assassin, Ranger)
+    - Each class has 4 unique abilities
+    - Swap class to change model + stats + abilities at runtime
+    - Reuse animations via shared animator controller
+
+[33mcommit 94afa2b1fc3741baae6474b2767818aa24d0ea37[m
+Author: Nico <nico99rueda@gmail.com>
+Date:   Fri Apr 10 16:20:17 2026 +0200
+
+    docs: update all documentation - 2026-04-10
+    
+    - memoria.md: full rewrite with current state
+    - roadmap.md: add cooldown bugfix section
+    - README.md: update changelog to v0.3.0
+    - README.es.md: update changelog to v0.3.0
+
+[33mcommit f039b6cce6372bf1420697e55543e44c46c59b0a[m
+Author: Nico <nico99rueda@gmail.com>
+Date:   Fri Apr 10 16:09:18 2026 +0200
+
+    chore: remove debug logs from AbilitySlotUI and PlayerHUD
+
+[33mcommit d07eba28ffe47a008cac60dc5073ec7906a2713b[m
+Author: Nico <nico99rueda@gmail.com>
+Date:   Fri Apr 10 16:07:18 2026 +0200
+
+    fix: AbilitySlotUI cooldown overlay now works properly
+    
+    - Add Awake() to auto-find child UI elements by name (cooldownOverlay, cooldownText)
+    - Add UpdateNewAbility() call immediately after AssignAbility() to force first cooldown update
+    - Migrate PlayerInputController to use new AbilitySystem with slot count detection
+    - Add targeting system integration for new ability data-driven system
+    - Update Player prefab to include both AbilityController (legacy) and AbilitySystem (new)
+    - Add health regen to BaseEntity for sustain testing
+
+[33mcommit f18c444e9227dd3c47797f9c7f6a665d9aacd22b[m
+Author: Nico <nico99rueda@gmail.com>
+Date:   Fri Apr 10 12:02:16 2026 +0200
+
+    refactor: extract magic numbers to constants and serialized fields
+    
+    EquipmentComponent: HP_PER_STAT_POINT=10, AD_PER_STR_POINT=2 constants
+    BaseEntity: ARMOR_SCALING_BASE=100 constant, floatingTextOffsetY serialized
+    XZPlaneMovement: 5 CharacterController params exposed as [SerializeField], GROUND_CHECK_OFFSET const
+    EnemyAIController: idleWaitTime now a [SerializeField] field (was hardcoded 2f)
+    All changes are tunable from the Inspector without code changes
+
+[33mcommit 1b807fbd027af419b046bdcb63c9265d3fa34773[m
+Author: Nico <nico99rueda@gmail.com>
+Date:   Fri Apr 10 11:51:28 2026 +0200
+
+    fix: remove override from OnDestroy (not virtual in base class)
+
+[33mcommit 3b2df01f22f2f6453725b0b131b79c4eedc00015[m
+Author: Nico <nico99rueda@gmail.com>
+Date:   Fri Apr 10 11:23:39 2026 +0200
+
+    perf: replace FindObjectOfType with HeroEntity singleton pattern
+    
+    - Add HeroEntity.Instance singleton (set in Awake, cleared in OnDestroy)
+    - GoldDrop: use HeroEntity.Instance instead of FindObjectOfType<HeroEntity>()
+    - EnemyEntity.NotifyKillReward: use HeroEntity.Instance instead of FindObjectOfType<HeroEntity>()
+    - FindObjectOfType does a full scene scan every call; singleton is O(1)
+    - GoldDrop also recovers hero reference if spawn was late (retry in Update)
+
+[33mcommit 7499d16997c1ca58fa8d35a57c8a8c05b6026881[m
+Author: Nico <nico99rueda@gmail.com>
+Date:   Fri Apr 10 11:14:09 2026 +0200
+
+    refactor: encapsulate public fields in core scripts and abilities
+    
+    - HeroEntity: 11 public fields converted to [SerializeField] private + read-only properties
+    - FireballAbility, GroundSmashAbility, DashAbility: public fields → [SerializeField] private + properties
+    - AoEZone: 5 public fields → [SerializeField] private + properties
+    - LinearProjectile: 4 public fields → [SerializeField] private + properties
+    - HoverOutline: [SerializeField] public → [SerializeField] private (uses property accessors)
+    - SimpleVFX: public fields → [SerializeField] private + properties
+    - CircleIndicator, LineIndicator: public fields → [SerializeField] private + properties
+    - EnemyEntity: direct field access → uses HoverOutline property methods
+    - HeroBuilderSafe, VisualsBuilder: replaced direct field writes with SetSerializedField helper
+    - Adds private const expScaleMultiplier (1.2f) exposed via serialized field for tunability
+    - All tests pass (62/62)
+
+[33mcommit 15448a7008a79bfbeac8f67bfaed39a68f2288e8[m
+Author: Nico <nico99rueda@gmail.com>
+Date:   Fri Apr 10 10:34:08 2026 +0200
+
+    test: setup assembly definitions and fix EditMode test issues
+    
+    - Add MobaGameplay.Runtime.asmdef with Unity.InputSystem and Unity.TextMeshPro references
+    - Add MobaGameplay.Editor.asmdef referencing Runtime
+    - Add MobaGameplay.Tests.asmdef referencing Runtime + TestAssemblies
+    - Remove orphan asmdef from Art/Icons/Abilities/Tests/
+    - Fix CurrentMana event test: set manaInitialized=true via reflection (Start() doesn't run in EditMode)
+    - Fix Destroy() error in death tests: use LogAssert.Expect
+    - Fix EquipmentComponent tests: force _owner and OnEnable via reflection
+    - Fix GameStateManagerTests: reset singleton via reflection, cleanup Time.timeScale
+    - Update roadmap: Phase 4 tests completed (62/62 passing)
+
+[33mcommit ced578486bc9366f1edc1c817a7268a3e7e087d7[m
+Author: Nico <nico99rueda@gmail.com>
+Date:   Thu Apr 9 23:38:53 2026 +0200
+
+    fix: remove private field access in BaseEntityTests, use public properties only
+    
+    TestEntity subclass now uses CurrentHealth/CurrentMana public property setters
+    instead of accessing private fields. Added ForceInitialize() that sets values
+    through properties. Added 3 new initial-state tests.
+
+[33mcommit 762526996de0f955aec8efa6497af2e7a5d49fa0[m
+Author: Nico <nico99rueda@gmail.com>
+Date:   Thu Apr 9 23:34:11 2026 +0200
+
+    test: move tests to Assets/Tests (Unity auto-compile), remove custom asmdef
+    
+    - Moved 4 test files from Assets/_Project/Tests/EditMode/ to Assets/Tests/
+    - Removed custom MobaGameplay.Tests.asmdef — Unity auto-compiles tests in Assets/Tests/
+    - Tests now compile against Assembly-CSharp-Editor which automatically references Assembly-CSharp
+
+[33mcommit c835a25e30bb2200df6a64025402d3a6ba1ff4ec[m
+Author: Nico <nico99rueda@gmail.com>
+Date:   Thu Apr 9 23:28:37 2026 +0200
+
+    test: add unit tests for core systems (Phase 4)
+    
+    - BaseEntityTests: 15 tests covering TakeDamage (normal, critical, armor,
+      death, events), mana events, and Heal
+    - HeroEntityTests: 14 tests covering AddGold, AddExp, LevelUp (stat scaling,
+      carry-over, max level), and starting state
+    - EquipmentComponentTests: 12 tests covering equip/unequip, stat application,
+      re-equip no accumulation (Phase 1 regression), and level-up preservation
+      (Phase 2 regression)
+    - GameStateManagerTests: 10 tests covering state transitions, score, and restart
+    - DamageInfo: tested default and explicit IsCritical flag
+    
+    Test assembly definition references Assembly-CSharp for access to
+    MobaGameplay.* namespaces. All tests are EditMode (no PlayMode required).
+
+[33mcommit be74746c5f88c4890298a042e2b7c64c50352334[m
+Author: Nico <nico99rueda@gmail.com>
+Date:   Thu Apr 9 23:16:27 2026 +0200
+
+    refactor!: unify namespace, fix critical bugs, and cleanup tech debt
+    
+    BREAKING CHANGE: Inventory and UI namespaces changed from MMORPG.* to MobaGameplay.*
+    
+    Fixes:
+    - Critical: BaseEntity.TakeDamage() applied critical multiplier twice (~2.5x instead of 1.5x)
+    - Critical: GoldDrop.OnCollected() never called AddGold() (drops gave no gold)
+    - Critical: EnemyEntity.Die() double Destroy() (1s + 3s timer race condition)
+    - Critical: GameStateManager triggered wave-clear twice per wave (duplicate events + score)
+    - Critical: EquipmentComponent used += causing stat accumulation on re-equip
+    - Critical: EnemyEntity.Start() hid base.Start() with 'new' keyword
+    - Critical: BaseEntity mana regen bypassed property setter (no OnManaChanged events)
+    
+    Refactors:
+    - EquipmentComponent now subscribes to HeroEntity.OnLevelUp, RefreshBaseStats() strips equipment bonuses to get "naked" base values including level-up gains
+    - 20 files migrated from MMORPG.* to MobaGameplay.* namespaces
+    - Projectile.cs base class damage uncommented (safe - subclasses handle separately)
+    - AbilityController uses public property setters instead of reflection for icon assignment
+    - MeleeCombat commented-out code removed
+    - EnemyAIController.HandleDamageDealt() dead method removed
+    
+    Cleanup:
+    - 5 redundant editor scripts deleted
+    - 8 junk files removed (cookies.txt, mcp files, python scripts, Django template)
+    - README.md updated with actual Unity 6 (6000.3) and URP 17.3.0 versions
+    - roadmap.md and memoria.md updated with all fixes
+
+[33mcommit c50e616e5d1d0eeb0494250b4217f2594f97b245[m
+Author: Nico <nico99rueda@gmail.com>
+Date:   Thu Apr 9 22:31:12 2026 +0200
+
+    Icon UI FIX
+
+[33mcommit 93e94be9ec5283b00c43a3a9ddae6a27db29a2d6[m
+Author: Nico <nico99rueda@gmail.com>
+Date:   Thu Apr 9 09:08:53 2026 +0200
+
+    feat: implement Fase 3 - Equipment System Integration
+    
+    - Add DebugShowStats() to BaseEntity for stats verification
+    
+    - Add DebugShowEquippedItems() and helper methods to EquipmentComponent
+    
+    - Add debug logging when stats are applied to owner
+    
+    - Create 4 test items (Weapon, Armor, Boots, Helmet) for testing
+    
+    - Create EquipmentTester script with keyboard shortcuts (F1-F6)
+    
+    - Add helper methods: GetEquippedItem(), HasItemEquipped(), GetEquippedSlots()
+    
+    Testing shortcuts:
+    
+      F1-F4: Equip test items
+    
+      F5: Unequip all
+    
+      F6: Show equipped items and stats
+    
+    Refs: roadmap.md Fase 3
+
+[33mcommit 50b5c3f4d7c3c4b1ab969c3626cba8098fc9c69f[m
+Author: Nico <nico99rueda@gmail.com>
+Date:   Thu Apr 9 08:48:47 2026 +0200
+
+    fix: convert ability icons to sprite type for UI compatibility
+    
+    - Change textureType from 0 (Default) to 8 (Sprite 2D and UI)
+    
+    - Change spriteMode from 0 to 1 (Single sprite)
+    
+    - Add unique spriteID to each icon
+    
+    - Enable alpha transparency for icons
+    
+    Refs: roadmap.md Fase 2 - UI Icons
+
+[33mcommit 5e9a04b00766e7771aa1f67a5e0be2ed6a935fcd[m
+Author: Nico <nico99rueda@gmail.com>
+Date:   Thu Apr 9 08:29:08 2026 +0200
+
+    ui: add ability icons and polish health bar ticks
+    
+    - Add _abilityIcon field to BaseAbility with public getter/setter
+    
+    - Connect ability icons to AbilitySlotUI in PlayerHUD
+    
+    - Assign icons 1-4 to Fireball, GroundSmash, Dash, GroundTrail abilities
+    
+    - Adjust FloatingStatusBar tick width from 0.005 to 0.02 for better visibility
+    
+    Refs: roadmap.md Fase 2
+
+[33mcommit 4fdfd99b434fb4498587a583506e995dbae12f1b[m
+Author: Nico <nico99rueda@gmail.com>
+Date:   Thu Apr 9 08:16:49 2026 +0200
+
+    feat: implement Fase 1 - fix critical bugs from roadmap
+    
+    - Add GoldDrop system with visual pickup feedback
+    
+    - Connect EnemyEntity.NotifyKillReward() to give gold/XP
+    
+    - Fix AoEZone damage (uncomment TakeDamage)
+    
+    - Connect EquipmentComponent stats to BaseEntity
+    
+    - Add GroundTrailAbility (Ability 4) with working damage
+    
+    - Fix TrailZone collision detection with Rigidbody
+    
+    - Add OverlapBox fallback for enemy detection
+    
+    - Replace PlayerHero_Template with correct Player prefab
+    
+    Refs: roadmap.md Fase 1
+
+[33mcommit 8ea4df00d981d661070a0944cd92259fc71b4de2[m
+Author: Nico <nico99rueda@gmail.com>
+Date:   Wed Apr 8 21:42:30 2026 +0200
+
+    revert: restore entire project state from backup
+    
+    - Restore all files from backup branch
+    - Remove incorrectly implemented item drop system
+    - Remove broken ability 4 changes
+    - Project back to working state before Priority 1 implementation
+
+[33mcommit e7c98718af93781c5e1883f488ea91e67a53600c[m
+Author: Nico <nico99rueda@gmail.com>
+Date:   Wed Apr 8 21:39:31 2026 +0200
+
+    fix: reassign ability4 to GroundSmashAbility in scene
+    
+    - Change ability4 reference from GroundTrailAbility (missing script)
+      to GroundSmashAbility (fileID: 5521050719080623898)
+    - Fixes ability 4 not working when pressing key 4
+
+[33mcommit c43e83538c49ccdc3a9c913bfb208fa83d3dbce0[m
+Author: Nico <nico99rueda@gmail.com>
+Date:   Wed Apr 8 21:36:54 2026 +0200
+
+    fix: restore ability 4 and HUD from backup
+    
+    - Restore GroundSmashAbility (ability 4) with targeting and cast
+    - Restore PlayerHUD with 4 ability slots
+    - Restore PlayerInputController with key 4 binding
+    - Restore PlayerHUD prefab configuration
+    - Restore SampleScene with proper ability setup
+    
+    Fixes missing ability 4 targeting, casting and UI icon
+
+[33mcommit fc64dedeed2cabd4196cfe17383b96b0cb4226f1[m
+Author: Nico <nico99rueda@gmail.com>
+Date:   Wed Apr 8 21:33:11 2026 +0200
+
+    fix: restore AbilityController with 4 abilities and copy items to Resources
+    
+    - Restore AbilityController from backup (was incorrectly changed to 3 abilities)
+    - Copy all 45 items to Resources/ScriptableObjects/Items/ for drop system
+    - Fixes missing ability 4 (GroundSmash) and targeting
+
+[33mcommit 929ce66b337d597a5b5fb5f7994dd7a24b271740[m
+Author: Nico <nico99rueda@gmail.com>
+Date:   Wed Apr 8 21:29:50 2026 +0200
+
+    fix: add missing using directives to MobaGameplaySetup
+    
+    - Add using MobaGameplay.Core for HeroEntity
+    - Add using MobaGameplay.Inventory for GroundItem and ItemPickupDetector
+    - Replace deprecated FindObjectOfType with FindFirstObjectByType
+
+[33mcommit 558b0ac21857fc54817543e85fea3bb38291576f[m
+Author: Nico <nico99rueda@gmail.com>
+Date:   Wed Apr 8 21:15:53 2026 +0200
+
+    feat: add MCP configuration for item drop system
+    
+    - Add GroundItem tag to TagManager
+    - Create Items folder structure
+    - Add .meta files for new scripts
+    - Create MobaGameplaySetup automation script
+
+[33mcommit 7083756e9a61fc22ef3fd801c80965e1ca81d096[m
+Author: Nico <nico99rueda@gmail.com>
+Date:   Wed Apr 8 21:08:56 2026 +0200
+
+    fix: add missing UnityEngine.UI using directive to CreateGameStartUI
+
+[33mcommit 02b9ed91bed7c7c9497d6861a370e94cfa865690[m
+Author: Nico <nico99rueda@gmail.com>
+Date:   Wed Apr 8 21:06:50 2026 +0200
+
+    feat: implement item drop system
+    
+    - Add GroundItem component for world items with floating animation
+    - Add ItemDropSystem for random enemy drops (30% chance)
+    - Add ItemPickupDetector for automatic item collection
+    - Modify EnemyEntity to call drop system on death
+    - Add ItemDropInitializer helper for manual item configuration
+    - Add GroundItemPrefabCreator editor tool
+    - Verify GroundSmashAbility AoE damage is working
+    
+    Closes priority 1: loot drops and AoE damage
+
+[33mcommit e3a5556888ed31bc502caeea0b360d483fc960f0[m
+Author: Nico <nico99rueda@gmail.com>
+Date:   Wed Apr 8 21:00:47 2026 +0200
+
+    docs: add project specification and roadmap
+
+[33mcommit d8364815f0a67586f62c050b65b642fa779a9352[m
+Author: Nico <nico99rueda@gmail.com>
+Date:   Wed Apr 8 10:06:21 2026 +0200
+
+    feat(game): add GameStateManager, UI and editor tools
+    
+    - Add GameStateManager singleton with wave system
+    - Add WaveData ScriptableObject for wave configuration
+    - Add EnemyAIController fixes (tag detection, lose target when out of range)
+    - Add GameStartUI with start button, wave counter, lives and score
+    - Add AutoSetupGameManager: creates GSM, spawn points, WaveData assets
+    - Add CreateGameStartUI: generates start UI in scene
+    - Fix editor API deprecation warnings (FindObjectOfType → FindFirstObjectByType)
+    - Enemy_Dummy now has EnemyAIController component
+
+[33mcommit 7ed9f5911cbb345602f1065d17dff37380602834[m
+Author: Nico <nico99rueda@gmail.com>
+Date:   Wed Apr 8 08:17:25 2026 +0200
+
+    feat(editor): add editor tools for wave and game setup
+    
+    - Add CreateWaveData: creates WaveData ScriptableObjects from menu
+    - Add SetupGameStateManager: creates GameStateManager singleton from menu
+    - Add menu items for Player/Enemy spawn points
+    - Add EnemySpawnPoint component with editor gizmos
+
+[33mcommit 3943eb546c753a720a3fc62a8452b899c3eaf772[m
+Author: Nico <nico99rueda@gmail.com>
+Date:   Wed Apr 8 08:16:35 2026 +0200
+
+    feat(ai): add Enemy AI system with state machine
+    
+    - Add EnemyState enum (Idle, Patrol, Chase, Attack, Retreat, Dead)
+    - Add EnemyAIController with configurable detection, attack, patrol settings
+    - Add state transitions with proper OnEnter/OnUpdate logic
+    - Integrate with BaseEntity for damage and death handling
+    - Add Debug Gizmos for visualization in editor
+    
+    feat(game): add GameStateManager singleton
+    
+    - Add GameState enum (Menu, Playing, Paused, Ended)
+    - Add WaveState enum (Idle, Preparing, Spawning, Active, Cleared, Victory)
+    - Implement wave spawning system with WaveData ScriptableObject
+    - Add player respawn system with lives
+    - Add score tracking
+    - Add events for UI integration (OnWaveStarted, OnPlayerDeath, etc.)
+    - Add Pause/Resume functionality
+    
+    fix(core): update OnDeath event signature to include DamageInfo
+    
+    - Changed OnDeath from Action<BaseEntity> to Action<BaseEntity, DamageInfo>
+    - Added Revive() method for player respawn
+    - Updated EnemyAIController and GameStateManager handlers
+
+[33mcommit 768330b648c22370ed9f58d5629aa19da4099227[m
+Author: Nico <nico99rueda@gmail.com>
+Date:   Wed Apr 8 08:12:37 2026 +0200
+
+    fix(combat): remove charged attack cooldown to allow immediate chaining
+    
+    - Removed chargedCooldown field and lastChargedTime tracking
+    - CanCharge now simply checks !IsCharging
+    - AttackSpeed already limits attack rate, so cooldown is redundant
+    - Allows laser sight to appear immediately after firing
+
+[33mcommit 8ea2c3d66d9b55d94094de48622513cf11cd6e25[m
+Author: Nico <nico99rueda@gmail.com>
+Date:   Wed Apr 8 07:32:00 2026 +0200
+
+    fix(input): use GetComponent<RangedCombat>() directly instead of entity.Combat cast
+    
+    The Player has both MeleeCombat and RangedCombat. BaseEntity.Awake() uses
+    GetComponent<BaseCombat>() which returns the first component found (could be MeleeCombat).
+    This caused cachedRangedCombat to be null, breaking charged attacks and laser sight.
+    
+    Fix: Get RangedCombat explicitly using GetComponent<RangedCombat>() to ensure
+    we always have the correct combat reference.
+
+[33mcommit 955a38014f1b66c1881d9bf3fb90648e21551258[m
+Author: Nico <nico99rueda@gmail.com>
+Date:   Tue Apr 7 22:15:28 2026 +0200
+
+    docs: update Spanish README to match English version
+
+[33mcommit 631213f49bf3c2009747c67543951a76b8e0addc[m
+Author: Nico <nico99rueda@gmail.com>
+Date:   Tue Apr 7 22:12:17 2026 +0200
+
+    refactor(input): complete input system refactoring and optimization
+
+[33mcommit 970ab041a31b8316eef09e7e7dfa5e3fd49bd03d[m
+Author: Nico <nico99rueda@gmail.com>
+Date:   Tue Apr 7 21:24:28 2026 +0200
+
+    feat(ui): laser sight changes color with charge progress
+    
+    - Green laser when not charging
+    - Transitions to orange-red as charge builds up
+    - Laser width also increases with charge level
+    - Uses RangedCombat.IsCharging and ChargeProgress
+
+[33mcommit 5eaa34e955d4e54fa0e22ddf651118820f9baa53[m
+Author: Nico <nico99rueda@gmail.com>
+Date:   Tue Apr 7 21:05:53 2026 +0200
+
+    fix(combat): add cooldown to prevent charged attack spam
+    
+    - Added chargedAttackCooldown (2 seconds default) to prevent spam
+    - After a charged attack, must wait cooldown before charging again
+    - CanCharge property controls if charging is allowed
+    - Player can still fire normal attacks during cooldown
+
+[33mcommit 7d4ff2087c5af0db1b3d1a5030cc9b803d1119bf[m
+Author: Nico <nico99rueda@gmail.com>
+Date:   Tue Apr 7 21:02:39 2026 +0200
+
+    feat(combat): add visual effects for charged attacks
+    
+    - Charged projectiles now have distinct color (orange-red vs yellow)
+    - Emission glow effect on charged shots
+    - Enhanced trail renderer for charged attacks
+    - Impact explosion effect on charged hit
+    - Trail renderer added dynamically if not present
+    - Normal: yellow/cream color, subtle trail
+    - Charged: orange-red, brighter glow, longer/wider trail
+
+[33mcommit ce416bf0fd64462bd21fae0d538b83e008211068[m
+Author: Nico <nico99rueda@gmail.com>
+Date:   Tue Apr 7 20:56:10 2026 +0200
+
+    feat(combat): add charged basic attack system
+    
+    - BasicAttackProjectile: ApplyChargeMultiplier() for size/speed/damage scaling
+    - RangedCombat: charging logic with StartCharging(), UpdateCharge(), ResetCharge()
+    - PlayerInputController: detect held click for charging vs instant release
+    - Charged attack when aiming (right click held) + left click held + release
+    - Multipliers configurable in Inspector (1.5x damage, 1.3x speed, 1.5x size)
+
+[33mcommit a84615536471a9a66483e7902be31851f3d34182[m
+Author: Nico <nico99rueda@gmail.com>
+Date:   Tue Apr 7 20:54:39 2026 +0200
+
+    chore: restore camera settings
+
+[33mcommit 57a9c423646aafab32eb73a07f5bbf12a84fec35[m
+Author: Nico <nico99rueda@gmail.com>
+Date:   Tue Apr 7 20:29:15 2026 +0200
+
+    fix: mana system with OnManaChanged event propagation
+
+[33mcommit 3f077edcc44ddfd17ea890228efe75a7f874ccc3[m
+Author: Nico <nico99rueda@gmail.com>
+Date:   Tue Apr 7 20:12:32 2026 +0200
+
+    fix(ui): add OnManaChanged event to update mana bar
+    
+    - BaseEntity: CurrentMana is now a property with setter that fires OnManaChanged event
+    - Added flag manaInitialized to prevent event firing during Awake
+    - FloatingStatusBar subscribes to OnManaChanged and calls ApplyBars on change
+    - HandleManaChanged method added to trigger bar update
+
+[33mcommit e50f4a08741d54aaa0018971a824393f91676f59[m
+Author: Nico <nico99rueda@gmail.com>
+Date:   Tue Apr 7 20:07:30 2026 +0200
+
+    feat(prefabs): add manaRegen field to PlayerHero and Enemy
+
+[33mcommit c57304789ec27198b0cfec69ae0621cb93a825b1[m
+Author: Nico <nico99rueda@gmail.com>
+Date:   Tue Apr 7 18:58:44 2026 +0200
+
+    feat(combat): implement mana system with centralized consumption
+    
+    - BaseAbility.CanCast() now checks mana (HasEnoughMana)
+    - BaseAbility.ExecuteCast() consumes mana + starts cooldown
+    - Removed redundant mana checks from FireballAbility, GroundSmashAbility, DashAbility
+    - Added manaRegen field in BaseEntity with passive regeneration
+    - Centralized targeting feedback in AbilityController for mana/cooldown states
+
+[33mcommit 019c1e928064d7101e269061f28c0c58066cd453[m
+Author: Nico <nico99rueda@gmail.com>
+Date:   Tue Apr 7 18:45:04 2026 +0200
+
+    fix(editor): handle missing animation clip gracefully in auto-setup
+
+[33mcommit e80c91f71f048a2601f5bdd6b744316280056c05[m
+Author: Nico <nico99rueda@gmail.com>
+Date:   Tue Apr 7 18:39:38 2026 +0200
+
+    feat(ui): add floating damage text with physics and tick marks
+
+[33mcommit 02b264952d9a7af0041dbb7174564c00bb12151c[m
+Author: Nico <nico99rueda@gmail.com>
+Date:   Tue Apr 7 18:20:04 2026 +0200
+
+    sync engram memories
+
+[33mcommit 9f89802e9a635a9126516b51ef6560d1947f07bc[m
+Author: Nico <nico99rueda@gmail.com>
+Date:   Tue Apr 7 13:28:01 2026 +0200
+
+    feat: Add LoL-style tick marks and improved floating combat text
+
+[33mcommit 7b13c7be14783998470d681d384a36418a969323[m
+Author: Nico <nico99rueda@gmail.com>
+Date:   Tue Apr 7 12:57:26 2026 +0200
+
+    HP Bar fix
+
+[33mcommit 64986bcb4868afae5120c77dfa0eb562d57bcf75[m
+Author: Nico <nico99rueda@gmail.com>
+Date:   Tue Apr 7 12:30:00 2026 +0200
+
+    Refactor FloatingStatusBar for LoL-like health logic
+
+[33mcommit 4c653c76ac8c19658fa425fd4d7a4d3fcbf96a9a[m
+Author: Nico <nico99rueda@gmail.com>
+Date:   Tue Apr 7 10:19:47 2026 +0200
+
+    fix: ensure RangedCombat hitLayers targets everything by default
+
+[33mcommit 3bd12fe6f4f946a0b58c32ce005cc12f13132a98[m
+Author: Nico <nico99rueda@gmail.com>
+Date:   Tue Apr 7 10:13:00 2026 +0200
+
+    fix: resolve syntax error in BasicAttackProjectile
+
+[33mcommit b5564f6473e10d012603129b71dd1150837885e6[m
+Author: Nico <nico99rueda@gmail.com>
+Date:   Tue Apr 7 10:10:50 2026 +0200
+
+    feat: standardize projectile heights, death flow, and collision rules
+
+[33mcommit e5e66ddc9cd96eb87f96916187adac6175bd01ba[m
+Author: Nico <nico99rueda@gmail.com>
+Date:   Tue Apr 7 09:47:15 2026 +0200
+
+    feat: add Floating Status Bars (Health/Mana) to all entities
+
+[33mcommit 4d2288ef17f71ea945bac268873d537630a6f2e9[m
+Author: Nico <nico99rueda@gmail.com>
+Date:   Tue Apr 7 08:44:47 2026 +0200
+
+    fix: allow quick cast on key tap (remove else if) and remove UI block on release
+
+[33mcommit 2d5fc16fdcd6a6494f15ec8619625732560bdf56[m
+Author: Nico <nico99rueda@gmail.com>
+Date:   Tue Apr 7 08:35:10 2026 +0200
+
+    fix: restore classic MOBA always-face-mouse rotation and remove ability aim slowdown
+
+[33mcommit 385bca80667b2b32273b15ff9b0b6a03b25867bc[m
+Author: Nico <nico99rueda@gmail.com>
+Date:   Tue Apr 7 08:14:01 2026 +0200
+
+    fix: restore quick cast (release key) for Ability 1
+
+[33mcommit 6e25f3ff0e13dc79150aaae7e2620972fddea16a[m
+Author: Nico <nico99rueda@gmail.com>
+Date:   Tue Apr 7 08:09:03 2026 +0200
+
+    feat: change Ability 1 back to normal cast (point and shoot)
+
+[33mcommit 6b03cfea610d18bca4ce4be70633f08633f7d174[m
+Author: Nico <nico99rueda@gmail.com>
+Date:   Tue Apr 7 07:51:07 2026 +0200
+
+    feat: generate BasicAttackProjectile prefab via HeroBuilderSafe
+
+[33mcommit 4918379b3c63577221b314d1cf12ad5ba58bef41[m
+Author: Nico <nico99rueda@gmail.com>
+Date:   Tue Apr 7 07:46:43 2026 +0200
+
+    feat: add dynamic camera panning and laser sight
+
+[33mcommit 09b2837a663e1bf2802c142efaece8586c3428d1[m
+Author: Nico <nico99rueda@gmail.com>
+Date:   Tue Apr 7 07:44:48 2026 +0200
+
+    feat: implement RangedCombat and BasicAttackProjectile
+
+[33mcommit 0167cddd4a46d6be2558b0a1db3aa607e2de37c6[m
+Author: Nico <nico99rueda@gmail.com>
+Date:   Tue Apr 7 07:43:16 2026 +0200
+
+    feat: implement top-down shooter control scheme (aim state & strafing)
+
+[33mcommit 7c07d59a009d42fb53f1c2485ebd46b0ca6f7b7a[m
+Author: Nico <nico99rueda@gmail.com>
+Date:   Tue Apr 7 07:26:34 2026 +0200
+
+    feat: refactor ability input to Quick Cast on release
+
+[33mcommit 66d729d0028d70b72f6d09b4145aaa67c8149fb5[m
+Author: Nico <nico99rueda@gmail.com>
+Date:   Tue Apr 7 07:14:05 2026 +0200
+
+    fix: resolve ability ui freeze and ghost projectile bugs
+
+[33mcommit 6261e876e5598a8181200a5abd8511d66a7b7ddd[m
+Author: Nico <nico99rueda@gmail.com>
+Date:   Mon Apr 6 23:07:33 2026 +0200
+
+    feat: attach concrete abilities to player and generate visual prefabs
+
+[33mcommit abba5538b2239e773a29092081e136118ec5c177[m
+Author: Nico <nico99rueda@gmail.com>
+Date:   Mon Apr 6 23:01:45 2026 +0200
+
+    fix: restore scene UI and Player state after revert
+
+[33mcommit 33f156eb6463e24173de125d5f606b91554c25aa[m
+Author: Nico <nico99rueda@gmail.com>
+Date:   Mon Apr 6 22:45:38 2026 +0200
+
+    feat: add isolated ability and hero prefabs
+
+[33mcommit eb3dc23981c8a13a89f9cfb7418a94e610c217d6[m
+Author: Nico <nico99rueda@gmail.com>
+Date:   Mon Apr 6 22:40:54 2026 +0200
+
+    Revert "feat: add Hero and Ability prefabs"
+    
+    This reverts commit 6567e1607fb84742b34beb1d20780ecda4da80da.
+
+[33mcommit 6567e1607fb84742b34beb1d20780ecda4da80da[m
+Author: Nico <nico99rueda@gmail.com>
+Date:   Mon Apr 6 22:38:20 2026 +0200
+
+    feat: add Hero and Ability prefabs
+
+[33mcommit f17cbedd76f81e16ee9994c2ed5f495fd0a0c307[m
+Author: Nico <nico99rueda@gmail.com>
+Date:   Mon Apr 6 22:34:58 2026 +0200
+
+    feat: implement hero progression and real abilities
+
+[33mcommit 06d3b0cc374ce2c64b439c62c616a28a5daf1394[m
+Author: Nico <nico99rueda@gmail.com>
+Date:   Mon Apr 6 22:24:41 2026 +0200
+
+    feat: add red highlight outline on enemy hover
+
+[33mcommit 7845e09e37163c1b3c6ca906a966b8ae052ec97e[m
+Author: Nico <nico99rueda@gmail.com>
+Date:   Mon Apr 6 22:20:58 2026 +0200
+
+    fix: use new Input System in TargetingManager
+
+[33mcommit b00012befa3abc0c3693a51a34508e769772b3a0[m
+Author: Nico <nico99rueda@gmail.com>
+Date:   Mon Apr 6 22:16:30 2026 +0200
+
+    feat: create prefabs for targeting indicators
+
+[33mcommit 94ffc2c078f17067ee2eecc94011bd1327b2f977[m
+Author: Nico <nico99rueda@gmail.com>
+Date:   Mon Apr 6 22:13:46 2026 +0200
+
+    feat: add Targeting indicators and damage structures
+
+[33mcommit 720ca8001d90e660099ab7663837c644385889c2[m
+Author: Nico <nico99rueda@gmail.com>
+Date:   Mon Apr 6 22:13:40 2026 +0200
+
+    feat: implement Combat Core with DamageInfo and targeting systems
+
+[33mcommit fa797cb61ff65574c59fe1b35e637632ae459980[m
+Author: Nico <nico99rueda@gmail.com>
+Date:   Mon Apr 6 22:00:07 2026 +0200
+
+    chore: save TextMeshPro assets and current state
+
+[33mcommit 1fb3041855a92bcdd907a21180b4213b4a95de27[m
+Author: Nico <nico99rueda@gmail.com>
+Date:   Mon Apr 6 21:56:37 2026 +0200
+
+    feat: implement Player HUD and UI System
+
+[33mcommit 85f7f91df549b7be40f182237caeb34b41ad2ad2[m
+Author: Nico <nico99rueda@gmail.com>
+Date:   Mon Apr 6 21:46:46 2026 +0200
+
+    Feat: Auto-generate MOBA ability prefabs via MCP
+
+[33mcommit 94e3a5096ff184351b358a63a02588013f7db56a[m
+Author: Nico <nico99rueda@gmail.com>
+Date:   Mon Apr 6 21:20:40 2026 +0200
+
+    Feat: Implement Phase 4 - Targeted Homing Projectile (Veigar R) and Enemy Entity
+
+[33mcommit 36b8d25e35895878857701bac7812e45aa48ea54[m
+Author: Nico <nico99rueda@gmail.com>
+Date:   Mon Apr 6 21:19:53 2026 +0200
+
+    Feat: Implement Phase 3 - Area of Effect (AoE) Ability
+
+[33mcommit 3036ba89ddbba1bd9ed88b7cd40385e48c05b91a[m
+Author: Nico <nico99rueda@gmail.com>
+Date:   Mon Apr 6 21:17:59 2026 +0200
+
+    Feat: Implement Phase 2 - Skillshot Projectile Ability
+
+[33mcommit 8369a0fadfbacd668ed163f9492b62be003b8cd7[m
+Author: Nico <nico99rueda@gmail.com>
+Date:   Mon Apr 6 21:16:14 2026 +0200
+
+    Feat: Implement Core Ability System architecture (Phase 1)
+
+[33mcommit 62f59c0c46a23a57a2dd09862dbed4a40b867164[m
+Author: Nico <nico99rueda@gmail.com>
+Date:   Mon Apr 6 17:55:47 2026 +0200
+
+    Fix: Resolve WASD sinking by baking animation root motion and removing backward movement logic
+
+[33mcommit 4da106681aea7d774a7da8e20ff62d010f8579c3[m
+Author: Nico <nico99rueda@gmail.com>
+Date:   Mon Apr 6 17:37:03 2026 +0200
+
+    Fix: Restructure Player hierarchy to resolve infinite falling and Animator conflicts
+
+[33mcommit 77a6620951916abbbe8dcd664ebef59bff127a04[m
+Author: Nico <nico99rueda@gmail.com>
+Date:   Mon Apr 6 16:31:41 2026 +0200
+
+    docs: update README with MMORPG inventory and equipment systems
+
+[33mcommit b3414619f4ab271b92700c2f3016ab4aeda6e0fd[m
+Author: Nico <nico99rueda@gmail.com>
+Date:   Mon Apr 6 15:57:04 2026 +0200
+
+    feat: implement MMORPG inventory, equipment paper-doll, drag-drop, and mass wiki item generator
+
+[33mcommit e3a613d8759f90e9a05443cd30b9f38873c5b0bc[m
+Author: Nico <nico99rueda@gmail.com>
+Date:   Mon Apr 6 12:33:25 2026 +0200
+
+    fix: resolve animator freefall glitch by ensuring consistent grounded state
+
+[33mcommit 832e2641e705ebbbd5cf0b918606e0cbd282ba69[m
+Author: Nico <nico99rueda@gmail.com>
+Date:   Mon Apr 6 12:12:44 2026 +0200
+
+    feat: implement twin-stick mouse aiming and dash mechanics
+
+[33mcommit dac01360bc05d299740a78c22a1a8896f15c675a[m
+Author: Nico <nico99rueda@gmail.com>
+Date:   Mon Apr 6 12:06:47 2026 +0200
+
+    feat: add ground plane, character controller gravity and jump mechanics
+
+[33mcommit 7ac87021d957912311b52936228c6e50249639c3[m
+Author: Nico <nico99rueda@gmail.com>
+Date:   Mon Apr 6 12:02:34 2026 +0200
+
+    feat: use avatar mask and upper body layer to walk while attacking
+
+[33mcommit 647ba342b1c5c9402d5e7d0544dd9d7446a1141a[m
+Author: Nico <nico99rueda@gmail.com>
+Date:   Mon Apr 6 11:58:49 2026 +0200
+
+    fix: add missing transition from punch to idle
+
+[33mcommit c799949564020f882dbbd524b77391d6252dbaf6[m
+Author: Nico <nico99rueda@gmail.com>
+Date:   Mon Apr 6 11:56:46 2026 +0200
+
+    feat: configure punch animation and apply melee components
+
+[33mcommit 23b63a6704b4ce9cde3eb52919e86d451ae4241b[m
+Author: Nico <nico99rueda@gmail.com>
+Date:   Mon Apr 6 01:07:38 2026 +0200
+
+    Revert "feat: setup animator for punch attack"
+    
+    This reverts commit 9f73950f51397014e5b34ffba029fff5c2bd0387.
+
+[33mcommit 9f73950f51397014e5b34ffba029fff5c2bd0387[m
+Author: Nico <nico99rueda@gmail.com>
+Date:   Mon Apr 6 01:05:53 2026 +0200
+
+    feat: setup animator for punch attack
+
+[33mcommit cb2ac7e34cc3c7644c0b9005f16ac8e50bb51941[m
+Author: Nico <nico99rueda@gmail.com>
+Date:   Mon Apr 6 00:38:29 2026 +0200
+
+    chore: save clean working state before attack animation retry
+
+[33mcommit ed36b7e7fca18c0250cc16b20979946511a8b97f[m
+Author: Nico <nico99rueda@gmail.com>
+Date:   Sun Apr 5 16:27:05 2026 +0200
+
+    sync engram memories
+
+[33mcommit d3428f027ee6a0b2125de9f31e2a17596319cdb8[m
+Author: Nico <nico99rueda@gmail.com>
+Date:   Sun Apr 5 16:13:11 2026 +0200
+
+    feat: Add BaseCombat, MeleeCombat and Attack Animation Trigger
+
+[33mcommit 727135c9c1eb5010cc68049e9c87f6074d2caf2a[m
+Author: Nico <nico99rueda@gmail.com>
+Date:   Sun Apr 5 15:30:15 2026 +0200
+
+    feat: Add shift to sprint functionality
+
+[33mcommit df82ad0878052b67d00a8dc29de63ad2017e4cf8[m
+Author: Nico <nico99rueda@gmail.com>
+Date:   Sun Apr 5 15:24:55 2026 +0200
+
+    refactor: Replace point-and-click movement with WASD movement
+
+[33mcommit ac25f69c7ac1682f1599fa72c5c4696fe4bb1bbc[m
+Author: Nico <nico99rueda@gmail.com>
+Date:   Sun Apr 5 15:08:52 2026 +0200
+
+    feat: Add scroll wheel zoom to CameraController
+
+[33mcommit 2455c5298b1935db2fdd0a7171652430d62d1f56[m
+Author: Nico <nico99rueda@gmail.com>
+Date:   Sun Apr 5 15:07:10 2026 +0200
+
+    docs: Add Spanish README and navigation links
+
+[33mcommit ade837b9b3d76eed161c9d714241644d4837a207[m
+Author: Nico <nico99rueda@gmail.com>
+Date:   Sun Apr 5 15:05:12 2026 +0200
+
+    docs: Add comprehensive project README
+
+[33mcommit 225ca220d57f15b5498ec11462cfd307d2d4c236[m
+Author: Nico <nico99rueda@gmail.com>
+Date:   Sun Apr 5 15:03:27 2026 +0200
+
+    Fix animation event missing receiver errors
+
+[33mcommit 597f7b59feed6a9bddbe2d400128698a750901bc[m
+Author: Nico <nico99rueda@gmail.com>
+Date:   Sun Apr 5 14:59:29 2026 +0200
+
+    Update PlayerMovement to integrate StarterAssets animations
+
+[33mcommit 7321ae2e546776c730683693876ff28cbfcaa972[m
+Author: Nico <nico99rueda@gmail.com>
+Date:   Sun Apr 5 14:41:10 2026 +0200
+
+    First commit: Add Unity project base, CameraController, and PlayerMovement
+
+[33mcommit c17cde49d5eb753b9a3521079581c293b151b44d[m
+Author: Nico Rueda <34022939+NicoRuedaA@users.noreply.github.com>
+Date:   Sun Apr 5 14:36:40 2026 +0200
+
+    Initial commit

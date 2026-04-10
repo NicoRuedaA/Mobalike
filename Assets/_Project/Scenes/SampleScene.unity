@@ -554,21 +554,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 131792986}
   m_CullTransparentMesh: 1
---- !u!115 &194545673
-MonoScript:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_Name: 
-  serializedVersion: 7
-  m_DefaultReferences: {}
-  m_Icon: {fileID: 0}
-  m_Type: 0
-  m_ExecutionOrder: 0
-  m_ClassName: EnemySpawnPoint
-  m_Namespace: MobaGameplay.Editor
-  m_AssemblyName: Assembly-CSharp-Editor
 --- !u!1 &205169723
 GameObject:
   m_ObjectHideFlags: 0
@@ -1987,7 +1972,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 802607032}
-  - component: {fileID: 802607033}
   m_Layer: 0
   m_Name: EnemySpawnWest
   m_TagString: Untagged
@@ -2010,18 +1994,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &802607033
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 802607030}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 194545673}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp-Editor::MobaGameplay.Editor.EnemySpawnPoint
 --- !u!1 &827750681
 GameObject:
   m_ObjectHideFlags: 0
@@ -3245,7 +3217,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1252620564}
-  - component: {fileID: 1252620565}
   m_Layer: 0
   m_Name: EnemySpawnNorth
   m_TagString: Untagged
@@ -3268,18 +3239,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1252620565
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1252620562}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 194545673}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp-Editor::MobaGameplay.Editor.EnemySpawnPoint
 --- !u!1 &1402714024
 GameObject:
   m_ObjectHideFlags: 0
@@ -3289,7 +3248,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1402714026}
-  - component: {fileID: 1402714027}
   m_Layer: 0
   m_Name: EnemySpawnSouth
   m_TagString: Untagged
@@ -3312,18 +3270,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1402714027
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1402714024}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 194545673}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp-Editor::MobaGameplay.Editor.EnemySpawnPoint
 --- !u!1 &1438999326
 GameObject:
   m_ObjectHideFlags: 0
@@ -3677,7 +3623,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1653436414}
-  - component: {fileID: 1653436415}
   m_Layer: 0
   m_Name: EnemySpawnEast
   m_TagString: Untagged
@@ -3700,18 +3645,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1653436415
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1653436412}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 194545673}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp-Editor::MobaGameplay.Editor.EnemySpawnPoint
 --- !u!1 &1793029416
 GameObject:
   m_ObjectHideFlags: 0
@@ -4122,9 +4055,9 @@ MonoBehaviour:
   startingLives: 5
   respawnTime: 3
   waveConfigs:
-  - {fileID: 11400000, guid: 17f89962644d61a48bb6d00a77cb44f8, type: 2}
-  - {fileID: 11400000, guid: 79646643f6678854fba2a3763792f5ff, type: 2}
-  - {fileID: 11400000, guid: fd7c598182f13c44097d8061fea6b5af, type: 2}
+  - {fileID: 11400000, guid: d4cf0e22e06b0864e8e55ffee46e37e9, type: 2}
+  - {fileID: 11400000, guid: 04546f1c145465f42971fba2e1818f4c, type: 2}
+  - {fileID: 11400000, guid: b6aad628771c9f64f84e9ce3f3ea6bf7, type: 2}
   timeBetweenWaves: 5
   enemySpawnPoints:
   - {fileID: 1252620564}
@@ -6841,6 +6774,8 @@ MonoBehaviour:
   maxMana: 500
   currentMana: 500
   manaRegen: 5
+  healthRegen: 1
+  movementSpeed: 5
   baseAttackDamage: 50
   baseAbilityPower: 0
   attackSpeed: 1.5
@@ -6848,6 +6783,7 @@ MonoBehaviour:
   magicResistance: 30
   criticalChance: 0.15
   criticalMultiplier: 1.5
+  heroClass: {fileID: 11400000, guid: 93645beb36182484f98d9a8d1822a90d, type: 2}
   currentLevel: 1
   maxLevel: 18
   currentExp: 0
@@ -7219,15 +7155,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 114eece13224f0a42ba538d1a54614c4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: MobaGameplay.Runtime::MobaGameplay.Abilities.AbilitySystem
-  equippedAbilities:
-  - {fileID: 11400000, guid: e9e83171e7c6b7643a6c11ae62e563ce, type: 2}
-  - {fileID: 11400000, guid: 97cb18c324d38484ea2765f499a3b17d, type: 2}
-  - {fileID: 11400000, guid: dff993a34d5d5b6429c8e176a18a0bc3, type: 2}
-  - {fileID: 11400000, guid: 54c5292b53a841d4fa934f8b881b5ee7, type: 2}
-  slot1Key: 49
-  slot2Key: 50
-  slot3Key: 51
-  slot4Key: 52
 --- !u!4 &5583402631138559369
 Transform:
   m_ObjectHideFlags: 0

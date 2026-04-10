@@ -1,0 +1,41 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ecd32d551d8256c4a8dcbc464b88edfa, type: 3}
+  m_Name: borrar
+  m_EditorClassIdentifier: MobaGameplay.Runtime::MobaGameplay.Abilities.HeroClass
+  className: Mage
+  description: "Clase m\xE1gina de alto da\xF1o m\xE1gico. Tanke Attacks b\xE1sico
+    y poderoso."
+  role: Mage
+  combatType: 0
+  showAimLines: 1
+  modelPrefab: {fileID: 6008467741929148936, guid: 5716b21c5dd118a4d8a7a2f543315ab1, type: 3}
+  animatorController: {fileID: 9100000, guid: 40db3173a05ae3242b1c182a09b0a183, type: 2}
+  baseHealth: 450
+  baseMana: 400
+  baseAttackDamage: 45
+  baseMoveSpeed: 5.5
+  baseArmor: 15
+  baseMagicResist: 40
+  healthRegen: 1.2
+  manaRegen: 2
+  abilities:
+  - {fileID: 11400000, guid: e9e83171e7c6b7643a6c11ae62e563ce, type: 2}
+  - {fileID: 11400000, guid: 97cb18c324d38484ea2765f499a3b17d, type: 2}
+  - {fileID: 11400000, guid: dff993a34d5d5b6429c8e176a18a0bc3, type: 2}
+  - {fileID: 11400000, guid: 54c5292b53a841d4fa934f8b881b5ee7, type: 2}
+  basicAttackProjectilePrefab: {fileID: 4136283584567336420, guid: 23802ec068ee8444fab0737d4a1306fe, type: 3}
+  projectileSpeed: 25
+  projectileMaxDistance: 20
+  chargedDamageMultiplier: 1.5
+  chargedSpeedMultiplier: 1.3
+  chargedSizeMultiplier: 1.5
