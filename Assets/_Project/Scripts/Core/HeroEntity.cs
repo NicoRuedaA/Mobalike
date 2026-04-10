@@ -2,6 +2,8 @@ using UnityEngine;
 using System;
 using MobaGameplay.UI.Targeting;
 using MobaGameplay.Abilities;
+using MobaGameplay.Combat;
+using MobaGameplay.Visuals;
 
 namespace MobaGameplay.Core
 {
@@ -103,7 +105,50 @@ namespace MobaGameplay.Core
             HealthRegen = heroClass.healthRegen;
             ManaRegen = heroClass.manaRegen;
 
+            // Setup combat component based on combat type
+            SetupCombatComponent();
+
             Debug.Log($"[HeroEntity] Applied class: {heroClass.className}");
+        }
+
+        /// <summary>
+        /// Configura el componente de combate basado en el CombatType de la clase.
+        /// </summary>
+        private void SetupCombatComponent()
+        {
+            if (heroClass.combatType == CombatType.Ranged)
+            {
+                // Add or configure RangedCombat
+                RangedCombat rangedCombat = GetComponent<RangedCombat>();
+                if (rangedCombat == null)
+                {
+                    rangedCombat = gameObject.AddComponent<RangedCombat>();
+                }
+                rangedCombat.ConfigureFromHeroClass(heroClass);
+
+                // Add LaserSight if showAimLines is enabled
+                if (heroClass.showAimLines)
+                {
+                    // Ensure LineRenderer exists (required by LaserSight)
+                    LineRenderer lr = GetComponent<LineRenderer>();
+                    if (lr == null)
+                    {
+                        lr = gameObject.AddComponent<LineRenderer>();
+                    }
+
+                    LaserSight laserSight = GetComponent<LaserSight>();
+                    if (laserSight == null)
+                    {
+                        laserSight = gameObject.AddComponent<LaserSight>();
+                    }
+                    Debug.Log($"[HeroEntity] Configured LaserSight for {heroClass.className}");
+                }
+            }
+            else if (heroClass.combatType == CombatType.Melee)
+            {
+                // TODO: Implement MeleeCombat when available
+                Debug.Log($"[HeroEntity] Melee combat not yet implemented");
+            }
         }
 
         /// <summary>

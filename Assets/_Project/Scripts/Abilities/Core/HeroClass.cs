@@ -3,10 +3,20 @@ using UnityEngine;
 namespace MobaGameplay.Abilities
 {
     /// <summary>
-    /// Define una clase de héros para el MOBA. Cada clase tiene:
+    /// Tipo de combate del héroe. Define cómo ataca cuerpo a cuerpo.
+    /// </summary>
+    public enum CombatType
+    {
+        Ranged,    // Usa proyectiles (arquero, mago)
+        Melee      // Usa ataques cercanos (guerrero, assassin)
+    }
+
+    /// <summary>
+    /// Define una clase de héroe para el MOBA. Cada clase tiene:
     /// - Stats base únicos
     /// - 4 habilidades específicas
     /// - Modelo visual (skin)
+    /// - Tipo de combate (ranged/melee)
     /// 
     /// Crear: Right-click → Create → MobaGameplay → Hero Class
     /// </summary>
@@ -22,6 +32,12 @@ namespace MobaGameplay.Abilities
 
         [Tooltip("Rol principal (Tank, Fighter, Mage, Assassin, Ranger, Support)")]
         public string role = "Fighter";
+
+        [Tooltip("Tipo de combate: Ranged (proyectiles) o Melee (cuerpo a cuerpo)")]
+        public CombatType combatType = CombatType.Ranged;
+
+        [Tooltip("Mostrar líneas de aim (LaserSight, LineRenderer) - solo para ranged")]
+        public bool showAimLines = true;
 
         [Header("Visuals")]
         [Tooltip("Prefab del modelo visual. Debe tener Animator con el mismo rig que las demás clases.")]
@@ -58,6 +74,25 @@ namespace MobaGameplay.Abilities
         [Header("Abilities")]
         [Tooltip("Las 4 habilidades de esta clase (orden: Q, W, E, R)")]
         public AbilityData[] abilities = new AbilityData[4];
+
+        [Header("Ranged Combat (if combatType == Ranged)")]
+        [Tooltip("Prefab del proyectil para ataque básico")]
+        public GameObject basicAttackProjectilePrefab;
+
+        [Tooltip("Velocidad del proyectil")]
+        public float projectileSpeed = 25f;
+
+        [Tooltip("Distancia máxima del proyectil")]
+        public float projectileMaxDistance = 20f;
+
+        [Tooltip("Multiplicador de daño cuando está cargado")]
+        public float chargedDamageMultiplier = 1.5f;
+
+        [Tooltip("Multiplicador de velocidad cuando está cargado")]
+        public float chargedSpeedMultiplier = 1.3f;
+
+        [Tooltip("Multiplicador de tamaño cuando está cargado")]
+        public float chargedSizeMultiplier = 1.5f;
 
         /// <summary>
         /// Obtiene la habilidad en el slot especificado (0-3).

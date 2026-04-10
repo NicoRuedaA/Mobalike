@@ -95,6 +95,16 @@ namespace MobaGameplay.Controllers
             #endif
         }
 
+        /// <summary>
+        /// Resolves combat component from entity (RangedCombat added by HeroEntity).
+        /// Uses lazy initialization.
+        /// </summary>
+        private void ResolveCombat()
+        {
+            if (cachedRangedCombat != null) return;
+            cachedRangedCombat = entity?.GetComponent<RangedCombat>();
+        }
+
         #endregion
 
         #region Validation
@@ -528,6 +538,8 @@ namespace MobaGameplay.Controllers
         /// </summary>
         private void ProcessCombat()
         {
+            ResolveCombat();
+
             bool isAiming = Mouse.current.rightButton.isPressed;
             bool overUI = IsPointerOverUI();
 

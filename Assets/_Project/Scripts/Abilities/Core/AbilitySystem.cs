@@ -15,45 +15,21 @@ namespace MobaGameplay.Abilities
     /// - Slot count is configurable (default 4, expandable)
     /// - Behaviors are stateless IAbilityBehavior implementations (factory pattern)
     /// 
-    /// Two ways to configure:
-    /// 1. Directly with AbilityData assets (legacy/manual)
-    /// 2. Via HeroClass (automatic - recommended)
-    /// 
-    /// Migration: Both AbilitySystem and AbilityController can coexist.
-    /// When AbilitySystem is present, it takes priority.
+    /// IMPORTANT: 
+    /// - HeroClass is obtained from HeroEntity component (single source of truth)
+    /// - Key bindings are handled by PlayerInputController, not here
+    /// - No manual ability configuration - use HeroClass instead
     /// </summary>
     [RequireComponent(typeof(BaseEntity))]
     public class AbilitySystem : MonoBehaviour
     {
         // ============================================================
-        // Configuration - Method 1: Via HeroClass (recommended)
-        // ============================================================
-
-        [Header("Hero Class (Recommended)")]
-        [Tooltip("Use HeroClass to auto-configure abilities and stats. Asigna esto para automatic.")]
-        [SerializeField] private HeroClass heroClass;
-
-        // ============================================================
-        // Configuration - Method 2: Manual
-        // ============================================================
-
-        [Header("Ability Slots (Manual Override)")]
-        [Tooltip("Ability data assets to equip. Order = slot index (1-4 by default).")]
-        [SerializeField] private List<AbilityData> equippedAbilities = new List<AbilityData>();
-
-        [Header("Key Bindings")]
-        [SerializeField] private KeyCode slot1Key = KeyCode.Alpha1;
-        [SerializeField] private KeyCode slot2Key = KeyCode.Alpha2;
-        [SerializeField] private KeyCode slot3Key = KeyCode.Alpha3;
-        [SerializeField] private KeyCode slot4Key = KeyCode.Alpha4;
-
-        // ============================================================
-        // Runtime State
+        // Runtime State (obtained from HeroEntity)
         // ============================================================
 
         private BaseEntity owner;
+        private HeroClass heroClass;
         private List<AbilityInstance> instances = new List<AbilityInstance>();
-        private Dictionary<int, AbilityInstance> keyBindings = new Dictionary<int, AbilityInstance>();
         private int activeTargetingIndex = -1;
 
         // ============================================================
@@ -81,8 +57,15 @@ namespace MobaGameplay.Abilities
         private void Awake()
         {
             owner = GetComponent<BaseEntity>();
+            
+            // Get HeroClass from HeroEntity component (single source of truth)
+            var heroEntity = GetComponent<HeroEntity>();
+            if (heroEntity != null)
+            {
+                heroClass = heroEntity.HeroClass;
+            }
+            
             InitializeInstances();
-            SetupKeyBindings();
         }
 
         private void Update()
@@ -90,7 +73,8 @@ namespace MobaGameplay.Abilities
             // Tick cooldowns
             for (int i = 0; i < instances.Count; i++)
             {
-                instances[i].TickCooldown(Time.deltaTime);
+                if (instances[i] != null)
+                    instances[i].TickCooldown(Time.deltaTime);
             }
         }
 
@@ -102,37 +86,21 @@ namespace MobaGameplay.Abilities
         {
             instances.Clear();
 
-            // Use heroClass if assigned (recommended)
+            // Get HeroClass from HeroEntity (single source of truth)
+            var heroEntity = owner as HeroEntity;
+            if (heroEntity != null && heroEntity.HeroClass != null)
+            {
+                heroClass = heroEntity.HeroClass;
+            }
+
+            // Initialize abilities from HeroClass
             if (heroClass != null && heroClass.abilities != null)
             {
                 foreach (var data in heroClass.abilities)
                 {
-                    if (data != null)
-                    {
-                        instances.Add(new AbilityInstance(data, owner));
-                    }
-                    else
-                    {
-                        instances.Add(null);
-                    }
+                    instances.Add(data != null ? new AbilityInstance(data, owner) : null);
                 }
                 Debug.Log($"[AbilitySystem] Initialized from HeroClass: {heroClass.className}");
-            }
-            // Fallback to manual equippedAbilities list
-            else if (equippedAbilities != null)
-            {
-                foreach (var data in equippedAbilities)
-                {
-                    if (data != null)
-                    {
-                        instances.Add(new AbilityInstance(data, owner));
-                    }
-                    else
-                    {
-                        // Null slot = empty slot
-                        instances.Add(null);
-                    }
-                }
             }
             else
             {
@@ -151,21 +119,14 @@ namespace MobaGameplay.Abilities
         {
             heroClass = newClass;
             InitializeInstances();
-            SetupKeyBindings();
         }
 
-        private void SetupKeyBindings()
+        /// <summary>
+        /// Recarga las habilidades desde HeroEntity (útil tras cambio de clase).
+        /// </summary>
+        public void RefreshFromHeroEntity()
         {
-            keyBindings.Clear();
-
-            if (instances.Count > 0 && instances[0] != null)
-                keyBindings[(int)slot1Key] = instances[0];
-            if (instances.Count > 1 && instances[1] != null)
-                keyBindings[(int)slot2Key] = instances[1];
-            if (instances.Count > 2 && instances[2] != null)
-                keyBindings[(int)slot3Key] = instances[2];
-            if (instances.Count > 3 && instances[3] != null)
-                keyBindings[(int)slot4Key] = instances[3];
+            InitializeInstances();
         }
 
         // ============================================================

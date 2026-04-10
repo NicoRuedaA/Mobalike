@@ -1,5 +1,6 @@
 using UnityEngine;
 using MobaGameplay.Core;
+using MobaGameplay.Abilities;
 using MobaGameplay.Abilities.Projectiles;
 
 namespace MobaGameplay.Combat
@@ -7,6 +8,8 @@ namespace MobaGameplay.Combat
     /// <summary>
     /// Ranged combat system with charged attack mechanic.
     /// Supports charging by holding attack button while aiming.
+    /// 
+    /// Configuration should come from HeroClass - use ConfigureFromHeroClass().
     /// </summary>
     [RequireComponent(typeof(BaseEntity))]
     public class RangedCombat : BaseCombat
@@ -21,7 +24,7 @@ namespace MobaGameplay.Combat
         private const float DEFAULT_PROJECTILE_DISTANCE = 20f;
         private const float DEFAULT_DAMAGE = 10f;
 
-        // Serializable Fields
+        // Serializable Fields (can be set from HeroClass or editor)
         [Header("Projectile Setup")]
         [SerializeField] private GameObject basicAttackProjectilePrefab;
         [SerializeField] private Transform projectileSpawnPoint;
@@ -56,6 +59,22 @@ namespace MobaGameplay.Combat
         private void Awake()
         {
             entity = GetComponent<BaseEntity>();
+        }
+
+        /// <summary>
+        /// Configure this combat component from HeroClass data.
+        /// Call this from HeroEntity when setting up the hero.
+        /// </summary>
+        public void ConfigureFromHeroClass(HeroClass heroClass)
+        {
+            if (heroClass == null) return;
+
+            basicAttackProjectilePrefab = heroClass.basicAttackProjectilePrefab;
+            projectileSpeed = heroClass.projectileSpeed;
+            projectileMaxDistance = heroClass.projectileMaxDistance;
+            chargedDamageMultiplier = heroClass.chargedDamageMultiplier;
+            chargedSpeedMultiplier = heroClass.chargedSpeedMultiplier;
+            chargedSizeMultiplier = heroClass.chargedSizeMultiplier;
         }
 
         public override void BasicAttack()
