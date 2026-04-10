@@ -1,6 +1,7 @@
 using UnityEngine;
 using System;
 using MobaGameplay.UI.Targeting;
+using MobaGameplay.Abilities;
 
 namespace MobaGameplay.Core
 {
@@ -11,6 +12,10 @@ namespace MobaGameplay.Core
         /// Use instead of FindObjectOfType&lt;HeroEntity&gt;() for performance.
         /// </summary>
         public static HeroEntity Instance { get; private set; }
+
+        [Header("Hero Class")]
+        [Tooltip("Clase del héroe. Asigna esto para自动-configurar modelo, stats y habilidades.")]
+        [SerializeField] private HeroClass heroClass;
 
         [Header("Hero Progression")]
         [SerializeField] private int currentLevel = 1;
@@ -28,6 +33,9 @@ namespace MobaGameplay.Core
         [SerializeField] private float armorPerLevel = 4f;
         [SerializeField] private float mrPerLevel = 1.25f;
 
+        // References
+        private HeroEntityVisuals visuals;
+
         // Public read-only properties
         public int CurrentLevel => currentLevel;
         public int MaxLevel => maxLevel;
@@ -40,6 +48,11 @@ namespace MobaGameplay.Core
         public float APPerLevel => apPerLevel;
         public float ArmorPerLevel => armorPerLevel;
         public float MRPerLevel => mrPerLevel;
+
+        /// <summary>
+        /// La clase asignada a este héroe (solo lectura).
+        /// </summary>
+        public HeroClass HeroClass => heroClass;
 
         public event Action<int> OnLevelUp;
         public event Action<float, float> OnExpGained;
@@ -56,9 +69,53 @@ namespace MobaGameplay.Core
             }
             Instance = this;
 
+            // Apply class configuration BEFORE base.Awake()
+            if (heroClass != null)
+            {
+                ApplyClassConfiguration();
+            }
+
             base.Awake();
             if (TargetingManager.Instance != null)
                 TargetingManager.Instance.Initialize(transform);
+        }
+
+        /// <summary>
+        /// Aplica la configuración de la clase al héroe (modelo, stats, habilidades).
+        /// </summary>
+        private void ApplyClassConfiguration()
+        {
+            if (heroClass == null || !heroClass.IsValid()) return;
+
+            // Apply base stats from class
+            MaxHealth = heroClass.baseHealth;
+            CurrentHealth = heroClass.baseHealth;
+            MaxMana = heroClass.baseMana;
+            CurrentMana = heroClass.baseMana;
+            PhysicalArmor = heroClass.baseArmor;
+            MagicResistance = heroClass.baseMagicResist;
+            
+            // Override attack damage (can't set via BaseEntity directly, use field)
+            AttackDamage = heroClass.baseAttackDamage;
+            MovementSpeed = heroClass.baseMoveSpeed;
+            
+            // Set health/mana regen
+            healthRegenRate = heroClass.healthRegen;
+            manaRegenRate = heroClass.manaRegen;
+
+            Debug.Log($"[HeroEntity] Applied class: {heroClass.className}");
+        }
+
+        /// <summary>
+        /// Cambia la clase del héroe en runtime.
+        /// </summary>
+        public void SetClass(HeroClass newClass)
+        {
+            heroClass = newClass;
+            if (heroClass != null)
+            {
+                ApplyClassConfiguration();
+            }
         }
 
         protected void OnDestroy()
