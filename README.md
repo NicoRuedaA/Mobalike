@@ -518,20 +518,20 @@ namespace TuNamespace
 
 ## 11. Changelog
 
-### v0.3.0 (2026-04-10)
-- 62 tests Unitarios pasando ✅
+### v0.3.0 (10-04-2026)
+- 62 tests Unitarios pasando
 - Assembly definitions configuradas
 - Sistema de habilidades migrado a data-driven (AbilitySystem + AbilityData)
 - Cooldown overlay ahora funciona correctamente
 - Bugfixes: críticos duplicados, GoldDrop, Equipment stats, namespaces
 
-### v0.2.0 (2024)
+### v0.2.0 (10-04-2026)
 - Sistema de charged attack refactorizado
 - Input system optimizado (raycasts reducidos)
 - Mejor manejo de estados y edge cases
 - Hover outline con memory leak fix
 
-### v0.1.0 (2024)
+### v0.1.0 (10-04-2026)
 - Sistema de input básico implementado
 - Charged attack con cooldown
 - Habilidades con targeting
