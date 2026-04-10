@@ -1,0 +1,16 @@
+{
+    "name": "MobaGameplay.Editor",
+    "rootNamespace": "MobaGameplay.Editor",
+    "references": [
+        "MobaGameplay.Runtime",
+        "Unity.InputSystem",
+        "Unity.TextMeshPro"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideLanguageVersion": false,
+    "noEngineReferences": false
+}

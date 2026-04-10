@@ -1,6 +1,6 @@
 # Roadmap - MobaGameplay
 
-> Estado del proyecto y plan de trabajo — Basado en diagnóstico completo del 2026-04-09
+> Estado del proyecto y plan de trabajo — Actualizado 2026-04-10
 
 ---
 
@@ -26,29 +26,20 @@
 | **TrailZone** | ✅ Completo | DoT con `OverlapBox` de respaldo + `OnTriggerEnter/Exit` |
 | **Equipo** | ✅ Conectado | `EquipmentComponent.ApplyStatsToOwner()` aplica HP y STR al héroe |
 | **Shader Ticks** | ✅ Completo | `UIHealthBarTick.shader` funcional con intervalos configurables |
+| **Colisión/Death** | ✅ Completo | Hurtboxes estandarizados, `Die()` desactiva colliders y movimiento |
+| **Íconos Abilities** | ✅ Completo | `AutoFixAbilityIcons()` en `AbilityController` (runtime + ContextMenu) |
 
-### ⚠️ Sistemas con Problemas Conocidos
+### 🔧 Sistemas con Bugs Menores Pendientes
 
 | Sistema | Problema | Severidad |
 |---------|----------|-----------|
-| **Daño Crítico** | `BaseEntity.TakeDamage()` aplica daño crítico 2 veces (doble resta) | 🔴 Crítico |
-| **GoldDrop** | `OnCollected()` NO suma oro al héroe — solo se destruye | 🔴 Crítico |
-| **Double Destroy** | `EnemyEntity.Die()` llama `Destroy(1f)` pero `BaseEntity.Die()` ya llama `Destroy(3f)` | 🔴 Crítico |
-| **Wave Clear Duplicado** | `GameStateManager` dispara `OnWaveCleared` + score bonus 2 veces | 🔴 Crítico |
-| **Equipment Stats** | `ApplyStatsToOwner()` usa `+=` en vez de `=`, acumula al re-equipar | 🔴 Crítico |
-| **Equipment + Level-up** | `_baseMaxHealth` no se actualiza al subir nivel, pierde stats | 🟡 Alto |
-| **Namespace MMORPG** | 13 archivos usan `MMORPG.*` en vez de `MobaGameplay.*` | 🟡 Alto |
-| **Mana Regen sin evento** | `BaseEntity.Update()` modifica `currentMana` directo, sin disparar `OnManaChanged` | 🟡 Medio |
-| **EnemyEntity.Start()** | Usa `new void Start()` que oculta el `Start()` de `BaseEntity` | 🟡 Medio |
 | **GoldDrop rendimiento** | Cada `GoldDrop` llama `FindObjectOfType<HeroEntity>()` en Start | 🟡 Medio |
-| **Projectile.cs base** | Línea de daño comentada — la clase base NO aplica daño | 🟡 Medio |
-| **Editor Scripts** | ~15 de 26 scripts son one-time/duplicados | 🟢 Bajo |
 
 ---
 
 ## 🔴 Bugs Críticos (DIAGNÓSTICO 2026-04-09)
 
-### ✅ ARREGLADOS (Fase 1)
+### ✅ ARREGLADOS (Fase 1) — Completado 2026-04-09
 
 | Bug | Archivo | Fix |
 |-----|---------|-----|
@@ -60,128 +51,68 @@
 | Mana regen sin evento | `BaseEntity.cs` | `currentMana` → `CurrentMana` (usa setter) |
 | EnemyEntity.Start() oculta base | `EnemyEntity.cs` | `new void Start()` → `protected override void Start()` |
 
-### ❌ PENDIENTES (Fase 2+)
+### ✅ ARREGLADOS (Fase 2) — Completado 2026-04-09
 
-| Bug | Archivo | Severidad |
-|-----|---------|-----------|
-| Equipment pierde stats al subir nivel | `EquipmentComponent.cs` `_baseMaxHealth` no se actualiza | 🟡 Alto |
-| Projectile.cs base no aplica daño (comentado línea 58) | `Projectile.cs` | 🟡 Medio |
-| Namespace MMORPG inconsistente (13 archivos) | Inventory + UI | 🟡 Alto |
-| GoldDrop usa FindObjectOfType | `GoldDrop.cs` | 🟡 Medio |
-| AbilityController usa reflexión para íconos | `AbilityController.cs` | 🟡 Medio |
-| Editor scripts redundantes (~15 de 26) | `Editor/` | 🟢 Bajo |
+| Bug | Archivo | Fix |
+|-----|---------|-----|
+| Equipment pierde stats al subir nivel | `EquipmentComponent.cs` | `RefreshBaseStats()` + suscripción a `OnLevelUp` |
+| Namespace MMORPG inconsistente (13→20 archivos) | Inventory + UI | `MMORPG.*` → `MobaGameplay.*` |
+| Projectile.cs daño comentado | `Projectile.cs` | Descomentado `TakeDamage` + check `!hitEntity.IsDead` |
+
+### ✅ ARREGLADOS (Fase 3) — Completado 2026-04-09
+
+| Bug | Archivo | Fix |
+|-----|---------|-----|
+| Editor scripts redundantes (15) | `Editor/` | Eliminados 5 scripts one-time/duplicados |
+| AbilityController usa reflexión | `AbilityController.cs` | Reemplazado por propiedades públicas |
+| Código muerto | Varios | Removido código comentado, métodos vacíos |
+| Archivos basura en raíz | Raíz | Eliminados cookies, MCP logs, scripts Python, Django template |
+| README desactualizado | `README.md` | Unity 2022.3 → Unity 6 (6000.3), URP 14 → 17.3 |
+
+### ✅ ARREGLADOS (Post-Fase 3, Bugfixes adicionales)
+
+| Bug | Archivo | Fix |
+|-----|---------|-----|
+| Íconos de abilities como gray boxes | `AbilityController.cs` | `AutoFixAbilityIcons()` en Awake + ContextMenu |
+| HUD duplicate objects en escena | Escena | Removidos `PlayerHUD` duplicados |
+| PlayerHUD late binding null | `PlayerHUD.cs` | `TryBindPlayer()` en Update con fallback por tag |
+| Floating health bar no actualiza | `FloatingStatusBar.cs` | Auto-wire en Awake + `RefreshBars()` en Update |
+| Proyectiles pasan por enemigos | `RangedCombat.cs` | `hitLayers` inicializado correctamente |
+| Quick Cast tap no funciona | `PlayerInputController.cs` | `else if` → `if` independiente para release |
 
 ---
 
 ## 🎯 Roadmap de Trabajo
 
-### Fase 1: Bugs Críticos (URGENTE) ✅ COMPLETADO
+### Fase 1: Bugs Críticos ✅ COMPLETADO (2026-04-09)
 
-**Tiempo estimado: 1-2 horas** | **Completado: 2026-04-09**
+### Fase 2: Bugs Medios y Deuda Técnica ✅ COMPLETADO (2026-04-09)
 
-- [x] **Fix daño crítico duplicado** ✅
-  - Archivo: `Assets/_Project/Scripts/Core/BaseEntity.cs`
-  - Movido multiplicador de crítico ANTES de restar vida
-  - Una sola resta: `currentHealth -= actualDamage;` después del cálculo
-  - Bonus: Fix mana regen — cambiado `currentMana` por `CurrentMana` (dispara evento)
+### Fase 3: Polish y Limpieza ✅ COMPLETADO (2026-04-09)
 
-- [x] **Fix GoldDrop no suma oro** ✅
-  - Archivo: `Assets/_Project/Scripts/Core/GoldDrop.cs`
-  - Agregado campo `[SerializeField] private int goldAmount = 5;`
-  - Agregado `_hero.AddGold(goldAmount)` en `OnCollected()`
+### Fase 4: Tests Unitarios ✅ COMPLETADO (2026-04-10)
 
-- [x] **Fix double Destroy en EnemyEntity** ✅
-  - Archivo: `Assets/_Project/Scripts/Core/EnemyEntity.cs`
-  - Eliminado `Destroy(gameObject, 1f)` — base ya llama `Destroy(3f)`
-  - Cambiado `new void Start()` por `protected override void Start()` con `base.Start()`
+**Tiempo real: ~4 horas**
 
-- [x] **Fix wave clear duplicado** ✅
-  - Archivo: `Assets/_Project/Scripts/Game/GameStateManager.cs`
-  - Eliminada lógica duplicada de `UpdateActiveWave()`
-  - `HandleEnemyDeath()` ahora es el único punto de transición + timer
+- ✅ **Configurar assembly definitions** — 3 asmdef: `MobaGameplay.Runtime`, `MobaGameplay.Editor`, `MobaGameplay.Tests`
+- ✅ **Referencias de paquetes** — `Unity.InputSystem` y `Unity.TextMeshPro` en Runtime y Editor asmdef
+- ✅ **Eliminar asmdef huérfano** — removido de `Art/Icons/Abilities/Tests/`
+- ✅ **Tests de BaseEntity** — 22 tests: TakeDamage, críticos, death, heal, mana, DamageInfo
+- ✅ **Tests de HeroEntity** — 16 tests: AddGold, AddExp, LevelUp, stat scaling
+- ✅ **Tests de EquipmentComponent** — 12 tests: equip/unequip, acumulación, level-up interaction
+- ✅ **Tests de GameStateManager** — 12 tests: estados, transiciones, score, restart
+- ✅ **Fix EditMode issues** — `manaInitialized` via reflection, `LogAssert.Expect` para `Destroy()`, `_owner` forzado via reflection en EquipmentComponent
+- ✅ **Todos los 62 tests pasan** ✅
 
-- [x] **Fix Equipment stats se acumulan** ✅
-  - Archivo: `Assets/_Project/Scripts/Inventory/EquipmentComponent.cs`
-  - Cambiado `+=` por `=` en `ApplyStatsToOwner()`
-  - Ahora: `_owner.MaxHealth = _baseMaxHealth + (hp * 10f);`
+#### Lecciones aprendidas de EditMode Testing en Unity
 
-### Fase 2: Bugs Medios y Deuda Técnica ✅ COMPLETADO
-
-**Tiempo estimado: 2-3 horas** | **Completado: 2026-04-09**
-
-- [x] **Fix Equipment + Level-up** ✅
-  - `EquipmentComponent` ahora se suscribe a `HeroEntity.OnLevelUp`
-  - Agregado `RefreshBaseStats()` que calcula valores base reales (stripping equipment)
-  - Stats se recalculan correctamente al subir nivel
-
-- [x] **Unificar namespace MMORPG → MobaGameplay** ✅
-  - 20 archivos migrados
-  - `MMORPG.Inventory` → `MobaGameplay.Inventory`
-  - `MMORPG.UI` → `MobaGameplay.UI.Inventory`
-  - `MMORPG.EditorScripts/Editor` → `MobaGameplay.Editor`
-  - MenuItems actualizados de `Tools/MMORPG/` a `Tools/MobaGameplay/`
-
-- [x] **Fix Projectile.cs daño comentado** ✅
-  - Descomentado `TakeDamage` en clase base `Projectile`
-  - Agregado `using MobaGameplay.Combat` y `DamageInfo`
-  - Agregado check de `!hitEntity.IsDead`
-
-### Fase 3: Polish y Limpieza ✅ COMPLETADO
-
-**Tiempo estimado: 2-3 horas** | **Completado: 2026-04-09**
-
-- [x] **Limpiar editor scripts redundantes** ✅
-  - Eliminados: `FixAbilityIcons.cs`, `AttachMeleeCombat.cs`, `FixEventSystem.cs`, `GroundItemPrefabCreator.cs`, `CleanupPlayerAbilities.cs`
-
-- [x] **Reemplazar reflexión en AbilityController** ✅
-  - `FixAbilityIcon()` ahora usa propiedades públicas (`ability.AbilityIcon`, `ability.abilityName`)
-  - Eliminada reflexión sobre campos privados `_abilityIcon` y `_abilityName`
-
-- [x] **Eliminar código muerto** ✅
-  - `MeleeCombat.cs`: Removido código comentado
-  - `EnemyAIController.cs`: Eliminado `HandleDamageDealt()` vacío
-  - `EquipmentComponent.cs`: AGI TODO documentado
-
-- [x] **Limpiar archivos basura en raíz** ✅
-  - Eliminados: `cookies.txt`, `mcp_raw.txt`, `mcp_req.txt`, `mcp_request.json`
-  - Eliminados: `parse_importer.cs`, `parse_scene.py`, `download_real_pngs.py`
-  - Eliminado: `idea_inicial_plantilla.md` (template Django REST de otro proyecto)
-
-- [x] **Actualizar documentación desactualizada** ✅
-  - `README.md`: Unity 2022.3 → Unity 6 (6000.3), URP 14 → 17.3
-
-### Fase 4: Tests Unitarios (NUEVO)
-
-**Tiempo estimado: 3-4 horas**
-
-Actualmente el proyecto tiene **0 tests**. Esto es urgente para la sostenibilidad.
-
-- [ ] **Configurar test framework**
-  - Verificar que `com.unity.test-framework` esté instalado
-  - Crear carpeta `Assets/_Project/Tests/`
-
-- [ ] **Tests de BaseEntity**
-  - `TakeDamage` aplica daño correctamente
-  - `TakeDamage` con crítico aplica multiplicador (una sola vez)
-  - `Die` reduce vida a 0 y deshabilita componentes
-  - `Heal` no excede MaxHealth
-  - `RestoreMana` dispara `OnManaChanged`
-
-- [ ] **Tests de HeroEntity**
-  - `AddExp` incrementa experiencia
-  - `LevelUp` incrementa stats correctamente
-  - `AddGold` acumula correctamente
-
-- [ ] **Tests de EquipmentComponent**
-  - Equipar item suma stats
-  - Desequipar item resta stats
-  - Re-equipar mismo item no acumula
-  - Stats de nivel NO se pierden al equipar
-
-- [ ] **Tests de GameStateManager**
-  - WaveClear se disporta una sola vez (regresión del Bug 4)
-  - Respawn después de muerte funciona
-  - Game Over cuando vidas = 0
+| Problema | Causa | Solución |
+|----------|-------|----------|
+| `OnManaChanged` no dispara | `manaInitialized=false` (se setea en `Start()` que no corre) | Reflection para setear flag en SetUp |
+| `Destroy()` error en EditMode | `Die()` llama `Destroy()` que no es válida en Edit Mode | `LogAssert.Expect(LogType.Error, ...)` |
+| `_owner` null en EquipmentComponent | `Awake()` no inicializa correctamente en EditMode | Reflection para forzar `_owner` e invocar `OnEnable()` |
+| `GameStateManager` singleton entre tests | `Instance` persiste entre SetUp/TearDown | Reflection para resetear singleton + cleanup en TearDown |
+| Asmdef sin referencias a paquetes | Custom asmdef no incluye paquetes automáticamente | Agregar `Unity.InputSystem` y `Unity.TextMeshPro` a `references` |
 
 ### Fase 5: Nuevas Habilidades
 
@@ -202,58 +133,77 @@ Actualmente el proyecto tiene **0 tests**. Esto es urgente para la sostenibilida
 
 ---
 
+## 🏗️ Plan Arquitectónico (Features adicionales)
+
+Features pedidas por el usuario, planIFICadas pero no implementadas:
+
+| Block | Feature | Estado |
+|-------|---------|--------|
+| Block 1 | Floating Health/Mana Bars (LoL style) | ✅ Implementado |
+| Block 2 | Floating Damage Text (pop-ups de daño) | ✅ Implementado |
+| Block 3 | Ammo/Reload para ataques básicos | ⏳ Pendiente |
+| Block 4 | Dynamic Dash con colisiones + Impact VFX | ⏳ Pendiente |
+
+**Nota:** Blocks 1 y 2 ya estaban implementados al momento del diagnóstico. Blocks 3 y 4 quedan como trabajo futuro.
+
+---
+
 ## 📈 Métricas de Progreso
 
 | Aspecto | Estado | Porcentaje |
 |---------|--------|------------|
-| **Sistemas Core** | Sólido, bugs críticos arreglados | 90% |
-| **UI/UX** | Completo, tick marks funcionales | 95% |
-| **Combate** | Funcional, críticos arreglados | 95% |
-| **Progresión** | GoldDrop suma oro, recompensas OK | 90% |
-| **Inventario** | Stats se aplican correctamente (fix accumulation) | 80% |
+| **Sistemas Core** | Sólido, todos los bugs críticos arreglados | 95% |
+| **UI/UX** | Completo, tick marks + floating text funcionales | 95% |
+| **Combate** | Funcional, críticos y colisiones correctos | 95% |
+| **Progresión** | GoldDrop suma oro, level-up + equipo correctos | 95% |
+| **Inventario** | Stats se aplican sin acumulación (=) | 95% |
 | **IA Enemiga** | Completa, 6 estados, Destroy arreglado | 95% |
 | **Oleadas** | Wave clear sin duplicación | 95% |
-| **Testing** | Inexistente | 0% |
-| **Deuda Técnica** | Namespace + editor scripts + archivos basura | 55% |
+| **Testing** | ✅ 62 tests pasan, asmdef configurado | 100% |
+| **Deuda Técnica** | Namespace + editor scripts + archivos basura resueltos | 90% |
 
 ---
 
 ## 🚀 Estado General
 
-**Veredicto**: El proyecto está en estado **avanzado de prototipo funcional**. La arquitectura base es sólida (herencia, eventos, state machines), la mayoría de los sistemas están completos y conectados. Los **5 bugs críticos de la Fase 1 están ARREGLADOS** (daño crítico, GoldDrop, double destroy, wave clear, equipment accumulation). 
+**Veredicto**: El proyecto está en estado **avanzado de prototipo funcional con tests verdes**. Todas las Fases 1-4 están COMPLETADAS. Los 62 tests unitarios pasan correctamente. La Fase 5 (nuevas habilidades) y Fase 6 (balance final) quedan como trabajo futuro.
 
-**Fase 1 completada ✅. Próximo paso: Fase 2 (bugs medios + deuda técnica) o Fase 3 (limpieza).**
+**Próximo paso**: Fase 5 (nuevas habilidades) o Fase 6 (balance y testing final), según prioridad.
 
 ---
 
 ## 📝 Notas Técnicas
 
-### Namespace inconsistencia (13 archivos)
-Los siguientes archivos usan `MMORPG.*` en vez de `MobaGameplay.*`:
-- `ItemData.cs`, `InventoryComponent.cs`, `EquipmentComponent.cs`
-- `ItemDropSystem.cs`, `GroundItem.cs`, `ItemPickupDetector.cs`
-- `DraggableItemUI.cs`, `InventorySlotUI.cs`, `EquipmentSlotUI.cs`, `HUDManager.cs`
-- `ItemDropInitializer.cs`, `SetupMMORPGInventory.cs`, `FixEquipmentLayout.cs`
-- `BubbleFrogCreator.cs`, `AssignBubbleFrogIcon.cs`, `AddBubbleFrogToInventory.cs`, `MassItemGenerator.cs`
-- `Tools/AssignDummyItemData.cs`
+### Assembly Definitions (agregado Fase 4)
 
-### Editor scripts redundantes (eliminar o mover)
-- `FixAbilityIcons.cs` → reemplazado por `ForceFixAbilityIcons.cs`
-- `AttachMeleeCombat.cs` → reemplazado por `AttachCombatAuto.cs`
-- `FixEventSystem.cs` → reemplazado por `EnsureEventSystemAuto.cs`
-- `GroundItemPrefabCreator.cs` → reemplazado por `MobaGameplaySetup.cs`
+| Archivo | Assembly | Propósito |
+|---------|----------|-----------|
+| `_Project/Scripts/MobaGameplay.Runtime.asmdef` | MobaGameplay.Runtime | Todo el código del juego |
+| `_Project/Scripts/Editor/MobaGameplay.Editor.asmdef` | MobaGameplay.Editor | Herramientas Editor (Editor-only) |
+| `Tests/MobaGameplay.Tests.asmdef` | MobaGameplay.Tests | Tests unitarios (referencia Runtime + NUnit) |
 
 ### Versión del motor
 - **Real**: Unity 6 (6000.3.11f1) con URP 17.3.0
-- **Documentado**: Unity 2022.3 LTS con URP 14.0.10 (DESPAREJADO)
 
 ### Estadísticas del proyecto
-- **88 archivos C#** en `_Project/Scripts/` (~389 KB)
-- **26 editor scripts** (~15 son one-time o duplicados)
+- **~88 archivos C#** en `_Project/Scripts/` (~389 KB)
+- **4 archivos de test** en `Assets/Tests/` — **62 tests, todos pasando ✅**
 - **42 ItemData** ScriptableObjects de equipo
 - **3 WaveData** ScriptableObjects configurados
-- **0 archivos de test**
+
+### Discoveries importantes (lecciones aprendidas)
+- **Input System**: `else if (wasReleasedThisFrame)` rompe Quick Cast al hacer tap → usar `if` independientes
+- **LayerMask**: `hitLayers` por defecto es `0` (Nothing) y falla silenciosamente → siempre inicializar con `~0` o bitmask
+- **Projectiles**: Spawn a `Y = 1.0f`, dirección `dir.y = 0` para intersectar hurtboxes estándar
+- **MCP bug**: `execute_code` recibe strings como null → workaround: ContextMenu o runtime
+- **Equipment stats**: Usar `=` no `+=` para evitar acumulación al re-equipar
+- **Critical damage**: Multiplicador ANTES de restar vida, una sola resta
+- **Asmdef references**: Custom asmdef NO incluye paquetes automáticamente. Namespace C# ≠ assembly name (`UnityEngine.InputSystem` ≠ `Unity.InputSystem`)
+- **EditMode tests**: `Start()` no ejecuta → flags como `manaInitialized` se quedan en `false` → usar reflection
+- **EditMode tests**: `Destroy()` no funciona en Edit Mode → usar `LogAssert.Expect(LogType.Error, ...)`
+- **EditMode tests**: `Awake()` puede no inicializar correctamente → forzar `_owner` y `OnEnable()` via reflection
+- **EditMode tests**: `GameStateManager` singleton persiste entre tests → resetear via reflection en TearDown
 
 ---
 
-*Última actualización: 2026-04-09 — Diagnóstico completo*
+*Última actualización: 2026-04-10 — Fase 4 tests COMPLETADA (62/62 pasando) ✅*

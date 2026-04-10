@@ -1,0 +1,13 @@
+{
+    "name": "MobaGameplay.Runtime",
+    "rootNamespace": "MobaGameplay",
+    "references": [
+        "Unity.InputSystem",
+        "Unity.TextMeshPro"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideLanguageVersion": false,
+    "noEngineReferences": false
+}

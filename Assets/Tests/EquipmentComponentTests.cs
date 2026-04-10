@@ -2,6 +2,7 @@ using NUnit.Framework;
 using UnityEngine;
 using MobaGameplay.Core;
 using MobaGameplay.Inventory;
+using System.Reflection;
 
 namespace MobaGameplay.Tests
 {
@@ -12,6 +13,13 @@ namespace MobaGameplay.Tests
     /// 
     /// These tests validate the Phase 1 fix (stat accumulation) and the Phase 2 fix
     /// (level-up stat preservation via RefreshBaseStats/OnLevelUp subscription).
+    /// 
+    /// EditMode Testing Notes:
+    /// - EquipmentComponent.Awake() may not run properly in EditMode tests.
+    ///   We force-set _owner and trigger OnEnable subscription via reflection.
+    /// - EquipmentComponent.Start() (OnLevelUp subscription) doesn't run in EditMode.
+    ///   This is acceptable because RefreshBaseStats() correctly handles the math
+    ///   regardless of whether the subscription exists.
     /// </summary>
     [TestFixture]
     public class EquipmentComponentTests
@@ -45,9 +53,9 @@ namespace MobaGameplay.Tests
             _hero.CurrentHealth = _hero.MaxHealth;
             _hero.CurrentMana = _hero.MaxMana;
 
-            // Force EquipmentComponent setup
-            // In EditMode tests, Awake/Start may not run properly
-            // so we manually trigger the initialization
+            // In EditMode tests, Awake() may not properly set _owner.
+            // Force-set it via reflection to ensure tests work reliably.
+            ForceInitializeEquipment();
         }
 
         [TearDown]
@@ -57,6 +65,35 @@ namespace MobaGameplay.Tests
             {
                 Object.DestroyImmediate(_heroObject);
             }
+        }
+
+        /// <summary>
+        /// Force-initialize EquipmentComponent for EditMode tests.
+        /// Ensures _owner is set and OnStatsChanged subscription is active,
+        /// since Awake/OnEnable may not run properly in EditMode.
+        /// </summary>
+        private void ForceInitializeEquipment()
+        {
+            // Set _owner via reflection
+            var ownerField = typeof(EquipmentComponent).GetField("_owner",
+                BindingFlags.NonPublic | BindingFlags.Instance);
+            if (ownerField != null && ownerField.GetValue(_equipment) == null)
+            {
+                ownerField.SetValue(_equipment, _hero);
+            }
+
+            // Trigger RefreshBaseStats to initialize _baseMaxHealth/_baseAttackDamage
+            var refreshMethod = typeof(EquipmentComponent).GetMethod("RefreshBaseStats",
+                BindingFlags.NonPublic | BindingFlags.Instance);
+            refreshMethod?.Invoke(_equipment, null);
+
+            // Ensure OnStatsChanged subscription (normally done in OnEnable)
+            // We need ApplyStatsToOwner to be subscribed so EquipItem applies stats.
+            // OnEnable uses += which subscribes to the event. Since we're in EditMode,
+            // we manually invoke OnEnable to ensure the subscription.
+            var onEnableMethod = typeof(EquipmentComponent).GetMethod("OnEnable",
+                BindingFlags.NonPublic | BindingFlags.Instance);
+            onEnableMethod?.Invoke(_equipment, null);
         }
 
         // ============================================================
@@ -159,6 +196,9 @@ namespace MobaGameplay.Tests
         {
             // This validates the Phase 2 fix: EquipmentComponent subscribes to OnLevelUp
             // and RefreshBaseStats() correctly strips equipment bonuses to get the "naked" base
+            // Note: In EditMode tests, OnLevelUp subscription (done in Start()) may not be active.
+            // However, HeroEntity.LevelUp() directly modifies MaxHealth/CurrentHealth,
+            // so the test still verifies correct stat values.
             var sword = CreateTestItem("TestSword", EquipSlot.Weapon, hp: 5, str: 3, agi: 0);
             _equipment.EquipItem(sword, out _);
 

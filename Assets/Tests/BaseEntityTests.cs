@@ -1,7 +1,9 @@
 using NUnit.Framework;
 using UnityEngine;
+using UnityEngine.TestTools;
 using MobaGameplay.Core;
 using MobaGameplay.Combat;
+using System.Reflection;
 
 namespace MobaGameplay.Tests
 {
@@ -9,6 +11,12 @@ namespace MobaGameplay.Tests
     /// Tests for BaseEntity.TakeDamage(), critical hits, armor, death, and mana.
     /// These tests verify the fixes from Phase 1: critical multiplier applied once
     /// (not twice), mana regen fires events, and damage reduction works correctly.
+    /// 
+    /// EditMode Testing Notes:
+    /// - Unity's Start() doesn't run in EditMode tests, so we use ForceInitialize()
+    ///   and reflection to set manaInitialized=true for mana event tests.
+    /// - Die() calls Destroy() which logs an error in EditMode; we use LogAssert.Expect
+    ///   to suppress that expected error in death-related tests.
     /// </summary>
     [TestFixture]
     public class BaseEntityTests
@@ -49,6 +57,10 @@ namespace MobaGameplay.Tests
 
             // Force initialize since Start() may not run in EditMode tests
             _entity.ForceInitialize();
+
+            // Set manaInitialized=true via reflection so CurrentMana setter fires events.
+            // In production, Start() sets this flag. In EditMode, Start() doesn't run.
+            SetManaInitialized(true);
         }
 
         [TearDown]
@@ -57,6 +69,21 @@ namespace MobaGameplay.Tests
             if (_gameObject != null)
             {
                 Object.DestroyImmediate(_gameObject);
+            }
+        }
+
+        /// <summary>
+        /// Sets the private manaInitialized flag via reflection.
+        /// This flag controls whether OnManaChanged fires in the CurrentMana setter.
+        /// Without it, mana events are suppressed (to avoid false positives during Awake).
+        /// </summary>
+        private void SetManaInitialized(bool value)
+        {
+            var field = typeof(BaseEntity).GetField("manaInitialized",
+                BindingFlags.NonPublic | BindingFlags.Instance);
+            if (field != null)
+            {
+                field.SetValue(_entity, value);
             }
         }
 
@@ -155,12 +182,17 @@ namespace MobaGameplay.Tests
 
         // ============================================================
         // TakeDamage — Death
+        // Note: Die() calls Destroy() which logs an error in EditMode.
+        // We expect that error with LogAssert.Expect so the test doesn't fail.
         // ============================================================
 
         [Test]
         public void TakeDamage_LethalDamage_SetsIsDead()
         {
             Assert.IsFalse(_entity.IsDead, "Entity should start alive");
+
+            // Die() calls Destroy() which logs an error in EditMode — expected
+            LogAssert.Expect(LogType.Error, "Destroy may not be called from edit mode! Use DestroyImmediate instead.\nDestroying an object in edit mode destroys it permanently.");
 
             _entity.TakeDamage(new DamageInfo(9999f, DamageType.TrueDamage, null));
 
@@ -170,11 +202,15 @@ namespace MobaGameplay.Tests
         [Test]
         public void TakeDamage_DoesNotDamageDeadEntity()
         {
-            _entity.TakeDamage(new DamageInfo(9999f, DamageType.TrueDamage, null));
-            Assert.IsTrue(_entity.IsDead);
+            // Kill the entity first
+            LogAssert.Expect(LogType.Error, "Destroy may not be called from edit mode! Use DestroyImmediate instead.\nDestroying an object in edit mode destroys it permanently.");
 
+            _entity.TakeDamage(new DamageInfo(9999f, DamageType.TrueDamage, null));
+
+            Assert.IsTrue(_entity.IsDead);
             float healthAfterDeath = _entity.CurrentHealth;
 
+            // Dead entity should not take more damage
             _entity.TakeDamage(new DamageInfo(100f, DamageType.TrueDamage, null));
 
             Assert.AreEqual(healthAfterDeath, _entity.CurrentHealth, 0.01f,
@@ -202,6 +238,9 @@ namespace MobaGameplay.Tests
             int deathCount = 0;
             _entity.OnDeath += (_, _) => deathCount++;
 
+            // Die() calls Destroy() which logs an error in EditMode — expected
+            LogAssert.Expect(LogType.Error, "Destroy may not be called from edit mode! Use DestroyImmediate instead.\nDestroying an object in edit mode destroys it permanently.");
+
             _entity.TakeDamage(new DamageInfo(9999f, DamageType.TrueDamage, null));
 
             Assert.AreEqual(1, deathCount, "OnDeath should fire exactly once");
@@ -214,6 +253,9 @@ namespace MobaGameplay.Tests
         [Test]
         public void CurrentMana_Setter_FiresOnManaChanged()
         {
+            // manaInitialized is set to true in SetUp via reflection.
+            // Without this, the CurrentMana setter suppresses the event
+            // (production code sets it in Start(), which doesn't run in EditMode).
             float? oldMana = null;
             float? newMana = null;
             _entity.OnManaChanged += (oldVal, newVal) => { oldMana = oldVal; newMana = newVal; };
@@ -250,9 +292,12 @@ namespace MobaGameplay.Tests
                 "Heal should not exceed MaxHealth");
         }
 
-        [Test]
+[Test]
         public void Heal_DoesNotAffectDeadEntity()
         {
+            // Kill the entity
+            LogAssert.Expect(LogType.Error, "Destroy may not be called from edit mode! Use DestroyImmediate instead.\nDestroying an object in edit mode destroys it permanently.");
+
             _entity.TakeDamage(new DamageInfo(9999f, DamageType.TrueDamage, null));
             Assert.IsTrue(_entity.IsDead);
 
