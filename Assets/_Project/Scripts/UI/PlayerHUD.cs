@@ -25,10 +25,6 @@ namespace MobaGameplay.UI
         private void Start()
         {
             TryBindPlayer();
-            
-            #if UNITY_EDITOR
-            Debug.Log($"[PlayerHUD] Start: playerEntity={playerEntity != null}, slot1={slot1}, slot2={slot2}, slot3={slot3}, slot4={slot4}");
-            #endif
         }
 
         private void Update()
@@ -43,15 +39,8 @@ namespace MobaGameplay.UI
             // Solo intentar asignar una vez
             if (!abilitiesAssigned)
             {
-                #if UNITY_EDITOR
-                Debug.Log("[PlayerHUD] About to call TryAssignAbilities");
-                #endif
                 TryAssignAbilities();
                 abilitiesAssigned = true;
-                
-                #if UNITY_EDITOR
-                Debug.Log("[PlayerHUD] TryAssignAbilities complete");
-                #endif
             }
 
             // Actualizar barras de recursos suavemente
@@ -82,65 +71,36 @@ namespace MobaGameplay.UI
 
         private void TryAssignAbilities()
         {
-            #if UNITY_EDITOR
-            Debug.Log($"[PlayerHUD] TryAssignAbilities: usesNewSystem={usesNewSystem}, newAbilities={newAbilities != null}");
-            Debug.Log($"[PlayerHUD] Slots: s1={slot1 != null}, s2={slot2 != null}, s3={slot3 != null}, s4={slot4 != null}");
-            #endif
-            
             if (usesNewSystem)
             {
                 // New data-driven system
-                if (newAbilities == null) 
-                {
-                    #if UNITY_EDITOR
-                    Debug.LogWarning("[PlayerHUD] newAbilities is NULL!");
-                    #endif
-                    return;
-                }
+                if (newAbilities == null) return;
 
                 if (slot1 != null)
                 {
                     var data = newAbilities.GetAbilityData(0);
-                    #if UNITY_EDITOR
-                    Debug.Log($"[PlayerHUD] Slot1 data: {data?.abilityName}");
-                    #endif
                     if (data != null) slot1.AssignAbility(data, newAbilities, 0);
                 }
                 if (slot2 != null)
                 {
                     var data = newAbilities.GetAbilityData(1);
-                    #if UNITY_EDITOR
-                    Debug.Log($"[PlayerHUD] Slot2 data: {data?.abilityName}");
-                    #endif
                     if (data != null) slot2.AssignAbility(data, newAbilities, 1);
                 }
                 if (slot3 != null)
                 {
                     var data = newAbilities.GetAbilityData(2);
-                    #if UNITY_EDITOR
-                    Debug.Log($"[PlayerHUD] Slot3 data: {data?.abilityName}");
-                    #endif
                     if (data != null) slot3.AssignAbility(data, newAbilities, 2);
                 }
                 if (slot4 != null)
                 {
                     var data = newAbilities.GetAbilityData(3);
-                    #if UNITY_EDITOR
-                    Debug.Log($"[PlayerHUD] Slot4 data: {data?.abilityName}");
-                    #endif
                     if (data != null) slot4.AssignAbility(data, newAbilities, 3);
                 }
             }
             else
             {
                 // Old MonoBehaviour system
-                if (legacyAbilities == null) 
-                {
-                    #if UNITY_EDITOR
-                    Debug.LogWarning("[PlayerHUD] legacyAbilities is NULL!");
-                    #endif
-                    return;
-                }
+                if (legacyAbilities == null) return;
 
                 if (slot1 != null && slot1.GetAbility() == null) 
                     slot1.AssignAbility(legacyAbilities.Ability1);

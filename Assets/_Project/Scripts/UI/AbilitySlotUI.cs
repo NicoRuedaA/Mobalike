@@ -23,10 +23,6 @@ namespace MobaGameplay.UI
 
         private void Awake()
         {
-            #if UNITY_EDITOR
-            Debug.Log($"[AbilitySlotUI] {name} Awake called!");
-            #endif
-            
             // Auto-find child UI elements if not assigned
             if (iconImage == null)
                 iconImage = GetComponentInChildren<Image>();
@@ -57,10 +53,6 @@ namespace MobaGameplay.UI
                     }
                 }
             }
-            
-            #if UNITY_EDITOR
-            Debug.Log($"[AbilitySlotUI] {name} Awake complete: iconImage={iconImage != null}, overlay={cooldownOverlay != null}, text={cooldownText != null}");
-            #endif
         }
 
         // Legacy API (old system)
@@ -137,12 +129,6 @@ namespace MobaGameplay.UI
 
         private void Update()
         {
-            // Debug logging EVERY frame for a few frames
-            #if UNITY_EDITOR
-            if (Time.frameCount <= 10)
-                Debug.Log($"[AbilitySlotUI] {name} Update: legacy={legacyAbility != null}, sys={abilitySystem != null}, data={newAbilityData != null}, idx={slotIndex}");
-            #endif
-            
             if (legacyAbility != null)
             {
                 UpdateLegacyAbility();
