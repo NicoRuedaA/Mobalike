@@ -61,7 +61,7 @@ namespace MobaGameplay.Core
                 TargetingManager.Instance.Initialize(transform);
         }
 
-        protected override void OnDestroy()
+        protected void OnDestroy()
         {
             // Clear singleton reference when destroyed
             if (Instance == this)
