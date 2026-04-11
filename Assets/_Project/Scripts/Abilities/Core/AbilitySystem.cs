@@ -36,7 +36,6 @@ namespace MobaGameplay.Abilities
         // Public API
         // ============================================================
 
-        /// <summary>Number of equipped ability slots</summary>
         public int SlotCount => instances.Count;
 
         /// <summary>Currently targeting ability index (-1 = none)</summary>
@@ -54,6 +53,9 @@ namespace MobaGameplay.Abilities
         // Unity Lifecycle
         // ============================================================
 
+        // Cached ability controller for fallback
+        private AbilityController cachedAbilityController;
+
         private void Awake()
         {
             owner = GetComponent<BaseEntity>();
@@ -64,6 +66,9 @@ namespace MobaGameplay.Abilities
             {
                 heroClass = heroEntity.HeroClass;
             }
+
+            // Try to get old AbilityController for fallback
+            cachedAbilityController = GetComponent<AbilityController>();
             
             InitializeInstances();
         }
@@ -100,7 +105,6 @@ namespace MobaGameplay.Abilities
                 {
                     instances.Add(data != null ? new AbilityInstance(data, owner) : null);
                 }
-                Debug.Log($"[AbilitySystem] Initialized from HeroClass: {heroClass.className}");
             }
             else
             {

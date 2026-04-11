@@ -81,17 +81,45 @@ namespace MobaGameplay.Controllers
         {
             if (abilitySystemResolved) return;
 
-            cachedAbilitySystem = entity?.AbilitySystem;
+            cachedAbilitySystem = entity?.GetComponent<AbilitySystem>();
             usesNewAbilitySystem = cachedAbilitySystem != null;
+
+            // If new system exists, check if it actually has abilities
+            // If not, fall back to old system
+            if (usesNewAbilitySystem)
+            {
+                bool hasAnyAbility = false;
+                for (int i = 0; i < cachedAbilitySystem.SlotCount; i++)
+                {
+                    if (cachedAbilitySystem.GetAbilityInstance(i) != null)
+                    {
+                        hasAnyAbility = true;
+                        break;
+                    }
+                }
+
+                if (!hasAnyAbility)
+                {
+                    usesNewAbilitySystem = false;
+                    cachedAbilitySystem = null;
+                }
+            }
+
+            // If new system is not being used, check old system
+            if (!usesNewAbilitySystem)
+            {
+                usesNewAbilitySystem = entity?.Abilities?.HasAnyAbilities ?? false;
+            }
+
             abilitySystemResolved = true;
 
             #if UNITY_EDITOR
-            if (usesNewAbilitySystem)
+            if (usesNewAbilitySystem && cachedAbilitySystem != null)
                 Debug.Log($"[PlayerInputController] Using NEW AbilitySystem (slots: {cachedAbilitySystem.SlotCount})");
             else if (entity?.Abilities != null)
                 Debug.Log("[PlayerInputController] Using OLD AbilityController");
             else
-                Debug.Log("[PlayerInputController] NO ability system found!");
+                Debug.LogWarning("[PlayerInputController] NO ability system found!");
             #endif
         }
 
@@ -361,7 +389,11 @@ namespace MobaGameplay.Controllers
         /// </summary>
         private void ProcessAbilities()
         {
-            ResolveAbilitySystem();
+            // Resolve system once at start (but allow re-resolution if needed)
+            if (!abilitySystemResolved)
+            {
+                ResolveAbilitySystem();
+            }
 
             if (usesNewAbilitySystem)
             {

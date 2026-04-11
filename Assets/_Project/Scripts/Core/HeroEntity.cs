@@ -71,6 +71,12 @@ namespace MobaGameplay.Core
             }
             Instance = this;
 
+            // Fallback: try to load Mage class if heroClass is null
+            if (heroClass == null)
+            {
+                heroClass = Resources.Load<HeroClass>("ScriptableObjects/Heroes/Mage");
+            }
+
             // Apply class configuration BEFORE base.Awake()
             if (heroClass != null)
             {

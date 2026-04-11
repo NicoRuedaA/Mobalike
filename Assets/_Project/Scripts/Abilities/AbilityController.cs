@@ -33,6 +33,7 @@ namespace MobaGameplay.Abilities
         public BaseAbility Ability2 => ability2;
         public BaseAbility Ability3 => ability3;
         public BaseAbility Ability4 => ability4;
+        public bool HasAnyAbilities => ability1 != null || ability2 != null || ability3 != null || ability4 != null;
         public bool HasActiveTargeting => activeTargetingAbility != null;
 
         // Events

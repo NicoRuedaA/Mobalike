@@ -1913,6 +1913,9 @@ GameObject:
   - component: {fileID: 8866827507429533972}
   - component: {fileID: 5283883250811315238}
   - component: {fileID: 6217096372508124323}
+  - component: {fileID: 8072462935137672236}
+  - component: {fileID: 4629167410994301893}
+  - component: {fileID: 1053266791046506981}
   m_Layer: 0
   m_Name: Player
   m_TagString: Player
@@ -1965,7 +1968,7 @@ MonoBehaviour:
   magicResistance: 30
   criticalChance: 0.15
   criticalMultiplier: 1.5
-  heroClass: {fileID: 11400000, guid: 5716b21c5dd118a4d8a7a2f543315ab1, type: 2}
+  heroClass: {fileID: 11400000, guid: 93645beb36182484f98d9a8d1822a90d, type: 2}
   currentLevel: 1
   maxLevel: 18
   currentExp: 0
@@ -2257,6 +2260,59 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 114eece13224f0a42ba538d1a54614c4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: MobaGameplay.Runtime::MobaGameplay.Abilities.AbilitySystem
+--- !u!114 &8072462935137672236
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7489238076579717741}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f6dd3512895dc054db56682fc7de20b4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: MobaGameplay.Runtime::MobaGameplay.Combat.RangedCombat
+  basicAttackProjectilePrefab: {fileID: 4136283584567336420, guid: 23802ec068ee8444fab0737d4a1306fe, type: 3}
+  projectileSpawnPoint: {fileID: 0}
+  projectileSpeed: 25
+  projectileMaxDistance: 20
+  hitLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  chargedDamageMultiplier: 1.5
+  chargedSpeedMultiplier: 1.3
+  chargedSizeMultiplier: 1.5
+  maxChargeTime: 1
+--- !u!114 &4629167410994301893
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7489238076579717741}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2f72ebcff6fce01468706c232ac6eb7c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: MobaGameplay.Runtime::MobaGameplay.Visuals.LaserSight
+  laserLength: 15
+  hitLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  normalColor: {r: 0.3, g: 0.9, b: 0.3, a: 0.5}
+  chargedColor: {r: 1, g: 0.4, b: 0.1, a: 0.8}
+--- !u!114 &1053266791046506981
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7489238076579717741}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ebcccc4f85316ff44896a1f0101879fa, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: MobaGameplay.Runtime::MobaGameplay.Combat.MeleeCombat
 --- !u!1 &7685962938007839371
 GameObject:
   m_ObjectHideFlags: 0
