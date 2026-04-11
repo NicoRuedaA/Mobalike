@@ -1965,7 +1965,7 @@ MonoBehaviour:
   magicResistance: 30
   criticalChance: 0.15
   criticalMultiplier: 1.5
-  heroClass: {fileID: 11400000, guid: 93645beb36182484f98d9a8d1822a90d, type: 2}
+  heroClass: {fileID: 11400000, guid: 5716b21c5dd118a4d8a7a2f543315ab1, type: 2}
   currentLevel: 1
   maxLevel: 18
   currentExp: 0
