@@ -36,6 +36,24 @@ namespace MobaGameplay.UI.Targeting
             Instance = this;
         }
 
+        private void Start()
+        {
+            // Lazy initialization: if playerTransform is null, try to find the player by name
+            if (playerTransform == null)
+            {
+                var player = GameObject.Find("Player");
+                if (player != null)
+                {
+                    playerTransform = player.transform;
+                    Debug.Log("[TargetingManager] Auto-initialized with Player from Start");
+                }
+                else
+                {
+                    Debug.LogWarning("[TargetingManager] Could not find Player GameObject");
+                }
+            }
+        }
+
         public void Initialize(Transform player)
         {
             playerTransform = player;
