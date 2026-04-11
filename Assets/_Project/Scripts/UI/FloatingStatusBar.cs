@@ -516,15 +516,9 @@ namespace MobaGameplay.UI
                 Debug.LogWarning($"[{nameof(FloatingStatusBar)}] Missing healthFill reference in '{gameObject.name}'. Expected a child Image named 'HealthFill'.", this);
             }
 
-            if (healthBackground == null)
-            {
-                Debug.LogWarning($"[{nameof(FloatingStatusBar)}] Missing healthBackground in '{gameObject.name}'. HP missing segment won't be visible.", this);
-            }
-
-            if (healthRecentDamageFill == null)
-            {
-                Debug.LogWarning($"[{nameof(FloatingStatusBar)}] Missing healthRecentDamageFill in '{gameObject.name}'. Delayed damage chip effect is disabled.", this);
-            }
+            // These are optional - they get auto-created at runtime if missing
+            // Only warn in editor if allowStructuralChanges=true (i.e., runtime context)
+            // Not critical since ResolveReferences(true) creates them in Awake()
 
             if (manaFill == null)
             {
