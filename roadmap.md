@@ -1,6 +1,6 @@
 # Roadmap - MobaGameplay
 
-> Estado del proyecto y plan de trabajo — Actualizado 2026-04-10
+> Estado del proyecto y plan de trabajo — Actualizado 2026-04-11
 
 ---
 
@@ -138,6 +138,90 @@
 - [ ] Testing completo de inicio a fin (victoria/derrota)
 - [ ] Verificar edge cases (muerte simultánea, level-up durante equipo, etc.)
 
+### Fase 7: Sistema de Animaciones
+
+**Tiempo estimado: 3-4 horas**
+
+#### Estado Actual del Sistema de Animaciones
+
+| Componente | Estado | Notas |
+|------------|--------|-------|
+| **CharacterAnimator.cs** | ⚠️ Básico | 80 líneas, solo Attack trigger conectado |
+| **Controller** | ⚠️ Limitado | StarterAssetsThirdPerson con solo 1 animación (Hook Punch) |
+| **Animaciones disponibles** | 🔴 Sin usar | warriorSlash, warriorCasting, warriorPowerUp, warriorBlock existen en proyecto |
+
+#### Parámetros Actuales del Animator
+
+```
+├── Speed (Float) - velocidad de movimiento
+├── MotionSpeed (Float) - siempre 1
+├── Grounded (Bool) - si está en suelo
+├── Jump (Bool) - si está saltando
+├── FreeFall (Bool) - si está cayendo
+└── Attack (Trigger) - ataque básico
+```
+
+#### Sprint 1: Conectar Existentes (30 min)
+
+- [ ] Conectar `warriorSlash` al trigger **Attack** (Falta asignar state/clip en Unity)
+- [x] Crear parámetro **IsCharging** (bool) para charged attack
+- [x] Agregar **IsAiming** (bool) para cuando apunta con RMB
+- [ ] Testear attack animation
+
+#### Sprint 2: Dash y Muerte (1 hora)
+
+- [x] Agregar evento **OnDashStart** en XZPlaneMovement
+- [ ] Crear/animar animación de Dash (usar `warriorPowerUp` acelerado)
+- [x] Conectar **OnDeath** event → Death animation (Trigger programado)
+- [ ] Crear animación de muerte (buscar/crear)
+- [ ] Testear ambos
+
+#### Sprint 3: Habilidades (1 hora)
+
+- [x] Agregar evento **OnAbilityCast** en AbilitySystem (ya existe OnAbilityExecuted y fue conectado)
+- [ ] Conectar `warriorCasting` a habilidades (Q, W, E, R)
+- [ ] Crear diferenciación visual entre habilidades si es necesario
+- [ ] Testear casting animations
+
+#### Sprint 4: Hit Reaction y Polish (30 min)
+
+- [x] Agregar evento **OnTakeDamage** → HitReaction trigger (Trigger Hit programado)
+- [ ] Crear animación de stagger/hit
+- [ ] Ajustar blend times y transiciones
+- [ ] Test completo de todas las animaciones
+
+#### Animaciones a Implementar
+
+| # | Animación | Trigger | Archivo Origen |
+|---|-----------|---------|----------------|
+| 1 | **Dash** | Space + Dash | warriorPowerUp (acelerado) |
+| 2 | **Charged Attack** | LMB hold + RMB | warriorSlash (slower) |
+| 3 | **Death** | OnDeath | Nueva (buscar/crear) |
+| 4 | **Hit Reaction** | OnTakeDamage | Nueva (buscar/crear) |
+| 5 | **Fireball Cast (Q)** | Ability Q | warriorCasting |
+| 6 | **Ground Smash Cast (W)** | Ability W | warriorCasting |
+| 7 | **Dash Cast (E)** | Ability E | warriorCasting |
+| 8 | **Ground Trail Cast (R)** | Ability R | warriorCasting |
+
+#### Cambios Requeridos en Código
+
+**1. CharacterAnimator.cs - Nuevos eventos:**
+```csharp
+entity.Combat.OnAbilityCast += TriggerAbilityAnimation;
+entity.Movement.OnDashStart += TriggerDashAnimation;
+entity.OnTakeDamage += TriggerHitAnimation;
+entity.OnDeath += TriggerDeathAnimation;
+```
+
+**2. Nuevos parámetros del Animator:**
+```
+├── IsDashing (bool)
+├── IsCasting (bool)
+├── IsDead (bool)
+├── AbilityIndex (int) // 0-3 para Q,W,E,R
+└── HitReaction (trigger)
+```
+
 ---
 
 ## 🏗️ Plan Arquitectónico (Features adicionales)
@@ -168,14 +252,15 @@ Features pedidas por el usuario, planIFICadas pero no implementadas:
 | **Oleadas** | Wave clear sin duplicación | 95% |
 | **Testing** | ✅ 62 tests pasan, asmdef configurado | 100% |
 | **Deuda Técnica** | Namespace + editor scripts + archivos basura resueltos | 90% |
+| **Animaciones** | Fase 7planificada, 4 sprints definidos | 15% |
 
 ---
 
 ## 🚀 Estado General
 
-**Veredicto**: El proyecto está en estado **avanzado de prototipo funcional con tests verdes**. Todas las Fases 1-4 están COMPLETADAS. Los 62 tests unitarios pasan correctamente. La Fase 5 (nuevas habilidades) y Fase 6 (balance final) quedan como trabajo futuro.
+**Veredicto**: El proyecto está en estado **avanzado de prototipo funcional con tests verdes**. Todas las Fases 1-4 están COMPLETADAS. Los 62 tests unitarios pasan correctamente. La Fase 5 (nuevas habilidades), Fase 6 (balance final) y Fase 7 (animaciones) quedan como trabajo futuro.
 
-**Próximo paso**: Fase 5 (nuevas habilidades) o Fase 6 (balance y testing final), según prioridad.
+**Próximo paso**: Fase 5 (nuevas habilidades), Fase 6 (balance) o Fase 7 (animaciones), según prioridad.
 
 ---
 
@@ -213,4 +298,4 @@ Features pedidas por el usuario, planIFICadas pero no implementadas:
 
 ---
 
-*Última actualización: 2026-04-10 — Fase 4 tests COMPLETADA (62/62 pasando) ✅*
+*Última actualización: 2026-04-11 — Fase 7 (Sistema de Animaciones) planificada ✅*

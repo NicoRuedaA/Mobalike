@@ -66,7 +66,7 @@ namespace MobaGameplay.Controllers
             ProcessMovement();
             ProcessAbilities();
             ProcessCombat();
-            ProcessDash();
+            ProcessJump();
         }
 
         #endregion
@@ -663,47 +663,17 @@ namespace MobaGameplay.Controllers
 
         #endregion
 
-        #region Dash
+        #region Jump
 
         /// <summary>
-        /// Processes dash input (Space key).
-        /// Calculates dash direction based on current input, last movement, or facing direction.
+        /// Processes jump input (Space key).
         /// </summary>
-        private void ProcessDash()
+        private void ProcessJump()
         {
             if (Keyboard.current.spaceKey.wasPressedThisFrame)
             {
-                Vector3 dashDir = GetDashDirection();
-                entity.Movement.Dash(dashDir);
+                entity.Movement.Jump();
             }
-        }
-
-        /// <summary>
-        /// Determines the dash direction with fallback priority:
-        /// 1. Current WASD input direction
-        /// 2. Last valid movement direction (for dash after stopping)
-        /// 3. Current facing direction (fallback)
-        /// </summary>
-        /// <returns>Normalized dash direction vector.</returns>
-        private Vector3 GetDashDirection()
-        {
-            Vector2 input = GetMovementInput();
-            Vector3 currentDir = CalculateWorldMoveDirection(input);
-            
-            // Priority 1: Current input direction
-            if (currentDir.sqrMagnitude > MOVEMENT_DEADZONE)
-            {
-                return currentDir.normalized;
-            }
-            
-            // Priority 2: Last valid movement direction
-            if (lastValidMoveDir.sqrMagnitude > MOVEMENT_DEADZONE)
-            {
-                return lastValidMoveDir.normalized;
-            }
-            
-            // Priority 3: Current facing direction
-            return entity.transform.forward;
         }
 
         #endregion

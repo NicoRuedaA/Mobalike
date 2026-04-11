@@ -2,6 +2,8 @@
 
 Esta guía cubre la configuración para desplegar el proyecto en diferentes entornos.
 
+> **Versión del proyecto:** Unity 6 (6000.3.11f1) con URP 17.3.0 | 62 tests unitarios pasando ✅
+
 ---
 
 ## 1. Configuración de Build

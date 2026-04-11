@@ -113,9 +113,9 @@ COMBAT FLOW (Charged Attack):
 
 | Tecnología | Versión Mínima | Versión Recomendada | Notas |
 |------------|-----------------|---------------------|-------|
-| Unity Editor | 2022.3 LTS | 6000.3 (Unity 6) | LTS preferred; project uses Unity 6 |
+| Unity Editor | 2022.3 LTS | **6000.3 (Unity 6)** | LTS preferred; project uses Unity 6 |
 | Input System Package | 1.6.0 | 1.19.0 | New Input System |
-| URP | 14.0.0 | 17.3.0 | Universal Render Pipeline |
+| URP | 14.0.0 | **17.3.0** | Universal Render Pipeline |
 | C# | 9.0 | 10.0 | .NET Standard 2.1 |
 | IDE | VS 2022 | Rider 2024.1 | Recomendado para debugging |
 
@@ -517,6 +517,12 @@ namespace TuNamespace
 ---
 
 ## 11. Changelog
+
+### v0.4.0 (11-04-2026)
+- Documentación actualizada
+- Sistema completo con 62 tests unitarios passando
+- Assembly definitions configuradas (Runtime, Editor, Tests)
+- Sistema de habilidades data-driven con AbilityData ScriptableObjects
 
 ### v0.3.0 (10-04-2026)
 - 62 tests Unitarios pasando

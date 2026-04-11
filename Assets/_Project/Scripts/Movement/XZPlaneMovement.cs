@@ -180,6 +180,8 @@ namespace MobaGameplay.Movement
             dashTimer = dashDuration;
             dashCooldownTimer = dashCooldown;
             verticalVelocity = 0f; // Reset gravity for straight dash
+            
+            TriggerOnDashStart();
         }
 
         private void Update()

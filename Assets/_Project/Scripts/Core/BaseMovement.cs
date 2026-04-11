@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 namespace MobaGameplay.Core
@@ -11,6 +12,15 @@ namespace MobaGameplay.Core
     {
         // Constants
         protected const float DEFAULT_DEADZONE = 0.01f;
+        
+        // Events
+        public event Action OnDashStart;
+        
+        protected void TriggerOnDashStart()
+        {
+            OnDashStart?.Invoke();
+        }
+
         
         // Properties
         public abstract float CurrentVelocity { get; }

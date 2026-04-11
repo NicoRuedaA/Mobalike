@@ -1,6 +1,6 @@
 # Memoria del Proyecto - MobaGameplay
 
-> Estado actual del proyecto — Actualizado 2026-04-10
+> Estado actual del proyecto — Actualizado 2026-04-11
 
 ---
 
@@ -206,4 +206,4 @@ Assets/_Project/
 ---
 
 ## 📅 Último Update
-**2026-04-10** — Cooldown bugfix + cleanup + 62 tests pasando ✅
+**2026-04-11** — Documentación actualizada, 62 tests pasando ✅
