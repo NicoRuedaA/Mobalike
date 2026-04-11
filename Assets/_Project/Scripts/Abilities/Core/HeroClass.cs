@@ -109,9 +109,7 @@ namespace MobaGameplay.Abilities
         /// </summary>
         public bool IsValid()
         {
-            return !string.IsNullOrEmpty(className) 
-                && modelPrefab != null 
-                && animatorController != null;
+            return !string.IsNullOrEmpty(className);
         }
 
         void OnValidate()

@@ -2,6 +2,7 @@ using UnityEngine;
 using MobaGameplay.Core;
 using MobaGameplay.Abilities;
 using MobaGameplay.Abilities.Projectiles;
+using MobaGameplay.Visuals;
 
 namespace MobaGameplay.Combat
 {
@@ -67,7 +68,12 @@ namespace MobaGameplay.Combat
         /// </summary>
         public void ConfigureFromHeroClass(HeroClass heroClass)
         {
-            if (heroClass == null) return;
+            Debug.Log("[RangedCombat] ConfigureFromHeroClass START");
+            
+            if (heroClass == null) {
+                Debug.LogWarning("[RangedCombat] ConfigureFromHeroClass - heroClass is null!");
+                return;
+            }
 
             basicAttackProjectilePrefab = heroClass.basicAttackProjectilePrefab;
             projectileSpeed = heroClass.projectileSpeed;
@@ -75,6 +81,39 @@ namespace MobaGameplay.Combat
             chargedDamageMultiplier = heroClass.chargedDamageMultiplier;
             chargedSpeedMultiplier = heroClass.chargedSpeedMultiplier;
             chargedSizeMultiplier = heroClass.chargedSizeMultiplier;
+            
+            // Setup LaserSight if showAimLines is enabled
+            if (heroClass.showAimLines)
+            {
+                SetupLaserSight();
+            }
+            
+            Debug.Log($"[RangedCombat] Configured - projectilePrefab={basicAttackProjectilePrefab?.name ?? "NULL"}, speed={projectileSpeed}");
+        }
+
+        /// <summary>
+        /// Add LineRenderer and LaserSight components dynamically.
+        /// Called from ConfigureFromHeroClass when showAimLines is true.
+        /// </summary>
+        private void SetupLaserSight()
+        {
+            var entityTransform = entity?.transform ?? transform;
+            
+            // Add LineRenderer if missing
+            LineRenderer lineRenderer = entityTransform.GetComponent<LineRenderer>();
+            if (lineRenderer == null)
+            {
+                lineRenderer = entityTransform.gameObject.AddComponent<LineRenderer>();
+            }
+            
+            // Add LaserSight if missing
+            LaserSight laserSight = entityTransform.GetComponent<LaserSight>();
+            if (laserSight == null)
+            {
+                laserSight = entityTransform.gameObject.AddComponent<LaserSight>();
+            }
+            
+            Debug.Log("[RangedCombat] LaserSight configured");
         }
 
         public override void BasicAttack()

@@ -62,6 +62,8 @@ namespace MobaGameplay.Core
 
         protected override void Awake()
         {
+            Debug.Log("[HeroEntity] >>>>>>>>>> Awake START <<<<<<<<<<");
+            
             // Singleton setup — prevent duplicates
             if (Instance != null && Instance != this)
             {
@@ -75,12 +77,20 @@ namespace MobaGameplay.Core
             if (heroClass == null)
             {
                 heroClass = Resources.Load<HeroClass>("ScriptableObjects/Heroes/Mage");
+                Debug.Log($"[HeroEntity] Loaded heroClass from Resources: {heroClass?.className ?? "NULL"}");
             }
+
+            Debug.Log($"[HeroEntity] Awake: heroClass = {heroClass?.className ?? "NULL"}");
 
             // Apply class configuration BEFORE base.Awake()
             if (heroClass != null)
             {
+                Debug.Log($"[HeroEntity] About to apply class: {heroClass.className}");
                 ApplyClassConfiguration();
+            }
+            else
+            {
+                Debug.LogError("[HeroEntity] heroClass is NULL even after fallback!");
             }
 
             base.Awake();
@@ -123,7 +133,22 @@ namespace MobaGameplay.Core
         /// </summary>
         private void ApplyClassConfiguration()
         {
-            if (heroClass == null || !heroClass.IsValid()) return;
+            Debug.Log($"[HeroEntity] ApplyClassConfiguration ENTER, heroClass={heroClass?.className}");
+            
+            if (heroClass == null) {
+                Debug.LogWarning("[HeroEntity] ApplyClassConfiguration: heroClass is null!");
+                return;
+            }
+            
+            bool isValid = heroClass.IsValid();
+            Debug.Log($"[HeroEntity] ApplyClassConfiguration: IsValid={isValid}");
+            
+            if (!isValid) {
+                Debug.LogWarning("[HeroEntity] ApplyClassConfiguration SKIPPED - class invalid");
+                return;
+            }
+
+            Debug.Log("[HeroEntity] ApplyClassConfiguration: Proceeding with config...");
 
             // Apply base stats from class
             MaxHealth = heroClass.baseHealth;
@@ -142,6 +167,7 @@ namespace MobaGameplay.Core
             ManaRegen = heroClass.manaRegen;
 
             // Setup combat component based on combat type
+            Debug.Log("[HeroEntity] Calling SetupCombatComponent...");
             SetupCombatComponent();
 
             Debug.Log($"[HeroEntity] Applied class: {heroClass.className}");
@@ -152,33 +178,30 @@ namespace MobaGameplay.Core
         /// </summary>
         private void SetupCombatComponent()
         {
+            Debug.Log($"[HeroEntity] SetupCombatComponent START, combatType = {heroClass?.combatType}");
+            
+            if (heroClass == null) {
+                Debug.LogWarning("[HeroEntity] SetupCombatComponent SKIPPED - heroClass is null");
+                return;
+            }
+            
             if (heroClass.combatType == CombatType.Ranged)
             {
                 // Add or configure RangedCombat
                 RangedCombat rangedCombat = GetComponent<RangedCombat>();
                 if (rangedCombat == null)
                 {
+                    Debug.Log("[HeroEntity] Adding RangedCombat component");
                     rangedCombat = gameObject.AddComponent<RangedCombat>();
                 }
-                rangedCombat.ConfigureFromHeroClass(heroClass);
-
-                // Add LaserSight if showAimLines is enabled
-                if (heroClass.showAimLines)
+                else
                 {
-                    // Ensure LineRenderer exists (required by LaserSight)
-                    LineRenderer lr = GetComponent<LineRenderer>();
-                    if (lr == null)
-                    {
-                        lr = gameObject.AddComponent<LineRenderer>();
-                    }
-
-                    LaserSight laserSight = GetComponent<LaserSight>();
-                    if (laserSight == null)
-                    {
-                        laserSight = gameObject.AddComponent<LaserSight>();
-                    }
-                    Debug.Log($"[HeroEntity] Configured LaserSight for {heroClass.className}");
+                    Debug.Log("[HeroEntity] RangedCombat already exists");
                 }
+                
+                Debug.Log("[HeroEntity] Calling ConfigureFromHeroClass...");
+                rangedCombat.ConfigureFromHeroClass(heroClass);
+                Debug.Log("[HeroEntity] ConfigureFromHeroClass completed");
             }
             else if (heroClass.combatType == CombatType.Melee)
             {
