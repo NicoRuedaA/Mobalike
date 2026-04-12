@@ -17,7 +17,10 @@ namespace MobaGameplay.UI
         [SerializeField] private AbilitySlotUI slot4;
 
         private BaseEntity playerEntity;
-        private AbilityController playerAbilities;
+        private AbilityController legacyAbilities;
+        private AbilitySystem newAbilities;
+        private bool usesNewSystem;
+        private bool abilitiesAssigned;
 
         private void Start()
         {
@@ -33,6 +36,13 @@ namespace MobaGameplay.UI
                 if (playerEntity == null) return;
             }
 
+            // Solo intentar asignar una vez
+            if (!abilitiesAssigned)
+            {
+                TryAssignAbilities();
+                abilitiesAssigned = true;
+            }
+
             // Actualizar barras de recursos suavemente
             if (healthBar != null)
                 healthBar.UpdateValue(playerEntity.CurrentHealth, playerEntity.MaxHealth);
@@ -43,10 +53,8 @@ namespace MobaGameplay.UI
 
         private void TryBindPlayer()
         {
-            // Intentar por nombre (compatibilidad con escena actual)
             GameObject playerGo = GameObject.Find("Player");
 
-            // Fallback por tag para no depender de un nombre fijo
             if (playerGo == null)
             {
                 playerGo = GameObject.FindGameObjectWithTag("Player");
@@ -55,20 +63,53 @@ namespace MobaGameplay.UI
             if (playerGo != null)
             {
                 playerEntity = playerGo.GetComponent<BaseEntity>();
-                playerAbilities = playerGo.GetComponent<AbilityController>();
+                legacyAbilities = playerGo.GetComponent<AbilityController>();
+                newAbilities = playerGo.GetComponent<AbilitySystem>();
+                usesNewSystem = newAbilities != null;
+            }
+        }
 
-                // Vincular habilidades a los slots
-                if (playerAbilities != null)
+        private void TryAssignAbilities()
+        {
+            if (usesNewSystem)
+            {
+                // New data-driven system
+                if (newAbilities == null) return;
+
+                if (slot1 != null)
                 {
-                    if (slot1 != null) slot1.AssignAbility(playerAbilities.Ability1);
-                    if (slot2 != null) slot2.AssignAbility(playerAbilities.Ability2);
-                    if (slot3 != null) slot3.AssignAbility(playerAbilities.Ability3);
-                    if (slot4 != null) slot4.AssignAbility(playerAbilities.Ability4);
+                    var data = newAbilities.GetAbilityData(0);
+                    if (data != null) slot1.AssignAbility(data, newAbilities, 0);
                 }
-                else
+                if (slot2 != null)
                 {
-                    Debug.LogWarning("[PlayerHUD] No AbilityController found on Player.");
+                    var data = newAbilities.GetAbilityData(1);
+                    if (data != null) slot2.AssignAbility(data, newAbilities, 1);
                 }
+                if (slot3 != null)
+                {
+                    var data = newAbilities.GetAbilityData(2);
+                    if (data != null) slot3.AssignAbility(data, newAbilities, 2);
+                }
+                if (slot4 != null)
+                {
+                    var data = newAbilities.GetAbilityData(3);
+                    if (data != null) slot4.AssignAbility(data, newAbilities, 3);
+                }
+            }
+            else
+            {
+                // Old MonoBehaviour system
+                if (legacyAbilities == null) return;
+
+                if (slot1 != null && slot1.GetAbility() == null) 
+                    slot1.AssignAbility(legacyAbilities.Ability1);
+                if (slot2 != null && slot2.GetAbility() == null) 
+                    slot2.AssignAbility(legacyAbilities.Ability2);
+                if (slot3 != null && slot3.GetAbility() == null) 
+                    slot3.AssignAbility(legacyAbilities.Ability3);
+                if (slot4 != null && slot4.GetAbility() == null) 
+                    slot4.AssignAbility(legacyAbilities.Ability4);
             }
         }
     }
