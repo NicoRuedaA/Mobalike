@@ -70,6 +70,7 @@ namespace MobaGameplay.Movement
         public override bool IsGrounded => CheckGrounded();
         public override bool IsJumping => isJumping;
         public override bool IsDashing => currentMode == MovementMode.Dashing;
+        public override bool IsSprinting => isSprinting;
         
         public MovementMode CurrentMovementMode => currentMode;
 

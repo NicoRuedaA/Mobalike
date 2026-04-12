@@ -28,6 +28,7 @@ namespace MobaGameplay.Core
         public abstract bool IsGrounded { get; }
         public abstract bool IsJumping { get; }
         public abstract bool IsDashing { get; }
+        public abstract bool IsSprinting { get; }
 
         // Movement API
         public abstract void MoveTo(Vector3 destination);

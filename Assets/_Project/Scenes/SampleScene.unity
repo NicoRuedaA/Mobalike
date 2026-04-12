@@ -1753,6 +1753,58 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5853232107393476491, guid: 81fd3fdffc9696d419d40772fb4b68cd, type: 3}
+      propertyPath: clipHit
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 5853232107393476491, guid: 81fd3fdffc9696d419d40772fb4b68cd, type: 3}
+      propertyPath: clipRun
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 5853232107393476491, guid: 81fd3fdffc9696d419d40772fb4b68cd, type: 3}
+      propertyPath: clipCast
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 5853232107393476491, guid: 81fd3fdffc9696d419d40772fb4b68cd, type: 3}
+      propertyPath: clipDash
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 5853232107393476491, guid: 81fd3fdffc9696d419d40772fb4b68cd, type: 3}
+      propertyPath: clipIdle
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 5853232107393476491, guid: 81fd3fdffc9696d419d40772fb4b68cd, type: 3}
+      propertyPath: clipWalk
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 5853232107393476491, guid: 81fd3fdffc9696d419d40772fb4b68cd, type: 3}
+      propertyPath: clipDeath
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 5853232107393476491, guid: 81fd3fdffc9696d419d40772fb4b68cd, type: 3}
+      propertyPath: clipInAir
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 5853232107393476491, guid: 81fd3fdffc9696d419d40772fb4b68cd, type: 3}
+      propertyPath: clipAttack
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 5853232107393476491, guid: 81fd3fdffc9696d419d40772fb4b68cd, type: 3}
+      propertyPath: clipJumpLand
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 5853232107393476491, guid: 81fd3fdffc9696d419d40772fb4b68cd, type: 3}
+      propertyPath: clipHookPunch
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 5853232107393476491, guid: 81fd3fdffc9696d419d40772fb4b68cd, type: 3}
+      propertyPath: clipJumpStart
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 5853232107393476491, guid: 81fd3fdffc9696d419d40772fb4b68cd, type: 3}
+      propertyPath: overrideController
+      value: 
+      objectReference: {fileID: 22100000, guid: 8c7f83da2b400a447abf424667c56b8b, type: 2}
     - target: {fileID: 7469127219743572124, guid: 81fd3fdffc9696d419d40772fb4b68cd, type: 3}
       propertyPath: m_WarningMessage
       value: 
@@ -1764,8 +1816,28 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 7489238076579717741, guid: 81fd3fdffc9696d419d40772fb4b68cd, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 542171778}
   m_SourcePrefab: {fileID: 100100000, guid: 81fd3fdffc9696d419d40772fb4b68cd, type: 3}
+--- !u!1 &542171777 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 7489238076579717741, guid: 81fd3fdffc9696d419d40772fb4b68cd, type: 3}
+  m_PrefabInstance: {fileID: 542171776}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &542171778
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 542171777}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ebcccc4f85316ff44896a1f0101879fa, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: MobaGameplay.Runtime::MobaGameplay.Combat.MeleeCombat
 --- !u!1 &554162645
 GameObject:
   m_ObjectHideFlags: 0
@@ -5329,6 +5401,10 @@ PrefabInstance:
     - target: {fileID: 2356321136074236333, guid: 4baf0417cab834847881d3cd8230cd6f, type: 3}
       propertyPath: m_AnchoredPosition.y
       value: 78
+      objectReference: {fileID: 0}
+    - target: {fileID: 3064548462813746966, guid: 4baf0417cab834847881d3cd8230cd6f, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: -154
       objectReference: {fileID: 0}
     - target: {fileID: 3187139586826545203, guid: 4baf0417cab834847881d3cd8230cd6f, type: 3}
       propertyPath: m_AnchorMax.x
