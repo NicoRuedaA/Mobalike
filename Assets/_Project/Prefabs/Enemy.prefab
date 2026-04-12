@@ -144,7 +144,6 @@ MonoBehaviour:
   criticalMultiplier: 1.5
   goldReward: 10
   experienceReward: 25
-  goldDropPrefab: {fileID: 100000, guid: 1f338c29b5232744d91871cfe491bde1, type: 3}
 --- !u!114 &8981819843625623491
 MonoBehaviour:
   m_ObjectHideFlags: 0

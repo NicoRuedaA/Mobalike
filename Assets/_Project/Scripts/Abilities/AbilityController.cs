@@ -33,7 +33,6 @@ namespace MobaGameplay.Abilities
         public BaseAbility Ability2 => ability2;
         public BaseAbility Ability3 => ability3;
         public BaseAbility Ability4 => ability4;
-        public bool HasAnyAbilities => ability1 != null || ability2 != null || ability3 != null || ability4 != null;
         public bool HasActiveTargeting => activeTargetingAbility != null;
 
         // Events
@@ -44,78 +43,8 @@ namespace MobaGameplay.Abilities
         private void Awake()
         {
             entity = GetComponent<BaseEntity>();
-            FindAndAssignAbilities(); // Buscar abilities correctas por tipo
             InitializeAbilities();
             SetupKeyBindings();
-            AutoFixAbilityIcons(); // Arreglar iconos si están null
-        }
-
-        private void FindAndAssignAbilities()
-        {
-            // Solo buscar abilities si las referencias son null
-            // NO sobrescribir abilities ya asignadas en el prefab (preservan íconos y config)
-            if (ability1 == null)
-                ability1 = GetComponent<FireballAbility>();
-            if (ability2 == null)
-                ability2 = GetComponent<GroundSmashAbility>();
-            if (ability3 == null)
-                ability3 = GetComponent<DashAbility>();
-            if (ability4 == null)
-                ability4 = GetComponent<GroundTrailAbility>();
-
-            Debug.Log($"[AbilityController] Found abilities: A1={ability1?.abilityName}({ability1?.GetType().Name}), A2={ability2?.abilityName}({ability2?.GetType().Name}), A3={ability3?.abilityName}({ability3?.GetType().Name}), A4={ability4?.abilityName}({ability4?.GetType().Name})");
-        }
-
-        [ContextMenu("Fix Ability Icons")]
-        public void AutoFixAbilityIcons()
-        {
-            #if UNITY_EDITOR
-            // Only run in editor - load icons from Assets folder
-            string[] iconPaths = new string[]
-            {
-                "Assets/_Project/Art/Icons/Abilities/1.png",
-                "Assets/_Project/Art/Icons/Abilities/2.png",
-                "Assets/_Project/Art/Icons/Abilities/3.png",
-                "Assets/_Project/Art/Icons/Abilities/4.png"
-            };
-            
-            Sprite[] icons = new Sprite[4];
-            for (int i = 0; i < 4; i++)
-            {
-                icons[i] = UnityEditor.AssetDatabase.LoadAssetAtPath<Sprite>(iconPaths[i]);
-            }
-            
-            FixAbilityIcon(ability1, icons[0], "FireballAbility", "Fireball");
-            FixAbilityIcon(ability2, icons[1], "GroundSmashAbility", "Ground Smash");
-            FixAbilityIcon(ability3, icons[2], "DashAbility", "Dash");
-            FixAbilityIcon(ability4, icons[3], "GroundTrailAbility", "Ground Trail");
-            
-            // Mark abilities as dirty so they save
-            if (ability1 != null) UnityEditor.EditorUtility.SetDirty(ability1);
-            if (ability2 != null) UnityEditor.EditorUtility.SetDirty(ability2);
-            if (ability3 != null) UnityEditor.EditorUtility.SetDirty(ability3);
-            if (ability4 != null) UnityEditor.EditorUtility.SetDirty(ability4);
-            
-            Debug.Log("[AbilityController] Auto-fixed ability icons");
-            #endif
-        }
-        
-        private void FixAbilityIcon(BaseAbility ability, Sprite icon, string typeName, string displayName)
-        {
-            if (ability == null) return;
-            
-            // Use public property setters instead of reflection
-            if (ability.AbilityIcon == null && icon != null)
-            {
-                ability.AbilityIcon = icon;
-                Debug.Log($"[AbilityController] Assigned icon '{icon.name}' to {typeName}");
-            }
-            
-            // Fix the name if it's the default "New Ability"
-            if (string.IsNullOrEmpty(ability.abilityName) || ability.abilityName == "New Ability")
-            {
-                ability.abilityName = displayName;
-            }
         }
 
         private void SetupKeyBindings()

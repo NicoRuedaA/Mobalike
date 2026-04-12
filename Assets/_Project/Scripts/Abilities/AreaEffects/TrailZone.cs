@@ -59,64 +59,19 @@ namespace MobaGameplay.Abilities.AreaEffects
             // Limpiar referencias nulas o entidades muertas antes de iterar
             _entitiesInside.RemoveWhere(e => e == null || e.IsDead);
 
-            // Detectar enemigos manualmente con OverlapBox (respaldo para triggers)
-            DetectEnemiesWithOverlap();
-
             float tickDamage = _damagePerSecond * Time.deltaTime;
             foreach (EnemyEntity enemy in _entitiesInside)
             {
-                if (enemy != null && !enemy.IsDead)
-                {
-                    enemy.TakeDamage(new DamageInfo(tickDamage, DamageType.Magical, _owner));
-                    #if UNITY_EDITOR
-                    Debug.Log($"[TrailZone] Dealing {tickDamage:F1} damage to {enemy.gameObject.name}. Total entities: {_entitiesInside.Count}");
-                    #endif
-                }
-            }
-        }
-
-        /// <summary>
-        /// Detecta enemigos dentro del área usando Physics.OverlapBox.
-        /// Esto funciona como respaldo cuando OnTriggerEnter no detecta correctamente.
-        /// </summary>
-        private void DetectEnemiesWithOverlap()
-        {
-            Vector3 center = transform.position + _boxCollider.center;
-            Vector3 halfExtents = _boxCollider.size * 0.5f;
-            
-            Collider[] hits = Physics.OverlapBox(center, halfExtents, transform.rotation);
-            foreach (Collider hit in hits)
-            {
-                EnemyEntity enemy = hit.GetComponentInParent<EnemyEntity>();
-                if (enemy != null && !enemy.IsDead && !_entitiesInside.Contains(enemy))
-                {
-                    _entitiesInside.Add(enemy);
-                    #if UNITY_EDITOR
-                    Debug.Log($"[TrailZone] Detected enemy via OverlapBox: {enemy.gameObject.name}");
-                    #endif
-                }
+                enemy.TakeDamage(new DamageInfo(tickDamage, DamageType.Magical, _owner));
             }
         }
 
         private void OnTriggerEnter(Collider other)
         {
-            #if UNITY_EDITOR
-            Debug.Log($"[TrailZone] OnTriggerEnter: {other.gameObject.name} (Layer: {other.gameObject.layer})");
-            #endif
-            
             EnemyEntity enemy = other.GetComponentInParent<EnemyEntity>();
             if (enemy != null && !enemy.IsDead)
             {
                 _entitiesInside.Add(enemy);
-                #if UNITY_EDITOR
-                Debug.Log($"[TrailZone] Added enemy to tracking: {enemy.gameObject.name}");
-                #endif
-            }
-            else
-            {
-                #if UNITY_EDITOR
-                Debug.Log($"[TrailZone] No EnemyEntity found on {other.gameObject.name}");
-                #endif
             }
         }
 
