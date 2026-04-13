@@ -111,14 +111,22 @@ Pre-digested rules per skill. Delegators copy matching blocks into sub-agent pro
 
 | File | Path | Notes |
 |------|------|-------|
-| rules.md | F:\Proyectos\Unity\Unity Projects\MobaGameplay\rules.md | 1-line: "Be concise. Don't repeat unchanged code." |
-| README.es.md | F:\Proyectos\Unity\Unity Projects\MobaGameplay\README.es.md | Spanish architecture documentation |
-| README.md | F:\Proyectos\Unity\Unity Projects\MobaGameplay\README.md | English documentation |
-| plan.md | F:\Proyectos\Unity\Unity Projects\MobaGameplay\plan.md | Project plan |
-| roadmap.md | F:\Proyectos\Unity\Unity Projects\MobaGameplay\roadmap.md | Project roadmap |
+| README.es.md | F:\Proyectos\Unity\Unity Projects\Mobalike\README.es.md | Spanish architecture documentation |
+| README.md | F:\Proyectos\Unity\Unity Projects\Mobalike\README.md | English documentation |
+
+## Documentation (Assets/_Project/Documentation/)
+
+| File | Notes |
+|------|-------|
+| memoria.md | Project state, bugs fixed, learnings |
+| roadmap.md | Project roadmap (fases 1-7) |
+| rules.md | Concisión + archivos prohibidos |
+| HOW_TO_CREATE_ITEMS.md | Item creation guide |
+| idea_inicial.md | Original project vision | |
 
 ## Project Standards (from rules.md)
 
 - **Concision**: Be concise. Don't repeat unchanged code. Show only relevant fragments for small changes.
 - **Spanish first**: This project uses Spanish (voseo) for documentation and conventions.
 - **Unity MCP**: Use `mcpforunity://` resources before tools; wait for compilation after script edits.
+- **Token conservation**: NEVER read .unity, .prefab, .meta, .mat, .asset, .controller, .anim files directly. Use MCP for Unity tools (manage_gameobject, manage_components) to inspect scenes and prefabs instead. See `Documentation/rules.md` for full file ignore list.

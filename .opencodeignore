@@ -1,0 +1,60 @@
+# Unity Scene files - YAML serialized hierarchies, huge token waste
+# Use MCP for Unity to inspect scenes instead (manage_gameobject, manage_components)
+*.unity
+
+# Unity Prefab files - same as scenes, huge YAML without semantic value for coding
+# Use MCP to inspect prefabs instead
+*.prefab
+
+# Unity auto-generated meta files - GUIDs + timestamps, zero value for AI
+*.meta
+
+# Unity Asset serialized files (materials, animations, etc.)
+*.mat
+*.asset
+*.controller
+*.anim
+*.overrideController
+*.physicMaterial
+*.physicsMaterial2D
+
+# Unity Lighting data
+*.lighting
+*.lightmap
+*.exr
+
+# Unity NavMesh data
+*.navmesh
+
+# Packages (read-only, managed by Unity)
+Packages/
+
+# Build outputs
+Build/
+Builds/
+
+# Library (Unity cache, never read this)
+Library/
+
+# Temp and obj folders
+Temp/
+obj/
+
+# User settings
+UserSettings/
+
+# Logs
+Logs/
+*.log
+
+# IDE files
+.vs/
+.idea/
+*.csproj
+*.sln
+*.user
+*.userprefs
+
+# OS files
+.DS_Store
+Thumbs.db

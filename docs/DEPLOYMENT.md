@@ -119,14 +119,15 @@ URP Asset Configuration:
 
 ### 3.2 Shaders Requeridos
 
-确保 los siguientes shaders existen en el proyecto:
+Verificar que los siguientes shaders existen en el proyecto:
 
 ```text
-Assets/
+Assets/_Project/
 ├── Shaders/
-│   ├── Custom/
-│   │   └── Outline.shader    # Para HoverOutline
-│   └── ...
+│   └── Outline.shader    # Para HoverOutline
+└── Art/
+    └── Shaders/
+        └── UIHealthBarTick.shader
 ```
 
 Si el shader Outline no existe, crearlo:
@@ -352,7 +353,7 @@ Testing:
 
 ### 9.1 Monitoreo
 
-考虑 implementar:
+Considerar implementar:
 - Unity Analytics (gratuito, básico)
 - Custom crash reporting
 - Performance monitoring

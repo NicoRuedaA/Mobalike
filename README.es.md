@@ -201,74 +201,60 @@ com.unity.test-framework@1.1.33
 ```
 Assets/
 ├── _Project/                          # Código principal del proyecto
-│   ├── Scripts/
-│   │   ├── Core/                     # Clases base abstractas
-│   │   │   ├── BaseController.cs     # Controller base (input)
-│   │   │   ├── BaseEntity.cs        # Entidad base (health, mana, stats)
-│   │   │   ├── BaseMovement.cs      # Movimiento base abstracto
-│   │   │   ├── BaseCombat.cs        # Combate base abstracto
-│   │   │   ├── HeroEntity.cs        # Jugador (leveling, gold)
-│   │   │   └── EnemyEntity.cs        # Enemigo con hover outline
-│   │   │
-│   │   ├── Controllers/             # Controladores de input
-│   │   │   └── PlayerInputController.cs  # MAIN INPUT HANDLER
-│   │   │
-│   │   ├── Movement/                 # Sistemas de movimiento
-│   │   │   └── XZPlaneMovement.cs   # Movimiento estilo MOBA
-│   │   │
-│   │   ├── Combat/                  # Sistemas de combate
-│   │   │   ├── RangedCombat.cs      # Combate a distancia
-│   │   │   ├── MeleeCombat.cs       # Combate cuerpo a cuerpo
-│   │   │   └── DamageInfo.cs        # Struct de daño
-│   │   │
-│   │   ├── Abilities/               # Sistema de habilidades
-│   │   │   ├── BaseAbility.cs       # Habilidad base abstracta
-│   │   │   ├── AbilityController.cs # Gestor de abilities
-│   │   │   ├── DashAbility.cs      # Ability de dash
-│   │   │   ├── FireballAbility.cs  # Proyectil de fuego
-│   │   │   ├── GroundSmashAbility.cs # AoE melee
-│   │   │   ├── Types/              # Tipos de abilities
-│   │   │   │   ├── ProjectileAbility.cs
-│   │   │   │   ├── AreaOfEffectAbility.cs
-│   │   │   │   └── TargetedProjectileAbility.cs
-│   │   │   └── Projectiles/         # Proyectiles
-│   │   │       ├── Projectile.cs
-│   │   │       ├── BasicAttackProjectile.cs
-│   │   │       ├── LinearProjectile.cs
-│   │   │       └── HomingProjectile.cs
-│   │   │
-│   │   ├── Visuals/                 # Efectos visuales
-│   │   │   └── LaserSight.cs        # Laser de apuntar
-│   │   │
-│   │   ├── UI/                      # UI del juego
-│   │   │   ├── Targeting/          # Sistema de targeting UI
-│   │   │   │   ├── HoverOutline.cs     # Outline en hover
-│   │   │   │   ├── TargetingManager.cs  # Gestor de indicators
-│   │   │   │   ├── CircleIndicator.cs
-│   │   │   │   ├── LineIndicator.cs
-│   │   │   │   └── IndicatorType.cs     # Enum de tipos
-│   │   │   ├── FloatingTextManager.cs
-│   │   │   ├── FloatingDamageText.cs
-│   │   │   └── ...
-│   │   │
-│   │   └── VFX/                     # Efectos de partículas
-│   │       └── SimpleVFX.cs
+│   ├── Art/
+│   │   ├── Animations/
+│   │   │   ├── Controllers/         # .controller (playerAnimator.controller)
+│   │   │   ├── Clips/              # .anim clips
+│   │   │   └── Mask/               # Avatar masks
+│   │   ├── Icons/
+│   │   │   ├── Abilities/          # Íconos de habilidades
+│   │   │   └── Items/              # Íconos de items/equipo
+│   │   ├── Materials/               # Materiales varios
+│   │   └── Shaders/                # Outline.shader, UIHealthBarTick.shader
+│   │
+│   ├── Data/                        # ScriptableObjects de datos
+│   │   ├── Abilities/              # AbilityData (FireballAbilityData, etc.)
+│   │   └── Classes/               # HeroClass (Mage.asset, Warrior.asset)
+│   │
+│   ├── Documentation/               # Documentación del proyecto
 │   │
 │   ├── Prefabs/                     # Prefabs del proyecto
-│   │   ├── Abilities/
-│   │   │   ├── BasicAttackProjectile.prefab
-│   │   │   ├── Fireball.prefab
-│   │   │   └── GroundSmashVFX.prefab
-│   │   └── ...
+│   │   ├── Abilities/              # VFX: AoEZone, TrailZone, proyectiles
+│   │   ├── Characters/             # Player, enemies
+│   │   ├── Environment/            # Paredes, rampas, escaleras
+│   │   ├── Items/                 # GoldDrop, etc.
+│   │   └── UI/                    # HUD, status bars, floating text
+│   │       └── Targeting/          # Indicators (circle, line, trail)
 │   │
-│   └── Scenes/
-│       └── SampleScene.unity
+│   ├── Scenes/                     # SampleScene
+│   │
+│   └── Scripts/
+│       ├── Abilities/              # Sistema de habilidades data-driven
+│       │   ├── Core/              # AbilitySystem, AbilityData, AbilityInstance
+│       │   ├── Behaviors/         # AbilityBehaviorFactory
+│       │   ├── Types/             # ProjectileAbility, AoEAbility, etc.
+│       │   ├── Projectiles/       # Projectile, LinearProjectile, HomingProjectile
+│       │   └── AreaEffects/       # AoE zones, trail zones
+│       ├── AI/                    # EnemyAIController
+│       ├── Animation/             # CharacterAnimator, AnimationEventReceiver
+│       ├── Combat/               # RangedCombat, MeleeCombat, DamageInfo
+│       ├── Controllers/          # PlayerInputController
+│       ├── Core/                 # BaseEntity, HeroEntity, EnemyEntity, BaseController
+│       ├── Editor/               # Herramientas de editor + EquipmentTester
+│       ├── Game/                 # GameStateManager, ItemDropInitializer, WaveData
+│       ├── Inventory/           # InventoryComponent, EquipmentComponent, ItemData
+│       ├── Movement/            # XZPlaneMovement
+│       ├── UI/                 # HUD, AbilitySlotUI, ResourceBarUI, FloatingText
+│       │   └── Targeting/       # TargetingManager, indicators
+│       ├── VFX/                # SimpleVFX
+│       └── Visuals/            # LaserSight
 │
-├── StarterAssets/                   # Assets base de Unity
-│   ├── InputSystem/
-│   └── ThirdPersonController/
+├── StarterAssets/                # Assets base de Unity (IGNORADO por .opencodeignore)
 │
-└── docs/                           # Documentación
+├── Tests/                        # Tests unitarios (62 tests pasando)
+│   └── MobaGameplay.Tests.asmdef
+│
+└── docs/                        # Documentación legacy
     └── DEPLOYMENT.md
 ```
 
