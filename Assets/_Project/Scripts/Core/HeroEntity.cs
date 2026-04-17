@@ -94,33 +94,15 @@ namespace MobaGameplay.Core
             }
 
             base.Awake();
-            // Find TargetingManager directly since Instance might not be ready yet
-            var targetingManager = FindObjectOfType<MobaGameplay.UI.Targeting.TargetingManager>();
-            if (targetingManager != null)
-            {
-                targetingManager.Initialize(transform);
-            }
-            else
-            {
-                Debug.LogWarning("[HeroEntity] TargetingManager not found in Awake");
-            }
         }
 
         private void Start()
         {
-            // Find TargetingManager directly since Instance might not be set
-            var targetingManager = FindObjectOfType<MobaGameplay.UI.Targeting.TargetingManager>();
-            
-            if (targetingManager != null)
+            // Use singleton instead of FindObjectOfType — Instance is guaranteed to exist
+            // after all Awakes have run (Start always executes after Awake)
+            if (TargetingManager.Instance != null)
             {
-                var transformField = targetingManager.GetType().GetField("playerTransform", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
-                var existingTransform = transformField?.GetValue(targetingManager) as Transform;
-                
-                if (existingTransform == null)
-                {
-                    Debug.Log("[HeroEntity] Calling TargetingManager.Initialize from Start");
-                    targetingManager.Initialize(transform);
-                }
+                TargetingManager.Instance.Initialize(transform);
             }
             else
             {

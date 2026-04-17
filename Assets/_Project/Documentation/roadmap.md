@@ -121,6 +121,42 @@
 | `GameStateManager` singleton entre tests | `Instance` persiste entre SetUp/TearDown | Reflection para resetear singleton + cleanup en TearDown |
 | Asmdef sin referencias a paquetes | Custom asmdef no incluye paquetes automáticamente | Agregar `Unity.InputSystem` y `Unity.TextMeshPro` a `references` |
 
+### Bloque A: Encapsulación ✅ COMPLETADO (2026-04-10)
+
+**Tiempo real: ~2 horas**
+
+- ✅ **11 public fields → [SerializeField] private + properties** en HeroEntity
+- ✅ **Habilidades encapsuladas** — FireballAbility, GroundSmashAbility, DashAbility
+- ✅ **AoEZone, LinearProjectile** — encapsulados
+- ✅ **HoverOutline, SimpleVFX, CircleIndicator, LineIndicator** — encapsulados
+- ✅ **HeroBuilderSafe y VisualsBuilder** — actualizados para usar SetSerializedField helper
+- ✅ **EnemyEntity** — usa property accessors de HoverOutline en vez de field directo
+- ✅ **Todos los 62 tests pasan después del refactor** ✅
+
+### Bloque B: Eliminar FindObjectOfType ✅ COMPLETADO (2026-04-17)
+
+**Tiempo real: ~15 minutos**
+
+- ✅ **GoldDrop.cs** — Ya usaba `HeroEntity.Instance` (migrado previamente)
+- ✅ **EnemyEntity.cs** — Ya usaba `HeroEntity.Instance` (migrado previamente)
+- ✅ **HeroEntity.cs** — Reemplazados 2x `FindObjectOfType<TargetingManager>()` por `TargetingManager.Instance`
+- ✅ **Eliminado hack de reflection** en `Start()` — ya no se necesita verificar `playerTransform` por reflection
+- ✅ **Eliminada duplicación** — `Awake()` ya no llama a TargetingManager (se hace una sola vez en `Start()`)
+- ✅ **63 tests pasan** ✅
+
+#### Cambios en HeroEntity.cs
+
+| Antes | Después |
+|-------|---------|
+| `FindObjectOfType<TargetingManager>()` en Awake | Removido (Instance puede no existir en Awake) |
+| `FindObjectOfType<TargetingManager>()` en Start | `TargetingManager.Instance` |
+| Reflection hack para verificar `playerTransform` | Removido — `Initialize()` es idempotente |
+
+### Bloque C: Extraer Magic Numbers ⏳ Pendiente
+
+- [ ] Reemplazar magic numbers por `[SerializeField] private` con nombres descriptivos
+- [ ] Priorizar: daño, velocidades, rangos, cooldowns
+
 ### Fase 5: Nuevas Habilidades
 
 **Tiempo estimado: 2-4 horas**
@@ -251,16 +287,16 @@ Features pedidas por el usuario, planIFICadas pero no implementadas:
 | **IA Enemiga** | Completa, 6 estados, Destroy arreglado | 95% |
 | **Oleadas** | Wave clear sin duplicación | 95% |
 | **Testing** | ✅ 62 tests pasan, asmdef configurado | 100% |
-| **Deuda Técnica** | Namespace + editor scripts + archivos basura resueltos | 90% |
+| **Deuda Técnica** | Namespace + editor scripts + FindObjectOfType eliminado | 95% |
 | **Animaciones** | Fase 7planificada, 4 sprints definidos | 15% |
 
 ---
 
 ## 🚀 Estado General
 
-**Veredicto**: El proyecto está en estado **avanzado de prototipo funcional con tests verdes**. Todas las Fases 1-4 están COMPLETADAS. Los 62 tests unitarios pasan correctamente. La Fase 5 (nuevas habilidades), Fase 6 (balance final) y Fase 7 (animaciones) quedan como trabajo futuro.
+**Veredicto**: El proyecto está en estado **avanzado de prototipo funcional con tests verdes**. Todas las Fases 1-4 y Bloques A-B están COMPLETADOS. Los 63 tests unitarios pasan correctamente. Bloque C (magic numbers), Fase 5 (nuevas habilidades), Fase 6 (balance final) y Fase 7 (animaciones) quedan como trabajo futuro.
 
-**Próximo paso**: Fase 5 (nuevas habilidades), Fase 6 (balance) o Fase 7 (animaciones), según prioridad.
+**Próximo paso**: Bloque C (magic numbers), Fase 5 (nuevas habilidades), Fase 6 (balance) o Fase 7 (animaciones), según prioridad.
 
 ---
 
@@ -279,7 +315,7 @@ Features pedidas por el usuario, planIFICadas pero no implementadas:
 
 ### Estadísticas del proyecto
 - **~88 archivos C#** en `_Project/Scripts/` (~389 KB)
-- **4 archivos de test** en `Assets/Tests/` — **62 tests, todos pasando ✅**
+- **4 archivos de test** en `Assets/Tests/` — **63 tests, todos pasando ✅**
 - **42 ItemData** ScriptableObjects de equipo
 - **3 WaveData** ScriptableObjects configurados
 
@@ -298,4 +334,4 @@ Features pedidas por el usuario, planIFICadas pero no implementadas:
 
 ---
 
-*Última actualización: 2026-04-11 — Fase 7 (Sistema de Animaciones) planificada ✅*
+*Última actualización: 2026-04-17 — Bloque B (Eliminar FindObjectOfType) completado ✅*
