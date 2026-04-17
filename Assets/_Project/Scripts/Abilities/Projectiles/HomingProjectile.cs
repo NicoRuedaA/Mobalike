@@ -11,6 +11,10 @@ namespace MobaGameplay.Abilities.Projectiles
         [SerializeField] private float turnSpeed = 10f; // Velocidad de rotación para que no sea un giro instantáneo
         [SerializeField] private GameObject hitEffectPrefab;
 
+        [Header("Targeting")]
+        [SerializeField] private float targetHeightOffset = 1f;
+        [SerializeField] private float maxDistanceFromOwner = 30f;
+
         private float damage;
         private BaseEntity owner;
         private BaseEntity target;
@@ -27,7 +31,7 @@ namespace MobaGameplay.Abilities.Projectiles
             // Dirección inicial
             if (target != null)
             {
-                currentDirection = (target.transform.position + Vector3.up * 1f - transform.position).normalized;
+                currentDirection = (target.transform.position + Vector3.up * targetHeightOffset - transform.position).normalized;
                 transform.forward = currentDirection;
             }
 
@@ -40,7 +44,7 @@ namespace MobaGameplay.Abilities.Projectiles
             if (target != null)
             {
                 // Si el objetivo existe, calculamos la nueva dirección hacia su centro (asumiendo +1 en Y para el pecho)
-                Vector3 targetPos = target.transform.position + Vector3.up * 1f;
+                Vector3 targetPos = target.transform.position + Vector3.up * targetHeightOffset;
                 Vector3 desiredDirection = (targetPos - transform.position).normalized;
 
                 // Rotación suave hacia el objetivo
@@ -51,7 +55,7 @@ namespace MobaGameplay.Abilities.Projectiles
             {
                 // Si el objetivo murió o desapareció mientras el proyectil volaba, sigue recto
                 // Podríamos destruirlo, pero visualmente es mejor que vuele y se estrelle
-                if (Vector3.Distance(transform.position, owner.transform.position) > 30f)
+                if (Vector3.Distance(transform.position, owner.transform.position) > maxDistanceFromOwner)
                 {
                     Destroy(gameObject);
                     return;

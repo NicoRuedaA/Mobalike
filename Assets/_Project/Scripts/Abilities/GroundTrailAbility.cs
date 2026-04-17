@@ -14,6 +14,8 @@ namespace MobaGameplay.Abilities
     /// </summary>
     public class GroundTrailAbility : BaseAbility
     {
+        private const float DIRECTION_THRESHOLD = 0.001f;
+
         [Header("Trail Settings")]
         [Tooltip("Prefab de la zona de daño que forma cada segmento del camino.")]
         [SerializeField] private GameObject trailZonePrefab;
@@ -60,7 +62,7 @@ namespace MobaGameplay.Abilities
             // Dirección plana hacia el objetivo
             Vector3 direction = targetPosition - origin;
             direction.y = 0f;
-            if (direction.sqrMagnitude < 0.001f)
+            if (direction.sqrMagnitude < DIRECTION_THRESHOLD)
                 direction = ownerEntity.transform.forward;
             direction.Normalize();
 

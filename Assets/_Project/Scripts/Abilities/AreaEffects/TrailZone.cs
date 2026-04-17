@@ -13,6 +13,9 @@ namespace MobaGameplay.Abilities.AreaEffects
     [RequireComponent(typeof(BoxCollider))]
     public class TrailZone : MonoBehaviour
     {
+        [Header("Zone Settings")]
+        [SerializeField] private float zoneHeight = 2f;
+
         private float _damagePerSecond;
         private float _duration;
         private BaseEntity _owner;
@@ -42,7 +45,7 @@ namespace MobaGameplay.Abilities.AreaEffects
             _elapsed = 0f;
 
             // Ajustar el collider a las dimensiones del segmento
-            _boxCollider.size = new Vector3(segmentWidth, 2f, segmentLength);
+            _boxCollider.size = new Vector3(segmentWidth, zoneHeight, segmentLength);
             _boxCollider.center = Vector3.zero;
         }
 

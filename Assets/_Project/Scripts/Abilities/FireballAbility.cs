@@ -11,11 +11,15 @@ namespace MobaGameplay.Abilities
         [SerializeField] private GameObject projectilePrefab;
         [SerializeField] private float baseDamage = 80f;
         [SerializeField] private float apRatio = 0.6f;
+        [SerializeField] private float projectileSpawnHeight = 1f;
+        [SerializeField] private float projectileSpawnForward = 1f;
 
         // Public read-only properties
         public GameObject ProjectilePrefab => projectilePrefab;
         public float BaseDamage => baseDamage;
         public float ApRatio => apRatio;
+        public float ProjectileSpawnHeight => projectileSpawnHeight;
+        public float ProjectileSpawnForward => projectileSpawnForward;
 
         public override void ExecuteCast(Vector3 targetPosition, BaseEntity targetEntity)
         {
@@ -29,7 +33,7 @@ namespace MobaGameplay.Abilities
 
             if (projectilePrefab != null)
             {
-                Vector3 spawnPos = ownerEntity.transform.position + Vector3.up * 1f + dir * 1f;
+                Vector3 spawnPos = ownerEntity.transform.position + Vector3.up * projectileSpawnHeight + dir * projectileSpawnForward;
                 GameObject projObj = Instantiate(projectilePrefab, spawnPos, Quaternion.identity);
                 Debug.Log($"[FireballAbility] Launched fireball at {spawnPos} facing {dir}");
                 if (projObj.TryGetComponent(out LinearProjectile proj))

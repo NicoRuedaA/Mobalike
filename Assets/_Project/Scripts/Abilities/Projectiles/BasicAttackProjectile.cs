@@ -12,11 +12,32 @@ namespace MobaGameplay.Abilities.Projectiles
         [SerializeField] private float normalEmission = 0.3f;
         [SerializeField] private float chargedEmission = 1.5f;
 
-        private float speed = 20f;
-        private float maxDistance = 15f;
-        private float collisionRadius = 0.3f;
-        private LayerMask hitLayers;
+        [Header("Projectile Settings")]
+        [SerializeField] private float speed = 20f;
+        [SerializeField] private float maxDistance = 15f;
+        [SerializeField] private float collisionRadius = 0.3f;
 
+        [Header("Charge Settings")]
+        [SerializeField] private float chargedRangeMultiplier = 1.2f;
+
+        [Header("Ground Detection")]
+        [SerializeField] private float groundNormalThreshold = 0.8f;
+        [SerializeField] private float groundHeightThreshold = 0.1f;
+
+        [Header("Trail Settings")]
+        [SerializeField] private float trailTime = 0.15f;
+        [SerializeField] private float trailStartWidth = 0.15f;
+
+        [Header("Impact Settings")]
+        [SerializeField] private float impactBaseScale = 0.5f;
+        [SerializeField] private float impactEmissionMultiplier = 2f;
+
+        // Public read-only properties
+        public float Speed => speed;
+        public float MaxDistance => maxDistance;
+        public float ChargedRangeMultiplier => chargedRangeMultiplier;
+
+        private LayerMask hitLayers;
         private Vector3 startPos;
         private Vector3 direction;
         private float damage;
@@ -48,8 +69,8 @@ namespace MobaGameplay.Abilities.Projectiles
             if (trailRenderer == null)
             {
                 trailRenderer = gameObject.AddComponent<TrailRenderer>();
-                trailRenderer.time = 0.15f;
-                trailRenderer.startWidth = 0.15f;
+                trailRenderer.time = trailTime;
+                trailRenderer.startWidth = trailStartWidth;
                 trailRenderer.endWidth = 0f;
                 trailRenderer.startColor = new Color(1f, 0.9f, 0.5f, 0.6f);
                 trailRenderer.endColor = new Color(1f, 0.9f, 0.5f, 0f);
@@ -72,7 +93,7 @@ namespace MobaGameplay.Abilities.Projectiles
             collisionRadius *= sizeMultiplier;
             speed *= speedMultiplier;
             damage *= damageMultiplier;
-            maxDistance *= 1.2f; // Charged attacks travel slightly farther
+            maxDistance *= chargedRangeMultiplier;
             
             // Scale the visual mesh
             transform.localScale *= sizeMultiplier;
@@ -144,7 +165,7 @@ namespace MobaGameplay.Abilities.Projectiles
                 else 
                 {
                     // Si es el suelo (normal hacia arriba) lo ignoramos para evitar chocar por error
-                    if (Vector3.Dot(hit.normal, Vector3.up) > 0.8f || hit.point.y < 0.1f) 
+                    if (Vector3.Dot(hit.normal, Vector3.up) > groundNormalThreshold || hit.point.y < groundHeightThreshold) 
                         continue;
 
                     // Es una pared u obstáculo estático
@@ -176,13 +197,13 @@ namespace MobaGameplay.Abilities.Projectiles
             // Create a small explosion effect
             GameObject impact = GameObject.CreatePrimitive(PrimitiveType.Sphere);
             impact.transform.position = transform.position;
-            impact.transform.localScale = Vector3.one * 0.5f;
+            impact.transform.localScale = Vector3.one * impactBaseScale;
             
             // Orange-red glow material
             var renderer = impact.GetComponent<Renderer>();
             renderer.material.color = chargedColor;
             renderer.material.EnableKeyword("_EMISSION");
-            renderer.material.SetColor("_EmissionColor", chargedColor * 2f);
+            renderer.material.SetColor("_EmissionColor", chargedColor * impactEmissionMultiplier);
             
             // Animate and destroy
             impact.AddComponent<ChargedImpactFade>().Initialize(chargedColor);
@@ -203,8 +224,12 @@ namespace MobaGameplay.Abilities.Projectiles
     /// </summary>
     public class ChargedImpactFade : MonoBehaviour
     {
+        [Header("Impact Animation")]
+        [SerializeField] private float fadeDuration = 0.3f;
+        [SerializeField] private float startScale = 0.5f;
+        [SerializeField] private float targetScaleMultiplier = 2f;
+
         private float fadeTimer = 0f;
-        private float fadeDuration = 0.3f;
         private Color baseColor;
         private Vector3 targetScale;
         private bool initialized = false;
@@ -212,7 +237,7 @@ namespace MobaGameplay.Abilities.Projectiles
         public void Initialize(Color color)
         {
             baseColor = color;
-            targetScale = transform.localScale * 2f;
+            targetScale = transform.localScale * targetScaleMultiplier;
             initialized = true;
             Destroy(gameObject, fadeDuration);
         }
@@ -225,7 +250,7 @@ namespace MobaGameplay.Abilities.Projectiles
             float t = fadeTimer / fadeDuration;
             
             // Expand and fade
-            transform.localScale = Vector3.Lerp(Vector3.one * 0.5f, targetScale, t);
+            transform.localScale = Vector3.Lerp(Vector3.one * startScale, targetScale, t);
             
             var renderer = GetComponent<Renderer>();
             if (renderer != null)

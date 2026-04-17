@@ -152,10 +152,19 @@
 | `FindObjectOfType<TargetingManager>()` en Start | `TargetingManager.Instance` |
 | Reflection hack para verificar `playerTransform` | Removido — `Initialize()` es idempotente |
 
-### Bloque C: Extraer Magic Numbers ⏳ Pendiente
+### Bloque C: Extraer Magic Numbers ✅ COMPLETADO (2026-04-17)
 
-- [ ] Reemplazar magic numbers por `[SerializeField] private` con nombres descriptivos
-- [ ] Priorizar: daño, velocidades, rangos, cooldowns
+**Tiempo real: ~45 minutos**
+
+- ✅ **FireballAbility** — `1f` spawn height/forward → `projectileSpawnHeight` / `projectileSpawnForward` con properties
+- ✅ **BasicAttackProjectile** — 8 magic numbers extraídos: speed, maxDistance, collisionRadius, chargedRangeMultiplier, groundNormalThreshold, groundHeightThreshold, trailTime, trailStartWidth, impactBaseScale, impactEmissionMultiplier
+- ✅ **LinearProjectile** — ground detection thresholds → `groundNormalThreshold` / `groundHeightThreshold` serializados
+- ✅ **HomingProjectile** — target height offset → `targetHeightOffset`, max distance → `maxDistanceFromOwner`
+- ✅ **TrailZone** — collider height `2f` → `zoneHeight` serializado
+- ✅ **XZPlaneMovement** — hardcoded `1 << 8` → `ignoreLayerIndex` serializado (default 8)
+- ✅ **ChargedImpactFade** — fade duration, scales → `fadeDuration`, `startScale`, `targetScaleMultiplier` serializados
+- ✅ **DIRECTION_THRESHOLD** — `0.001f` extraído a `const` en ProjectileBehavior, DashBehavior, AreaOfEffectBehavior, TrailBehavior, GroundTrailAbility
+- ✅ **96 tests pasan** ✅ (incluyendo 33 nuevos tests para Bloques B+C y Animaciones)
 
 ### Fase 5: Nuevas Habilidades
 
@@ -287,7 +296,7 @@ Features pedidas por el usuario, planIFICadas pero no implementadas:
 | **IA Enemiga** | Completa, 6 estados, Destroy arreglado | 95% |
 | **Oleadas** | Wave clear sin duplicación | 95% |
 | **Testing** | ✅ 62 tests pasan, asmdef configurado | 100% |
-| **Deuda Técnica** | Namespace + editor scripts + FindObjectOfType eliminado | 95% |
+| **Deuda Técnica** | Namespace + editor scripts + FindObjectOfType + magic numbers | 98% |
 | **Animaciones** | Fase 7planificada, 4 sprints definidos | 15% |
 
 ---
@@ -315,7 +324,7 @@ Features pedidas por el usuario, planIFICadas pero no implementadas:
 
 ### Estadísticas del proyecto
 - **~88 archivos C#** en `_Project/Scripts/` (~389 KB)
-- **4 archivos de test** en `Assets/Tests/` — **63 tests, todos pasando ✅**
+- **5 archivos de test** en `Assets/Tests/` — **96 tests, todos pasando ✅**
 - **42 ItemData** ScriptableObjects de equipo
 - **3 WaveData** ScriptableObjects configurados
 
@@ -334,4 +343,4 @@ Features pedidas por el usuario, planIFICadas pero no implementadas:
 
 ---
 
-*Última actualización: 2026-04-17 — Bloque B (Eliminar FindObjectOfType) completado ✅*
+*Última actualización: 2026-04-17 — Bloque C (Extraer Magic Numbers) completado ✅*

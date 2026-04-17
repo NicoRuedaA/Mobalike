@@ -11,6 +11,8 @@ namespace MobaGameplay.Abilities.Behaviors
     /// </summary>
     public class ProjectileBehavior : IAbilityBehavior
     {
+        private const float DIRECTION_THRESHOLD = 0.001f;
+
         public void Execute(AbilityContext context)
         {
             if (context.Owner == null || context.Data == null) return;
@@ -28,7 +30,7 @@ namespace MobaGameplay.Abilities.Behaviors
             Vector3 direction = context.TargetPosition - origin;
             direction.y = 0f;
 
-            if (direction.sqrMagnitude < 0.001f)
+            if (direction.sqrMagnitude < DIRECTION_THRESHOLD)
             {
                 direction = context.Owner.transform.forward;
             }

@@ -12,6 +12,8 @@ namespace MobaGameplay.Abilities.Behaviors
     /// </summary>
     public class AreaOfEffectBehavior : IAbilityBehavior
     {
+        private const float DIRECTION_THRESHOLD = 0.001f;
+
         public void Execute(AbilityContext context)
         {
             if (context.Owner == null || context.Data == null) return;
@@ -32,7 +34,7 @@ namespace MobaGameplay.Abilities.Behaviors
             }
 
             // Face the target instantly (abilities snap rotation, no smooth turn)
-            if (direction.sqrMagnitude > 0.001f)
+            if (direction.sqrMagnitude > DIRECTION_THRESHOLD)
             {
                 context.Owner.transform.forward = direction.normalized;
             }

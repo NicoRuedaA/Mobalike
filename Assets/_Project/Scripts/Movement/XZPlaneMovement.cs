@@ -34,6 +34,9 @@ namespace MobaGameplay.Movement
         [SerializeField] private float rotationSpeed = 25f;
         [SerializeField] private LayerMask groundLayer = ~0;
         
+        [Header("Ground Check")]
+        [SerializeField] private int ignoreLayerIndex = 8; // Layer to exclude from ground checks
+        
         // Jump & Gravity
         [Header("Jump & Gravity")]
         [SerializeField] private float jumpHeight = 1.2f;
@@ -336,7 +339,7 @@ namespace MobaGameplay.Movement
             return Physics.CheckSphere(
                 spherePosition,
                 controller.radius,
-                groundLayer & ~(1 << 8),
+                groundLayer & ~(1 << ignoreLayerIndex),
                 QueryTriggerInteraction.Ignore
             );
         }

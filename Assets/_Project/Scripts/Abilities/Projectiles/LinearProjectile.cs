@@ -12,6 +12,10 @@ namespace MobaGameplay.Abilities.Projectiles
         [SerializeField] private float collisionRadius = 0.5f;
         [SerializeField] private LayerMask hitLayers;
 
+        [Header("Ground Detection")]
+        [SerializeField] private float groundNormalThreshold = 0.8f;
+        [SerializeField] private float groundHeightThreshold = 0.1f;
+
         // Public read-only properties
         public float Speed => speed;
         public float MaxDistance => maxDistance;
@@ -66,7 +70,7 @@ namespace MobaGameplay.Abilities.Projectiles
                 else
                 {
                     // Si es el suelo (normal hacia arriba) lo ignoramos para evitar chocar por error
-                    if (Vector3.Dot(hit.normal, Vector3.up) > 0.8f || hit.point.y < 0.1f) 
+                    if (Vector3.Dot(hit.normal, Vector3.up) > groundNormalThreshold || hit.point.y < groundHeightThreshold) 
                         continue;
 
                     // Es una pared u obstáculo estático
