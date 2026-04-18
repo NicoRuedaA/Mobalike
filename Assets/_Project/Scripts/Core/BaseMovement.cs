@@ -15,10 +15,16 @@ namespace MobaGameplay.Core
         
         // Events
         public event Action OnDashStart;
+        public event Action<Vector3> OnDashWallHit;
         
         protected void TriggerOnDashStart()
         {
             OnDashStart?.Invoke();
+        }
+        
+        protected void TriggerOnDashWallHit(Vector3 hitPoint)
+        {
+            OnDashWallHit?.Invoke(hitPoint);
         }
 
         

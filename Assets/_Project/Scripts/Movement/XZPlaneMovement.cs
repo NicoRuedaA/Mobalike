@@ -47,6 +47,10 @@ namespace MobaGameplay.Movement
         [SerializeField] private float dashSpeed = 25f;
         [SerializeField] private float dashDuration = 0.15f;
         [SerializeField] private float dashCooldown = 2f;
+        
+        [Header("Dash VFX")]
+        [Tooltip("Prefab de VFX que se spawnea al impactar contra una pared")]
+        [SerializeField] private GameObject dashImpactVFXPrefab;
 
         // State
         private CharacterController controller;
@@ -244,6 +248,25 @@ namespace MobaGameplay.Movement
             currentVelocity = dashSpeed;
             dashTimer -= Time.deltaTime;
             
+            // SphereCast forward para detectar colisiones durante el dash
+            float castDistance = dashSpeed * Time.deltaTime;
+            if (Physics.SphereCast(transform.position, controller.radius, 
+                dashDirection, out RaycastHit hit, castDistance, 
+                groundLayer, QueryTriggerInteraction.Ignore))
+            {
+                // Verificar si es una pared/obstáculo (no enemigo)
+                BaseEntity hitEntity = hit.collider.GetComponentInParent<BaseEntity>();
+                if (hitEntity == null)
+                {
+                    // Chocó con pared/obstáculo — cancelar dash
+                    TriggerOnDashWallHit(hit.point);
+                    SpawnDashImpactVFX(hit.point);
+                    EndDash();
+                    return Vector3.zero;
+                }
+                // Si es enemigo, continuar el dash (no hace daño, solo atraviesa)
+            }
+            
             if (dashTimer <= 0f)
             {
                 EndDash();
@@ -256,6 +279,17 @@ namespace MobaGameplay.Movement
         {
             currentMode = MovementMode.None;
             currentVelocity = 0f;
+        }
+        
+        /// <summary>
+        /// Spawns dash impact VFX at the given position.
+        /// </summary>
+        private void SpawnDashImpactVFX(Vector3 position)
+        {
+            if (dashImpactVFXPrefab == null) return;
+            
+            Vector3 spawnPos = position + Vector3.up * 0.5f;
+            Instantiate(dashImpactVFXPrefab, spawnPos, Quaternion.identity);
         }
 
         private Vector3 HandlePathing()

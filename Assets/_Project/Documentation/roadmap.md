@@ -298,9 +298,126 @@ Features pedidas por el usuario, planIFICadas pero no implementadas:
 | Block 1 | Floating Health/Mana Bars (LoL style) | ✅ Implementado |
 | Block 2 | Floating Damage Text (pop-ups de daño) | ✅ Implementado |
 | Block 3 | Ammo/Reload para ataques básicos | ⏳ Pendiente |
-| Block 4 | Dynamic Dash con colisiones + Impact VFX | ⏳ Pendiente |
+| Block 4 | Dynamic Dash con colisiones + Impact VFX (SIN DAÑO) | 🟡 En Progreso — Sprint 1: Wall Detection + Cancel |
 
-**Nota:** Blocks 1 y 2 ya estaban implementados al momento del diagnóstico. Blocks 3 y 4 quedan como trabajo futuro.
+**Nota:** Block 1 y 2 ya estaban implementados al momento del diagnóstico. Block 3 pendiente. **Block 4 EN PROGRESO** (2 sprints: Wall Detection + VFX, sin daño).
+
+---
+
+### Block 4: Dynamic Dash con Colisiones + Impact VFX 🟡 EN PROGRESO
+
+**Tiempo estimado: 1.5-2 horas**
+
+#### Estado Actual del Dash
+
+El dash actual (`XZPlaneMovement.Dash()`) es **puramente cinemático**:
+- ✅ Mueve al personaje a `dashSpeed` (25f) durante `dashDuration` (0.15s)
+- ✅ Tiene cooldown (2s)
+- ✅ Trigger de animación vía `OnDashStart`
+- ❤️ `CharacterController.Move()` ya desliza contra paredes automáticamente
+- ❌ **No detecta qué golpea durante el dash**
+- ❌ **No genera VFX de impacto**
+- ❌ **No puede cancelar el dash al chocar con algo sólido**
+
+#### Feature Spec (SIN DAÑO)
+
+| Feature | Descripción |
+|---------|-------------|
+| **Dash Wall Detection** | Al chocar contra una pared, el dash se cancela (no atraviesa) |
+| **Dash Impact VFX** | Spawn de efecto visual al impactar (partículas, flash) |
+| **Eventos** | `OnDashWallHit` (pared/obstáculo golpeado) |
+
+**NOTA:** El dash **NO hace daño** a enemigos. Solo es movimiento con colisión y VFX.
+
+#### Sprint 1: Dash Wall Detection + Cancel 🟡 EN PROGRESO
+
+**Archivos a modificar:**
+
+| Archivo | Acción | Descripción |
+|---------|--------|-------------|
+| `BaseMovement.cs` | Modificar | Agregar evento `OnDashWallHit` a la base abstracta |
+| `XZPlaneMovement.cs` | Modificar | Agregar detección de colisión en `HandleDashing()`, cancelar dash al chocar |
+
+**Cambios clave:**
+```csharp
+// BaseMovement.cs - Agregar evento
+public event Action<Vector3> OnDashWallHit;
+
+protected void TriggerOnDashWallHit(Vector3 hitPoint)
+{
+    OnDashWallHit?.Invoke(hitPoint);
+}
+
+// XZPlaneMovement.cs - HandleDashing()
+private Vector3 HandleDashing()
+{
+    currentVelocity = dashSpeed;
+    dashTimer -= Time.deltaTime;
+    
+    // Raycast forward para detectar colisiones durante el dash
+    if (Physics.SphereCast(transform.position, controller.radius, 
+        dashDirection, out RaycastHit hit, dashSpeed * Time.deltaTime, 
+        groundLayer, QueryTriggerInteraction.Ignore))
+    {
+        // Verificar si es una pared/obstáculo (no enemigo, no trigger)
+        BaseEntity hitEntity = hit.collider.GetComponentInParent<BaseEntity>();
+        if (hitEntity == null)
+        {
+            // Chocó con pared/obstáculo
+            TriggerOnDashWallHit(hit.point);
+            EndDash(); // Cancelar dash
+            return Vector3.zero;
+        }
+    }
+    
+    if (dashTimer <= 0f) EndDash();
+    return dashDirection * dashSpeed;
+}
+```
+
+#### Sprint 2: Dash Impact VFX ⏳ Pendiente
+
+**Archivos a crear/modificar:**
+
+| Archivo | Acción | Descripción |
+|---------|--------|-------------|
+| `DashImpactVFX.cs` | Crear | Componente VFX específico para impacto de dash (escalado, fade, auto-destroy) |
+| `XZPlaneMovement.cs` | Modificar | Agregar `dashImpactVFXPrefab`, spawn en `OnDashWallHit` |
+
+**VFX del dash:**
+```csharp
+// XZPlaneMovement.cs
+[Header("Dash VFX")]
+[SerializeField] private GameObject dashImpactVFXPrefab;
+
+private void SpawnDashImpactVFX(Vector3 position)
+{
+    if (dashImpactVFXPrefab == null) return;
+    
+    Vector3 spawnPos = position + Vector3.up * 0.5f;
+    Instantiate(dashImpactVFXPrefab, spawnPos, Quaternion.identity);
+}
+```
+
+#### Criterios de Aceptación
+
+| Feature | Criterio de Aceptación |
+|---------|------------------------|
+| **Dash Wall Detection** | El dash detecta paredes y obstáculos durante el movimiento |
+| **Wall Stop** | El dash se cancela al chocar con una pared (no atraviesa) |
+| **Impact VFX** | Se spawn de VFX al impactar contra pared/obstáculo |
+| **Eventos** | `OnDashWallHit` se dispara correctamente |
+| **Animación** | La animación de roll/dash se sigue reproduciendo correctamente |
+| **NO DAÑO** | El dash NO hace daño a enemigos ni paredes |
+
+#### Riesgos Técnicos
+
+| Riesgo | Mitigación |
+|--------|------------|
+| **SphereCast muy sensible** | Ajustar `controller.radius` y usar layer mask para ignorar triggers |
+| **Dash se cancela muy temprano** | Ajustar el radio del spherecast o usar distancia mínima |
+| **VFX no se ve bien** | Crear VFX específico en Unity (partículas) en vez de código |
+| **CharacterController interfiere** | Usar `QueryTriggerInteraction.Ignore` y testear con diferentes colisionadores |
 
 ---
 
@@ -318,14 +435,15 @@ Features pedidas por el usuario, planIFICadas pero no implementadas:
 | **Testing** | ✅ 62 tests pasan, asmdef configurado | 100% |
 | **Deuda Técnica** | Namespace + editor scripts + FindObjectOfType + magic numbers | 98% |
 | **Animaciones** | Fix de bugs técnicos completado (run loop, roll snap-back). Sprints de clips pendientes | 30% |
+| **Block 4: Dynamic Dash** | Sprint 1: Wall Detection + Cancel en progreso | 10% |
 
 ---
 
 ## 🚀 Estado General
 
-**Veredicto**: El proyecto está en estado **avanzado de prototipo funcional con tests verdes**. Todas las Fases 1-4 y Bloques A-C están COMPLETADOS. Los 96 tests unitarios pasan correctamente. Fix de animaciones (run loop, roll snap-back) completado. **Fase 6 (testing + edge cases) EN PROGRESO**.
+**Veredicto**: El proyecto está en estado **avanzado de prototipo funcional con tests verdes**. Todas las Fases 1-4 y Bloques A-C están COMPLETADOS. Los 96 tests unitarios pasan correctamente. Fix de animaciones (run loop, roll snap-back) completado. **Fase 6 (testing + edge cases) COMPLETADO**. **Block 4 (Dynamic Dash) EN PROGRESO**.
 
-**Próximo paso**: Fase 6 — Testing completo + edge cases. Luego Fase 5 (nuevas habilidades) y Fase 7 (animaciones restantes).
+**Próximo paso**: Block 4 Sprint 1 — Dash Wall Detection + Cancel. Luego Sprint 2 (Impact VFX), Fase 5 (nuevas habilidades) y Fase 7 (animaciones restantes).
 
 ---
 
@@ -366,4 +484,4 @@ Features pedidas por el usuario, planIFICadas pero no implementadas:
 
 ---
 
-*Última actualización: 2026-04-18 — Fix animaciones (run loop, roll snap-back) + Fase 6 (Testing + Edge Cases) en progreso*
+*Última actualización: 2026-04-18 — Fix animaciones (run loop, roll snap-back) + Fase 6 (Testing + Edge Cases) COMPLETADO + Block 4 (Dynamic Dash) EN PROGRESO*
