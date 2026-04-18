@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 using MobaGameplay.Combat;
+using MobaGameplay.Core;
 
 namespace MobaGameplay.UI
 {
@@ -19,20 +20,15 @@ namespace MobaGameplay.UI
         [SerializeField] private GameObject reloadIndicator;
         
         [Header("Combat Reference")]
-        [Tooltip("RangedCombat component to listen to. Auto-finds if not set.")]
+        [Tooltip("RangedCombat component to listen to. Auto-finds from Player if not set.")]
         [SerializeField] private RangedCombat rangedCombat;
         
         // State
         private bool isInitialized = false;
+        private HeroEntity heroEntity;
         
         private void Awake()
         {
-            // Auto-find RangedCombat if not set
-            if (rangedCombat == null)
-            {
-                rangedCombat = FindObjectOfType<RangedCombat>();
-            }
-            
             // Auto-find Text if not set
             if (ammoText == null)
             {
@@ -46,12 +42,69 @@ namespace MobaGameplay.UI
                 return;
             }
             
+            // Try to find Player's HeroEntity
+            var player = GameObject.FindWithTag("Player");
+            if (player != null)
+            {
+                heroEntity = player.GetComponent<HeroEntity>();
+            }
+            
             isInitialized = true;
         }
         
         private void Start()
         {
-            if (!isInitialized || rangedCombat == null) return;
+            if (!isInitialized) return;
+            
+            // Try to find RangedCombat from HeroEntity
+            if (rangedCombat == null && heroEntity != null)
+            {
+                if (heroEntity.Combat is RangedCombat rc)
+                {
+                    rangedCombat = rc;
+                }
+            }
+            
+            // If still null, try to find any RangedCombat in scene
+            if (rangedCombat == null)
+            {
+                rangedCombat = FindObjectOfType<RangedCombat>();
+            }
+            
+            // If still null, wait for HeroEntity to be ready
+            if (rangedCombat == null && heroEntity != null)
+            {
+                Debug.Log("[AmmoUI] Waiting for HeroEntity to initialize combat...");
+                Invoke(nameof(TryInitialize), 0.5f);
+                return;
+            }
+            
+            if (rangedCombat == null)
+            {
+                Debug.LogWarning("[AmmoUI] No RangedCombat found. UI will not update.");
+                return;
+            }
+            
+            InitializeSubscriptions();
+        }
+        
+        private void TryInitialize()
+        {
+            if (heroEntity != null && heroEntity.Combat is RangedCombat rc)
+            {
+                rangedCombat = rc;
+                InitializeSubscriptions();
+            }
+            else
+            {
+                // Retry in another 0.5s
+                Invoke(nameof(TryInitialize), 0.5f);
+            }
+        }
+        
+        private void InitializeSubscriptions()
+        {
+            if (rangedCombat == null) return;
             
             // Subscribe to events
             rangedCombat.OnAmmoChanged += UpdateAmmoUI;
@@ -60,7 +113,16 @@ namespace MobaGameplay.UI
             rangedCombat.OnReloadCancelled += HideReloadIndicator;  // Uses () overload
             
             // Initial update
-            UpdateAmmoUI(rangedCombat.CurrentAmmo, rangedCombat.MaxAmmo);
+            if (rangedCombat.HasAmmoSystem)
+            {
+                UpdateAmmoUI(rangedCombat.CurrentAmmo, rangedCombat.MaxAmmo);
+                Debug.Log($"[AmmoUI] Initialized with ammo: {rangedCombat.CurrentAmmo}/{rangedCombat.MaxAmmo}");
+            }
+            else
+            {
+                ammoText.text = "∞";
+                Debug.Log("[AmmoUI] Initialized with infinite ammo");
+            }
             
             // Hide reload indicator by default
             if (reloadIndicator != null)
@@ -71,12 +133,13 @@ namespace MobaGameplay.UI
         
         private void OnDestroy()
         {
+            CancelInvoke(nameof(TryInitialize));
+            
             if (rangedCombat != null)
             {
                 rangedCombat.OnAmmoChanged -= UpdateAmmoUI;
                 rangedCombat.OnReloadStart -= ShowReloadIndicator;
                 // Note: C# allows unsubscribing without specifying which overload
-                // The compiler will match the correct delegate type
                 rangedCombat.OnReloadComplete -= HideReloadIndicator;
                 rangedCombat.OnReloadCancelled -= HideReloadIndicator;
             }
