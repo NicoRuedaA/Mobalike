@@ -159,6 +159,9 @@ namespace MobaGameplay.Inventory
             // RecalculateStats() already restored _baseMaxHealth, so we set the final value
             _owner.MaxHealth = _baseMaxHealth + (hp * HP_PER_STAT_POINT);
 
+            // Clamp current health to new max (prevents CurrentHealth > MaxHealth when swapping to lower HP gear)
+            _owner.CurrentHealth = Mathf.Min(_owner.CurrentHealth, _owner.MaxHealth);
+
             // Aplicar STR como AttackDamage (assignment, NOT accumulation)
             _owner.AttackDamage = _baseAttackDamage + (str * AD_PER_STR_POINT);
 

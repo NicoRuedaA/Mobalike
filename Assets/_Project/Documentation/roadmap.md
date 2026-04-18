@@ -80,6 +80,13 @@
 | Proyectiles pasan por enemigos | `RangedCombat.cs` | `hitLayers` inicializado correctamente |
 | Quick Cast tap no funciona | `PlayerInputController.cs` | `else if` → `if` independiente para release |
 
+### ✅ ARREGLADOS (Animation Import Settings - 2026-04-18)
+
+| Bug | Archivo | Fix |
+|-----|---------|-----|
+| Run animation se traba después de 1 ciclo | `run.fbx.meta` | `loopTime: 0` → `loopTime: 1`, `loop: 1`, `loopBlend: 1` |
+| Roll/Dash snap-back (vuelve hacia atrás) | `roll.fbx.meta` | `keepOriginalPositionXZ: 1` → `0`, `loopBlendPositionXZ: 1` → `0` |
+
 ### ✅ ARREGLADOS (Cooldown Bugfix - 2026-04-10)
 
 | Bug | Archivo | Fix |
@@ -175,13 +182,26 @@
   - Multi-shot (ataque en cono)
   - Buff de velocidad/ataque
 
-### Fase 6: Balance y Testing Final
+### Fase 6: Balance y Testing Final ✅ EN PROGRESO (2026-04-18)
 
-**Tiempo estimado: 1-2 horas**
+**Tiempo estimado: 2-3 horas**
 
 - [ ] Ajustar números de daño, velocidades, cooldowns
 - [ ] Testing completo de inicio a fin (victoria/derrota)
-- [ ] Verificar edge cases (muerte simultánea, level-up durante equipo, etc.)
+- [ ] Verificar edge cases:
+  - [ ] Muerte simultánea (hero y enemigo mueren al mismo tiempo)
+  - [ ] Level-up durante equipo (stats se recalculan correctamente)
+  - [ ] Dash contra paredes/obstáculos (¿se traba? ¿rebota?)
+  - [ ] Múltiples habilidades en vuelo al mismo tiempo
+  - [ ] Enemy muere durante animación de hit (double death)
+  - [ ] GoldDrop spawnea fuera de mapa
+  - [ ] Wave clear con enemigos vivos (edge case de estado)
+  - [ ] Cooldown UI se desincroniza del cooldown real
+  - [ ] Equipment swap durante combate activo
+  - [ ] Projectile hit a enemigo ya muerto (null reference)
+  - [ ] Dash durante animación de cast (¿se cancela?)
+  - [ ] Múltiples GoldDrops al mismo tiempo (race condition)
+  - [ ] Hero muere y revive durante wave activa
 
 ### Fase 7: Sistema de Animaciones
 
@@ -297,15 +317,15 @@ Features pedidas por el usuario, planIFICadas pero no implementadas:
 | **Oleadas** | Wave clear sin duplicación | 95% |
 | **Testing** | ✅ 62 tests pasan, asmdef configurado | 100% |
 | **Deuda Técnica** | Namespace + editor scripts + FindObjectOfType + magic numbers | 98% |
-| **Animaciones** | Fase 7planificada, 4 sprints definidos | 15% |
+| **Animaciones** | Fix de bugs técnicos completado (run loop, roll snap-back). Sprints de clips pendientes | 30% |
 
 ---
 
 ## 🚀 Estado General
 
-**Veredicto**: El proyecto está en estado **avanzado de prototipo funcional con tests verdes**. Todas las Fases 1-4 y Bloques A-B están COMPLETADOS. Los 63 tests unitarios pasan correctamente. Bloque C (magic numbers), Fase 5 (nuevas habilidades), Fase 6 (balance final) y Fase 7 (animaciones) quedan como trabajo futuro.
+**Veredicto**: El proyecto está en estado **avanzado de prototipo funcional con tests verdes**. Todas las Fases 1-4 y Bloques A-C están COMPLETADOS. Los 96 tests unitarios pasan correctamente. Fix de animaciones (run loop, roll snap-back) completado. **Fase 6 (testing + edge cases) EN PROGRESO**.
 
-**Próximo paso**: Bloque C (magic numbers), Fase 5 (nuevas habilidades), Fase 6 (balance) o Fase 7 (animaciones), según prioridad.
+**Próximo paso**: Fase 6 — Testing completo + edge cases. Luego Fase 5 (nuevas habilidades) y Fase 7 (animaciones restantes).
 
 ---
 
@@ -327,6 +347,7 @@ Features pedidas por el usuario, planIFICadas pero no implementadas:
 - **5 archivos de test** en `Assets/Tests/` — **96 tests, todos pasando ✅**
 - **42 ItemData** ScriptableObjects de equipo
 - **3 WaveData** ScriptableObjects configurados
+- **Animaciones fixeadas**: run.fbx (loop), roll.fbx (snap-back)
 
 ### Discoveries importantes (lecciones aprendidas)
 - **Input System**: `else if (wasReleasedThisFrame)` rompe Quick Cast al hacer tap → usar `if` independientes
@@ -340,7 +361,9 @@ Features pedidas por el usuario, planIFICadas pero no implementadas:
 - **EditMode tests**: `Destroy()` no funciona en Edit Mode → usar `LogAssert.Expect(LogType.Error, ...)`
 - **EditMode tests**: `Awake()` puede no inicializar correctamente → forzar `_owner` y `OnEnable()` via reflection
 - **EditMode tests**: `GameStateManager` singleton persiste entre tests → resetear via reflection en TearDown
+- **Mixamo animations**: Unity NO detecta automáticamente `loopTime` → siempre verificar manualmente. `keepOriginalPositionXZ: 1` causa snap-back en animaciones one-shot → poner en `0`
+- **CharacterController + animaciones**: El movimiento lo hace el código (`controller.Move()`), NO root motion. Los `.meta` de animación solo controlan el movimiento visual del modelo hijo
 
 ---
 
-*Última actualización: 2026-04-17 — Bloque C (Extraer Magic Numbers) completado ✅*
+*Última actualización: 2026-04-18 — Fix animaciones (run loop, roll snap-back) + Fase 6 (Testing + Edge Cases) en progreso*

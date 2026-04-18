@@ -23,6 +23,10 @@ namespace MobaGameplay.Core
         [Tooltip("Prefab del drop visual de oro que aparece al morir.")]
         [SerializeField] private GameObject goldDropPrefab;
         
+        [Header("Map Bounds")]
+        [Tooltip("Radio máximo del mapa para clampear GoldDrop spawn. Previene drops fuera del área jugable.")]
+        [SerializeField] private float mapBoundsRadius = 50f;
+        
         // Referencia al AI Controller
         private EnemyAIController _aiController;
         
@@ -119,10 +123,18 @@ namespace MobaGameplay.Core
                 hero.AddExp(experienceReward);
             }
             
-            // Spawnear drop visual
+            // Spawnear drop visual (clamp dentro de límites del mapa para evitar drops fuera)
             if (goldDropPrefab != null)
             {
-                Instantiate(goldDropPrefab, transform.position + Vector3.up, Quaternion.identity);
+                Vector3 spawnPos = transform.position + Vector3.up;
+                float distanceFromCenter = Mathf.Sqrt(spawnPos.x * spawnPos.x + spawnPos.z * spawnPos.z);
+                if (distanceFromCenter > mapBoundsRadius)
+                {
+                    Vector3 direction = new Vector3(spawnPos.x, 0f, spawnPos.z).normalized;
+                    spawnPos.x = direction.x * mapBoundsRadius;
+                    spawnPos.z = direction.z * mapBoundsRadius;
+                }
+                Instantiate(goldDropPrefab, spawnPos, Quaternion.identity);
             }
         }
         
