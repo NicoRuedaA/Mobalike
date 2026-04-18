@@ -10,22 +10,22 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: e88452dfa839a3d42be681a9535b0cde, type: 3}
-  m_Name: GroundTrailAbilityData
+  m_Name: Ground Trail
   m_EditorClassIdentifier: MobaGameplay.Runtime::MobaGameplay.Abilities.AbilityData
   abilityName: Ground Trail
-  icon: {fileID: 0}
-  cooldown: 8
-  manaCost: 50
-  castTime: 0.2
-  targetingType: 0
-  castRange: 5
-  range: 2
-  width: 1
+  icon: {fileID: 21300000, guid: b16429dc26084f74d837c12d97edf407, type: 3}
+  cooldown: 12
+  manaCost: 80
+  castTime: 0
+  targetingType: 4
+  castRange: 25
+  range: 20
+  width: 3
   behaviorType: 3
-  baseDamage: 30
+  baseDamage: 0
   damageType: 1
-  apRatio: 0.3
-  adRatio: 0.5
+  apRatio: 0
+  adRatio: 0
   projectilePrefab: {fileID: 0}
   projectileSpawnHeight: 1
   projectileSpawnForward: 1
@@ -34,13 +34,13 @@ MonoBehaviour:
   aoePrefab: {fileID: 0}
   aoeDelay: 1
   aoeRadius: 3
-  vfxPrefab: {fileID: 6525115495502403156, guid: ebb4de5c57e0d0641a6f175cd0491936, type: 3}
+  vfxPrefab: {fileID: 0}
   trailZonePrefab: {fileID: 6525115495502403156, guid: ebb4de5c57e0d0641a6f175cd0491936, type: 3}
-  trailDamagePerSecond: 25
-  trailZoneDuration: 2
-  trailZoneCount: 3
-  trailSpawnDelay: 0.5
-  trailWidth: 2
+  trailDamagePerSecond: 40
+  trailZoneDuration: 3
+  trailZoneCount: 6
+  trailSpawnDelay: 0.12
+  trailWidth: 3
   healAmount: 0
   manaRestoreAmount: 0
   buffDuration: 0
