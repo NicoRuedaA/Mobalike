@@ -93,6 +93,16 @@ namespace MobaGameplay.Abilities
 
         [Tooltip("Multiplicador de tamaño cuando está cargado")]
         public float chargedSizeMultiplier = 1.5f;
+        
+        [Header("Ammo System (Optional)")]
+        [Tooltip("Si es true, este héroe usa sistema de munición. Si es false, munición infinita.")]
+        public bool hasAmmoSystem = false;
+        
+        [Tooltip("Munición máxima (solo si hasAmmoSystem = true)")]
+        public int maxAmmo = 6;
+        
+        [Tooltip("Tiempo de recarga en segundos (solo si hasAmmoSystem = true)")]
+        public float reloadTime = 2f;
 
         /// <summary>
         /// Obtiene la habilidad en el slot especificado (0-3).

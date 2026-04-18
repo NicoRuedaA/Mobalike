@@ -40,10 +40,19 @@ namespace MobaGameplay.Combat
         [SerializeField] private float chargedSpeedMultiplier = 1.3f;
         [SerializeField] private float chargedSizeMultiplier = 1.5f;
         [SerializeField] private float maxChargeTime = DEFAULT_CHARGE_TIME;
+        
+        [Header("Ammo System")]
+        [SerializeField] private bool hasAmmoSystem = false;
+        [SerializeField] private int maxAmmo = 6;
+        [SerializeField] private float reloadTime = 2f;
 
         // State
         private BaseEntity entity;
         private float lastAttackTime = float.MinValue;
+        private int currentAmmo;
+        private bool isReloading = false;
+        private float reloadCooldownTimer = 0f;
+        private Coroutine reloadCoroutine;
 
         // Properties
         public bool IsCharging { get; private set; }
@@ -51,6 +60,12 @@ namespace MobaGameplay.Combat
         public float MaxChargeTime => maxChargeTime;
         public bool CanCharge => !IsCharging;
         public float ChargePercent => Mathf.Clamp01(ChargeProgress / maxChargeTime);
+        
+        // Ammo Properties
+        public int CurrentAmmo => currentAmmo;
+        public int MaxAmmo => maxAmmo;
+        public bool IsReloading => isReloading;
+        public bool HasAmmoSystem => hasAmmoSystem;
 
         // Properties for external access
         public float ChargedDamageMultiplier => chargedDamageMultiplier;
@@ -81,6 +96,15 @@ namespace MobaGameplay.Combat
             chargedDamageMultiplier = heroClass.chargedDamageMultiplier;
             chargedSpeedMultiplier = heroClass.chargedSpeedMultiplier;
             chargedSizeMultiplier = heroClass.chargedSizeMultiplier;
+            
+            // Ammo system
+            hasAmmoSystem = heroClass.hasAmmoSystem;
+            maxAmmo = heroClass.maxAmmo;
+            reloadTime = heroClass.reloadTime;
+            if (hasAmmoSystem)
+            {
+                currentAmmo = maxAmmo;  // Start with full ammo
+            }
             
             // Setup LaserSight if showAimLines is enabled
             if (heroClass.showAimLines)
@@ -119,13 +143,36 @@ namespace MobaGameplay.Combat
         public override void BasicAttack()
         {
             if (entity == null || entity.IsDead) return;
-
+            
+            // Check ammo
+            if (hasAmmoSystem && currentAmmo <= 0)
+            {
+                Debug.Log($"[RangedCombat] No ammo! Press R to reload. ({reloadTime}s)");
+                return;
+            }
+            
+            // Check reload
+            if (isReloading)
+            {
+                Debug.Log("[RangedCombat] Cannot attack while reloading!");
+                return;
+            }
+            
+            // Check cooldown
             float atkSpeed = entity.AttackSpeed;
             float attackInterval = 1f / atkSpeed;
 
             if (Time.time >= lastAttackTime + attackInterval)
             {
                 lastAttackTime = Time.time;
+                
+                // Consume ammo
+                if (hasAmmoSystem)
+                {
+                    currentAmmo--;
+                    OnAmmoChanged?.Invoke(currentAmmo, maxAmmo);
+                    Debug.Log($"[RangedCombat] Attack! Ammo left: {currentAmmo}/{maxAmmo}");
+                }
                 
                 bool isCharged = IsCharging && ChargeProgress > MIN_CHARGE_THRESHOLD;
                 FireProjectile(isCharged);
@@ -234,6 +281,89 @@ namespace MobaGameplay.Combat
         public float GetNormalizedCharge()
         {
             return maxChargeTime > 0f ? ChargeProgress / maxChargeTime : 0f;
+        }
+        
+        // ============================================================
+        // Ammo System
+        // ============================================================
+        
+        /// <summary>
+        /// Start reloading. Cannot attack while reloading.
+        /// </summary>
+        public void Reload()
+        {
+            if (!hasAmmoSystem) return;
+            if (isReloading) return;
+            if (currentAmmo >= maxAmmo)
+            {
+                Debug.Log("[RangedCombat] Ammo already full!");
+                return;
+            }
+            if (reloadCooldownTimer > 0)
+            {
+                Debug.Log($"[RangedCombat] Reload on cooldown! ({reloadCooldownTimer:F1}s remaining)");
+                return;
+            }
+            
+            reloadCoroutine = StartCoroutine(ReloadCoroutine());
+        }
+        
+        /// <summary>
+        /// Cancel current reload (called when moving or dashing).
+        /// </summary>
+        public void CancelReload()
+        {
+            if (!isReloading) return;
+            
+            if (reloadCoroutine != null)
+            {
+                StopCoroutine(reloadCoroutine);
+                reloadCoroutine = null;
+            }
+            
+            isReloading = false;
+            OnReloadCancelled?.Invoke();
+            
+            Debug.Log("[RangedCombat] Reload cancelled!");
+        }
+        
+        /// <summary>
+        /// Check if reload is available.
+        /// </summary>
+        public bool CanReload()
+        {
+            if (!hasAmmoSystem) return false;
+            if (isReloading) return false;
+            if (currentAmmo >= maxAmmo) return false;
+            if (reloadCooldownTimer > 0) return false;
+            return true;
+        }
+        
+        private System.Collections.IEnumerator ReloadCoroutine()
+        {
+            isReloading = true;
+            OnReloadStart?.Invoke();
+            
+            Debug.Log($"[RangedCombat] Reloading... ({reloadTime}s)");
+            
+            yield return new WaitForSeconds(reloadTime);
+            
+            currentAmmo = maxAmmo;
+            isReloading = false;
+            reloadCooldownTimer = 0.5f;  // Small cooldown post-reload
+            reloadCoroutine = null;
+            
+            OnReloadComplete?.Invoke(currentAmmo, maxAmmo);
+            
+            Debug.Log($"[RangedCombat] Reload complete! ({currentAmmo}/{maxAmmo})");
+            
+            // Tick reload cooldown
+            while (reloadCooldownTimer > 0)
+            {
+                reloadCooldownTimer -= Time.deltaTime;
+                yield return null;
+            }
+            reloadCooldownTimer = 0;
         }
     }
 }

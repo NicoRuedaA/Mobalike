@@ -11,6 +11,10 @@ namespace MobaGameplay.Core
     {
         // Events
         public event Action OnBasicAttack;
+        public event Action OnReloadStart;
+        public event Action OnReloadComplete;
+        public event Action OnReloadCancelled;
+        public event Action<int, int> OnAmmoChanged;  // current, max
 
         // Properties
         protected BaseEntity Owner => GetComponent<BaseEntity>();
