@@ -53,9 +53,6 @@ namespace MobaGameplay.Abilities
         // Unity Lifecycle
         // ============================================================
 
-        // Cached ability controller for fallback
-        private AbilityController cachedAbilityController;
-
         private void Awake()
         {
             owner = GetComponent<BaseEntity>();
@@ -67,9 +64,6 @@ namespace MobaGameplay.Abilities
                 heroClass = heroEntity.HeroClass;
             }
 
-            // Try to get old AbilityController for fallback
-            cachedAbilityController = GetComponent<AbilityController>();
-            
             InitializeInstances();
         }
 

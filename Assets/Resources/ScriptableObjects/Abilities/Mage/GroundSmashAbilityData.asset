@@ -13,27 +13,27 @@ MonoBehaviour:
   m_Name: GroundSmashAbilityData
   m_EditorClassIdentifier: MobaGameplay.Runtime::MobaGameplay.Abilities.AbilityData
   abilityName: Ground Smash
-  icon: {fileID: 21300000, guid: 089196d2ec368a84c99e93f097e5d034, type: 3}
-  cooldown: 5
-  manaCost: 0
-  castTime: 0
+  icon: {fileID: 0}
+  cooldown: 10
+  manaCost: 70
+  castTime: 0.3
   targetingType: 1
   castRange: 10
   range: 2
   width: 1
   behaviorType: 2
-  baseDamage: 100
-  damageType: 0
-  apRatio: 0
+  baseDamage: 60
+  damageType: 1
+  apRatio: 0.6
   adRatio: 0.8
   projectilePrefab: {fileID: 0}
   projectileSpawnHeight: 1
   projectileSpawnForward: 1
   dashSpeed: 20
   dashDuration: 0.2
-  aoePrefab: {fileID: 0}
-  aoeDelay: 0
-  aoeRadius: 2
+  aoePrefab: {fileID: 2987217871762459909, guid: 37030b197ed8eec479acc2791096ccc5, type: 3}
+  aoeDelay: 0.5
+  aoeRadius: 4
   vfxPrefab: {fileID: 2987217871762459909, guid: 37030b197ed8eec479acc2791096ccc5, type: 3}
   trailZonePrefab: {fileID: 0}
   trailDamagePerSecond: 40

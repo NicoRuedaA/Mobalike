@@ -7,7 +7,7 @@ namespace MobaGameplay.UI
 {
     /// <summary>
     /// UI slot for displaying an ability icon with cooldown overlay.
-    /// Supports both old BaseAbility (MonoBehaviour) and new AbilityData (data-driven).
+    /// Uses the data-driven AbilitySystem (no legacy support).
     /// </summary>
     public class AbilitySlotUI : MonoBehaviour
     {
@@ -16,8 +16,7 @@ namespace MobaGameplay.UI
         [SerializeField] private Image cooldownOverlay; // Image Type = Filled, Radial 360
         [SerializeField] private TextMeshProUGUI cooldownText;
 
-        private BaseAbility legacyAbility;
-        private AbilityData newAbilityData;
+        private AbilityData abilityData;
         private AbilitySystem abilitySystem;
         private int slotIndex = -1;
 
@@ -55,55 +54,27 @@ namespace MobaGameplay.UI
             }
         }
 
-        // Legacy API (old system)
-        public BaseAbility GetAbility() => legacyAbility;
-
-        public void AssignAbility(BaseAbility newAbility)
-        {
-            legacyAbility = newAbility;
-            newAbilityData = null;
-            abilitySystem = null;
-            slotIndex = -1;
-            UpdateDisplay();
-        }
-
-        // New API (data-driven system)
+        /// <summary>
+        /// Assign an ability from the data-driven system to this slot.
+        /// </summary>
         public void AssignAbility(AbilityData data, AbilitySystem system, int index)
         {
-            legacyAbility = null;
-            newAbilityData = data;
+            abilityData = data;
             abilitySystem = system;
             slotIndex = index;
             
             UpdateDisplay();
             
             // Force first update immediately so cooldown visualization works
-            UpdateNewAbility();
+            UpdateCooldown();
         }
 
         private void UpdateDisplay()
         {
-            string name = "";
-            Sprite icon = null;
-            bool hasAbility = false;
-
-            if (legacyAbility != null)
+            if (abilityData != null && iconImage != null)
             {
-                name = legacyAbility.abilityName;
-                icon = legacyAbility.AbilityIcon;
-                hasAbility = true;
-            }
-            else if (newAbilityData != null)
-            {
-                name = newAbilityData.abilityName;
-                icon = newAbilityData.icon;
-                hasAbility = true;
-            }
-
-            if (hasAbility && iconImage != null)
-            {
-                iconImage.sprite = icon;
-                iconImage.enabled = icon != null;
+                iconImage.sprite = abilityData.icon;
+                iconImage.enabled = abilityData.icon != null;
             }
             else
             {
@@ -129,49 +100,15 @@ namespace MobaGameplay.UI
 
         private void Update()
         {
-            if (legacyAbility != null)
+            if (abilitySystem != null && slotIndex >= 0 && abilityData != null)
             {
-                UpdateLegacyAbility();
-            }
-            else if (abilitySystem != null && slotIndex >= 0 && newAbilityData != null)
-            {
-                UpdateNewAbility();
+                UpdateCooldown();
             }
         }
 
-        private void UpdateLegacyAbility()
+        private void UpdateCooldown()
         {
-            if (legacyAbility == null) return;
-
-            bool onCd = legacyAbility.IsOnCooldown;
-            
-            if (cooldownOverlay != null)
-            {
-                cooldownOverlay.enabled = onCd || legacyAbility.MaxCooldown > 0;
-                if (onCd && legacyAbility.MaxCooldown > 0)
-                    cooldownOverlay.fillAmount = legacyAbility.CurrentCooldown / legacyAbility.MaxCooldown;
-                else
-                    cooldownOverlay.fillAmount = 0;
-            }
-                
-            if (cooldownText != null)
-            {
-                if (onCd)
-                {
-                    cooldownText.text = legacyAbility.CurrentCooldown.ToString("F1");
-                    cooldownText.enabled = true;
-                }
-                else
-                {
-                    cooldownText.text = "";
-                    cooldownText.enabled = false;
-                }
-            }
-        }
-
-        private void UpdateNewAbility()
-        {
-            if (abilitySystem == null || newAbilityData == null || slotIndex < 0) return;
+            if (abilitySystem == null || abilityData == null || slotIndex < 0) return;
 
             var instance = abilitySystem.GetAbilityInstance(slotIndex);
             if (instance == null) return;
@@ -181,8 +118,8 @@ namespace MobaGameplay.UI
             if (cooldownOverlay != null)
             {
                 cooldownOverlay.enabled = true;
-                if (onCd && newAbilityData.cooldown > 0)
-                    cooldownOverlay.fillAmount = instance.CurrentCooldown / newAbilityData.cooldown;
+                if (onCd && abilityData.cooldown > 0)
+                    cooldownOverlay.fillAmount = instance.CurrentCooldown / abilityData.cooldown;
                 else
                     cooldownOverlay.fillAmount = 0;
             }

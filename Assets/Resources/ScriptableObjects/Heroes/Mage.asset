@@ -30,9 +30,9 @@ MonoBehaviour:
   manaRegen: 2
   abilities:
   - {fileID: 11400000, guid: e9e83171e7c6b7643a6c11ae62e563ce, type: 2}
-  - {fileID: 11400000, guid: 97cb18c324d38484ea2765f499a3b17d, type: 2}
   - {fileID: 11400000, guid: dff993a34d5d5b6429c8e176a18a0bc3, type: 2}
   - {fileID: 11400000, guid: 54c5292b53a841d4fa934f8b881b5ee7, type: 2}
+  - {fileID: 11400000, guid: 97cb18c324d38484ea2765f499a3b17d, type: 2}
   basicAttackProjectilePrefab: {fileID: 4136283584567336420, guid: 23802ec068ee8444fab0737d4a1306fe, type: 3}
   projectileSpeed: 25
   projectileMaxDistance: 20

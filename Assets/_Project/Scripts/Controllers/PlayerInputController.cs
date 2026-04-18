@@ -41,10 +41,8 @@ namespace MobaGameplay.Controllers
 // Cached combat reference
         private RangedCombat cachedRangedCombat;
 
-        // Ability system routing — prefer new AbilitySystem over old AbilityController
-        private bool usesNewAbilitySystem;
+        // Ability system
         private AbilitySystem cachedAbilitySystem;
-        private bool abilitySystemResolved;
 
         private void Update()
         {
@@ -74,50 +72,18 @@ namespace MobaGameplay.Controllers
         #region Ability System
 
         /// <summary>
-        /// Resolves which ability system to use (new or old).
+        /// Resolves the ability system from entity.
         /// Uses lazy initialization to avoid Awake execution order issues.
         /// </summary>
         private void ResolveAbilitySystem()
         {
-            if (abilitySystemResolved) return;
+            if (cachedAbilitySystem != null) return;
 
             cachedAbilitySystem = entity?.GetComponent<AbilitySystem>();
-            usesNewAbilitySystem = cachedAbilitySystem != null;
-
-            // If new system exists, check if it actually has abilities
-            // If not, fall back to old system
-            if (usesNewAbilitySystem)
-            {
-                bool hasAnyAbility = false;
-                for (int i = 0; i < cachedAbilitySystem.SlotCount; i++)
-                {
-                    if (cachedAbilitySystem.GetAbilityInstance(i) != null)
-                    {
-                        hasAnyAbility = true;
-                        break;
-                    }
-                }
-
-                if (!hasAnyAbility)
-                {
-                    usesNewAbilitySystem = false;
-                    cachedAbilitySystem = null;
-                }
-            }
-
-            // If new system is not being used, check old system
-            if (!usesNewAbilitySystem)
-            {
-                usesNewAbilitySystem = entity?.Abilities?.HasAnyAbilities ?? false;
-            }
-
-            abilitySystemResolved = true;
 
             #if UNITY_EDITOR
-            if (usesNewAbilitySystem && cachedAbilitySystem != null)
-                Debug.Log($"[PlayerInputController] Using NEW AbilitySystem (slots: {cachedAbilitySystem.SlotCount})");
-            else if (entity?.Abilities != null)
-                Debug.Log("[PlayerInputController] Using OLD AbilityController");
+            if (cachedAbilitySystem != null)
+                Debug.Log($"[PlayerInputController] Using AbilitySystem (slots: {cachedAbilitySystem.SlotCount})");
             else
                 Debug.LogWarning("[PlayerInputController] NO ability system found!");
             #endif
@@ -382,27 +348,15 @@ namespace MobaGameplay.Controllers
         #region Abilities
 
         /// <summary>
-        /// Processes ability input for keys 1, 2, and 3.
+        /// Processes ability input for keys 1-4.
         /// Handles both targeting (on key press) and executing (on key release).
         /// Also handles ability cancellation on right-click.
-        /// Routes through AbilitySystem (new) if present, falls back to AbilityController (old).
+        /// Uses exclusively the data-driven AbilitySystem.
         /// </summary>
         private void ProcessAbilities()
         {
-            // Resolve system once at start (but allow re-resolution if needed)
-            if (!abilitySystemResolved)
-            {
-                ResolveAbilitySystem();
-            }
-
-            if (usesNewAbilitySystem)
-            {
-                ProcessAbilitiesNewSystem();
-            }
-            else
-            {
-                ProcessAbilitiesOldSystem();
-            }
+            ResolveAbilitySystem();
+            ProcessAbilitiesNewSystem();
         }
 
         /// <summary>
@@ -459,64 +413,6 @@ namespace MobaGameplay.Controllers
         }
 
         /// <summary>
-        /// Processes ability input using the old AbilityController.
-        /// Kept for backward compatibility during migration.
-        /// </summary>
-        private void ProcessAbilitiesOldSystem()
-        {
-            if (entity.Abilities == null) return;
-
-            // Process ability key presses
-            ProcessAbilityInput(KeyCode.Alpha1, entity.Abilities.Ability1, 
-                () => entity.Abilities.TryStartTargetingAbility1());
-            
-            ProcessAbilityInput(KeyCode.Alpha2, entity.Abilities.Ability2,
-                () => entity.Abilities.TryStartTargetingAbility2());
-            
-            ProcessAbilityInput(KeyCode.Alpha3, entity.Abilities.Ability3,
-                () => entity.Abilities.TryStartTargetingAbility3());
-
-            ProcessAbilityInput(KeyCode.Alpha4, entity.Abilities.Ability4,
-                () => entity.Abilities.TryStartTargetingAbility4());
-
-            // Cancel targeting on right-click (if not over UI)
-            if (Mouse.current.rightButton.wasPressedThisFrame && !IsPointerOverUI())
-            {
-                if (entity.Abilities.HasActiveTargeting)
-                {
-                    entity.Abilities.CancelTargeting();
-                }
-            }
-        }
-
-        /// <summary>
-        /// Processes input for a single ability slot.
-        /// Starts targeting on press, executes on release if still targeting.
-        /// </summary>
-        /// <param name="key">The KeyCode for this ability slot.</param>
-        /// <param name="ability">The ability to process.</param>
-        /// <param name="executeIfActive">Callback to execute when ability is activated.</param>
-        private void ProcessAbilityInput(KeyCode key, Object ability, System.Action executeIfActive)
-        {
-            if (ability == null) return;
-
-            // Check if this specific ability is being targeted
-            bool isTargetingThis = IsTargetingSpecificAbility(ability);
-            
-            // Convert KeyCode to InputSystem.Key
-            Key inputKey = ConvertToInputKey(key);
-            if (inputKey != Key.None && Keyboard.current[inputKey].wasPressedThisFrame)
-            {
-                executeIfActive();
-            }
-            
-            if (inputKey != Key.None && Keyboard.current[inputKey].wasReleasedThisFrame && isTargetingThis)
-            {
-                ExecuteActiveAbility();
-            }
-        }
-
-        /// <summary>
         /// Converts Unity's legacy KeyCode to Input System's Key enum.
         /// Required because PlayerInputController uses the new Input System.
         /// </summary>
@@ -530,24 +426,8 @@ namespace MobaGameplay.Controllers
                 KeyCode.Alpha2 => Key.Digit2,
                 KeyCode.Alpha3 => Key.Digit3,
                 KeyCode.Alpha4 => Key.Digit4,
-                KeyCode.Alpha5 => Key.Digit5,
-                KeyCode.Alpha6 => Key.Digit6,
-                KeyCode.Alpha7 => Key.Digit7,
-                KeyCode.Alpha8 => Key.Digit8,
-                KeyCode.Alpha9 => Key.Digit9,
-                KeyCode.Alpha0 => Key.Digit0,
                 _ => Key.None
             };
-        }
-
-        /// <summary>
-        /// Checks if the specified ability is currently being targeted.
-        /// </summary>
-        /// <param name="ability">The ability to check.</param>
-        /// <returns>True if this ability is the active targeting ability.</returns>
-        private bool IsTargetingSpecificAbility(Object ability)
-        {
-            return entity.Abilities?.ActiveTargetingAbility == ability;
         }
 
         #endregion
@@ -639,7 +519,6 @@ namespace MobaGameplay.Controllers
         /// <summary>
         /// Checks if combat actions are currently allowed.
         /// Combat is blocked when targeting an ability or combat component is missing.
-        /// Checks both new AbilitySystem and old AbilityController for targeting state.
         /// </summary>
         /// <returns>True if combat is allowed, false otherwise.</returns>
         private bool CanCombat()
@@ -648,15 +527,8 @@ namespace MobaGameplay.Controllers
 
             ResolveAbilitySystem();
 
-            // Block combat if either ability system has active targeting
-            if (usesNewAbilitySystem)
-            {
-                if (cachedAbilitySystem != null && cachedAbilitySystem.HasActiveTargeting) return false;
-            }
-            else
-            {
-                if (entity.Abilities?.HasActiveTargeting == true) return false;
-            }
+            // Block combat if ability system has active targeting
+            if (cachedAbilitySystem != null && cachedAbilitySystem.HasActiveTargeting) return false;
 
             return true;
         }
@@ -684,18 +556,12 @@ namespace MobaGameplay.Controllers
         /// Executes the currently targeted ability at the mouse position.
         /// Performs a raycast to determine world position and any target entity.
         /// Called when releasing an ability key while targeting.
-        /// Routes through AbilitySystem (new) if present, falls back to AbilityController (old).
         /// </summary>
         private void ExecuteActiveAbility()
         {
             ResolveAbilitySystem();
 
-            // Determine which system is active
-            bool hasTargeting = usesNewAbilitySystem
-                ? (cachedAbilitySystem != null && cachedAbilitySystem.HasActiveTargeting)
-                : (entity.Abilities != null && entity.Abilities.HasActiveTargeting);
-
-            if (!hasTargeting) return;
+            if (cachedAbilitySystem == null || !cachedAbilitySystem.HasActiveTargeting) return;
             
             Vector2 mousePosition = Mouse.current.position.ReadValue();
             Ray aimRay = mainCamera.ScreenPointToRay(mousePosition);
@@ -713,15 +579,7 @@ namespace MobaGameplay.Controllers
                 aimPoint = aimRay.GetPoint(distance);
             }
 
-            // Route execution to the active system
-            if (usesNewAbilitySystem)
-            {
-                cachedAbilitySystem.ExecuteTargeting(aimPoint, targetEntity);
-            }
-            else
-            {
-                entity.Abilities.ExecuteTargeting(aimPoint, targetEntity);
-            }
+            cachedAbilitySystem.ExecuteTargeting(aimPoint, targetEntity);
         }
 
         #endregion

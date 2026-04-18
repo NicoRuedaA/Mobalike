@@ -4,6 +4,10 @@ using MobaGameplay.Abilities;
 
 namespace MobaGameplay.UI
 {
+    /// <summary>
+    /// HUD principal del jugador. Muestra barras de vida/maná y habilidades.
+    /// Usa exclusivamente el sistema data-driven (AbilitySystem).
+    /// </summary>
     public class PlayerHUD : MonoBehaviour
     {
         [Header("Stats UI")]
@@ -17,9 +21,7 @@ namespace MobaGameplay.UI
         [SerializeField] private AbilitySlotUI slot4;
 
         private BaseEntity playerEntity;
-        private AbilityController legacyAbilities;
-        private AbilitySystem newAbilities;
-        private bool usesNewSystem;
+        private AbilitySystem abilitySystem;
         private bool abilitiesAssigned;
 
         private void Start()
@@ -43,7 +45,7 @@ namespace MobaGameplay.UI
                 abilitiesAssigned = true;
             }
 
-            // Actualizar barras de recursos suavemente
+            // Actualizar barras de recursos
             if (healthBar != null)
                 healthBar.UpdateValue(playerEntity.CurrentHealth, playerEntity.MaxHealth);
 
@@ -63,53 +65,33 @@ namespace MobaGameplay.UI
             if (playerGo != null)
             {
                 playerEntity = playerGo.GetComponent<BaseEntity>();
-                legacyAbilities = playerGo.GetComponent<AbilityController>();
-                newAbilities = playerGo.GetComponent<AbilitySystem>();
-                usesNewSystem = newAbilities != null;
+                abilitySystem = playerGo.GetComponent<AbilitySystem>();
             }
         }
 
         private void TryAssignAbilities()
         {
-            if (usesNewSystem)
-            {
-                // New data-driven system
-                if (newAbilities == null) return;
+            if (abilitySystem == null) return;
 
-                if (slot1 != null)
-                {
-                    var data = newAbilities.GetAbilityData(0);
-                    if (data != null) slot1.AssignAbility(data, newAbilities, 0);
-                }
-                if (slot2 != null)
-                {
-                    var data = newAbilities.GetAbilityData(1);
-                    if (data != null) slot2.AssignAbility(data, newAbilities, 1);
-                }
-                if (slot3 != null)
-                {
-                    var data = newAbilities.GetAbilityData(2);
-                    if (data != null) slot3.AssignAbility(data, newAbilities, 2);
-                }
-                if (slot4 != null)
-                {
-                    var data = newAbilities.GetAbilityData(3);
-                    if (data != null) slot4.AssignAbility(data, newAbilities, 3);
-                }
+            if (slot1 != null)
+            {
+                var data = abilitySystem.GetAbilityData(0);
+                if (data != null) slot1.AssignAbility(data, abilitySystem, 0);
             }
-            else
+            if (slot2 != null)
             {
-                // Old MonoBehaviour system
-                if (legacyAbilities == null) return;
-
-                if (slot1 != null && slot1.GetAbility() == null) 
-                    slot1.AssignAbility(legacyAbilities.Ability1);
-                if (slot2 != null && slot2.GetAbility() == null) 
-                    slot2.AssignAbility(legacyAbilities.Ability2);
-                if (slot3 != null && slot3.GetAbility() == null) 
-                    slot3.AssignAbility(legacyAbilities.Ability3);
-                if (slot4 != null && slot4.GetAbility() == null) 
-                    slot4.AssignAbility(legacyAbilities.Ability4);
+                var data = abilitySystem.GetAbilityData(1);
+                if (data != null) slot2.AssignAbility(data, abilitySystem, 1);
+            }
+            if (slot3 != null)
+            {
+                var data = abilitySystem.GetAbilityData(2);
+                if (data != null) slot3.AssignAbility(data, abilitySystem, 2);
+            }
+            if (slot4 != null)
+            {
+                var data = abilitySystem.GetAbilityData(3);
+                if (data != null) slot4.AssignAbility(data, abilitySystem, 3);
             }
         }
     }

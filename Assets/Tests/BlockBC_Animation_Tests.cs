@@ -165,36 +165,6 @@ namespace MobaGameplay.Tests
     [TestFixture]
     public class BlockC_SerializedFieldsTests
     {
-        // --- FireballAbility ---
-
-        [Test]
-        public void FireballAbility_HasSpawnHeightProperty()
-        {
-            var prop = typeof(FireballAbility).GetProperty("ProjectileSpawnHeight");
-            Assert.IsNotNull(prop, "FireballAbility should have ProjectileSpawnHeight property");
-        }
-
-        [Test]
-        public void FireballAbility_HasSpawnForwardProperty()
-        {
-            var prop = typeof(FireballAbility).GetProperty("ProjectileSpawnForward");
-            Assert.IsNotNull(prop, "FireballAbility should have ProjectileSpawnForward property");
-        }
-
-        [Test]
-        public void FireballAbility_SpawnPropertiesHaveDefaults()
-        {
-            var go = new GameObject("TestFireball");
-            var fb = go.AddComponent<FireballAbility>();
-
-            Assert.AreEqual(1f, fb.ProjectileSpawnHeight, 0.01f,
-                "ProjectileSpawnHeight should default to 1f");
-            Assert.AreEqual(1f, fb.ProjectileSpawnForward, 0.01f,
-                "ProjectileSpawnForward should default to 1f");
-
-            Object.DestroyImmediate(go);
-        }
-
         // --- HeroEntity progression ---
 
         [Test]

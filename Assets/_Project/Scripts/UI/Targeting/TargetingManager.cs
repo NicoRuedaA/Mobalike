@@ -22,7 +22,6 @@ namespace MobaGameplay.UI.Targeting
         private LineIndicator activeLine;
         private TrailIndicator activeTrail;
         
-        private BaseAbility currentAimingAbility;
         private AbilityData currentAimingData;
         private Transform playerTransform;
 
@@ -59,43 +58,6 @@ namespace MobaGameplay.UI.Targeting
             playerTransform = player;
         }
 
-        public void StartTargeting(BaseAbility ability)
-        {
-            if (ability.TargetingType == IndicatorType.None) return;
-            
-            currentAimingAbility = ability;
-            currentAimingData = null; // Clear data reference
-            HideIndicator();
-
-            if (ability.TargetingType == IndicatorType.Circle)
-            {
-                activeIndicatorObj = Instantiate(circleIndicatorPrefab);
-                activeCircle = activeIndicatorObj.GetComponent<CircleIndicator>();
-                activeCircle.SetRadius(ability.Range);
-                activeCircle.SetColor(friendlyColor);
-            }
-            else if (ability.TargetingType == IndicatorType.Line)
-            {
-                activeIndicatorObj = Instantiate(lineIndicatorPrefab);
-                activeLine = activeIndicatorObj.GetComponent<LineIndicator>();
-                activeLine.SetDimensions(ability.Range, ability.Width);
-                activeLine.SetColor(friendlyColor);
-            }
-            else if (ability.TargetingType == IndicatorType.Trail)
-            {
-                // Use dedicated trail prefab if assigned, otherwise reuse line prefab.
-                GameObject sourcePrefab = trailIndicatorPrefab != null ? trailIndicatorPrefab : lineIndicatorPrefab;
-                activeIndicatorObj = Instantiate(sourcePrefab);
-
-                activeTrail = activeIndicatorObj.GetComponent<TrailIndicator>();
-                if (activeTrail == null)
-                    activeTrail = activeIndicatorObj.AddComponent<TrailIndicator>();
-
-                activeTrail.SetDimensions(ability.Range, ability.Width);
-                activeTrail.SetColor(new Color(1f, 0.4f, 0f, 0.7f));
-            }
-        }
-
         /// <summary>
         /// Start targeting mode using AbilityData (data-driven system).
         /// </summary>
@@ -104,7 +66,6 @@ namespace MobaGameplay.UI.Targeting
             if (data == null || data.targetingType == IndicatorType.None) return;
 
             currentAimingData = data;
-            currentAimingAbility = null; // Clear ability reference
             HideIndicator();
 
             if (data.targetingType == IndicatorType.Circle)
@@ -138,7 +99,6 @@ namespace MobaGameplay.UI.Targeting
         public void CancelTargeting()
         {
             HideIndicator();
-            currentAimingAbility = null;
             currentAimingData = null;
         }
 
@@ -156,23 +116,11 @@ namespace MobaGameplay.UI.Targeting
         private void Update()
         {
             if (activeIndicatorObj == null || playerTransform == null) return;
-            if (currentAimingAbility == null && currentAimingData == null) return;
+            if (currentAimingData == null) return;
             if (Camera.main == null || Mouse.current == null) return;
 
-            // Determine active targeting parameters from either system
-            IndicatorType targetType;
-            float targetCastRange;
-            if (currentAimingData != null)
-            {
-                targetType = currentAimingData.targetingType;
-                targetCastRange = currentAimingData.castRange;
-            }
-            else if (currentAimingAbility != null)
-            {
-                targetType = currentAimingAbility.TargetingType;
-                targetCastRange = currentAimingAbility.CastRange;
-            }
-            else return;
+            IndicatorType targetType = currentAimingData.targetingType;
+            float targetCastRange = currentAimingData.castRange;
 
             // Get mouse position on ground plane
             Ray ray = Camera.main.ScreenPointToRay(Mouse.current.position.ReadValue());
