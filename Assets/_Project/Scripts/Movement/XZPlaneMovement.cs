@@ -54,6 +54,7 @@ namespace MobaGameplay.Movement
 
         // State
         private CharacterController controller;
+        private BaseEntity entity;
         private Vector3 targetPosition;
         private Vector3 currentDirection;
         private MovementMode currentMode = MovementMode.None;
@@ -93,6 +94,7 @@ namespace MobaGameplay.Movement
         private void Awake()
         {
             controller = GetComponent<CharacterController>();
+            entity = GetComponent<BaseEntity>();
             ConfigureCharacterController();
         }
 

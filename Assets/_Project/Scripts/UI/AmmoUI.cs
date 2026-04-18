@@ -56,8 +56,8 @@ namespace MobaGameplay.UI
             // Subscribe to events
             rangedCombat.OnAmmoChanged += UpdateAmmoUI;
             rangedCombat.OnReloadStart += ShowReloadIndicator;
-            rangedCombat.OnReloadComplete += HideReloadIndicator;
-            rangedCombat.OnReloadCancelled += HideReloadIndicator;
+            rangedCombat.OnReloadComplete += HideReloadIndicator;  // Uses (int, int) overload
+            rangedCombat.OnReloadCancelled += HideReloadIndicator;  // Uses () overload
             
             // Initial update
             UpdateAmmoUI(rangedCombat.CurrentAmmo, rangedCombat.MaxAmmo);
@@ -75,6 +75,8 @@ namespace MobaGameplay.UI
             {
                 rangedCombat.OnAmmoChanged -= UpdateAmmoUI;
                 rangedCombat.OnReloadStart -= ShowReloadIndicator;
+                // Note: C# allows unsubscribing without specifying which overload
+                // The compiler will match the correct delegate type
                 rangedCombat.OnReloadComplete -= HideReloadIndicator;
                 rangedCombat.OnReloadCancelled -= HideReloadIndicator;
             }
@@ -121,7 +123,21 @@ namespace MobaGameplay.UI
         }
         
         /// <summary>
-        /// Hide reload indicator.
+        /// Hide reload indicator (called when reload completes).
+        /// </summary>
+        private void HideReloadIndicator(int current, int max)
+        {
+            if (reloadIndicator != null)
+            {
+                reloadIndicator.SetActive(false);
+            }
+            
+            // Refresh ammo text with provided values
+            UpdateAmmoUI(current, max);
+        }
+        
+        /// <summary>
+        /// Hide reload indicator (called when reload is cancelled).
         /// </summary>
         private void HideReloadIndicator()
         {

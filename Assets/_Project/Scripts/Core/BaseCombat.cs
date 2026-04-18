@@ -12,7 +12,7 @@ namespace MobaGameplay.Core
         // Events
         public event Action OnBasicAttack;
         public event Action OnReloadStart;
-        public event Action OnReloadComplete;
+        public event Action<int, int> OnReloadComplete;  // current, max
         public event Action OnReloadCancelled;
         public event Action<int, int> OnAmmoChanged;  // current, max
 
@@ -35,5 +35,14 @@ namespace MobaGameplay.Core
         {
             return Owner != null && !Owner.IsDead;
         }
+        
+        // Protected methods to trigger events from derived classes
+        protected void TriggerOnAmmoChanged(int current, int max) => OnAmmoChanged?.Invoke(current, max);
+        protected void TriggerOnReloadStart() => OnReloadStart?.Invoke();
+        protected void TriggerOnReloadComplete(int current, int max) => OnReloadComplete?.Invoke(current, max);
+        protected void TriggerOnReloadCancelled() => OnReloadCancelled?.Invoke();
+        
+        // Legacy overload without parameters
+        protected void TriggerOnReloadComplete() => OnReloadComplete?.Invoke(0, 0);
     }
 }

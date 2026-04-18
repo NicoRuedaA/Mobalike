@@ -170,7 +170,7 @@ namespace MobaGameplay.Combat
                 if (hasAmmoSystem)
                 {
                     currentAmmo--;
-                    OnAmmoChanged?.Invoke(currentAmmo, maxAmmo);
+                    TriggerOnAmmoChanged(currentAmmo, maxAmmo);
                     Debug.Log($"[RangedCombat] Attack! Ammo left: {currentAmmo}/{maxAmmo}");
                 }
                 
@@ -322,7 +322,7 @@ namespace MobaGameplay.Combat
             }
             
             isReloading = false;
-            OnReloadCancelled?.Invoke();
+            TriggerOnReloadCancelled();
             
             Debug.Log("[RangedCombat] Reload cancelled!");
         }
@@ -342,7 +342,7 @@ namespace MobaGameplay.Combat
         private System.Collections.IEnumerator ReloadCoroutine()
         {
             isReloading = true;
-            OnReloadStart?.Invoke();
+            TriggerOnReloadStart();
             
             Debug.Log($"[RangedCombat] Reloading... ({reloadTime}s)");
             
@@ -353,7 +353,7 @@ namespace MobaGameplay.Combat
             reloadCooldownTimer = 0.5f;  // Small cooldown post-reload
             reloadCoroutine = null;
             
-            OnReloadComplete?.Invoke(currentAmmo, maxAmmo);
+            TriggerOnReloadComplete(currentAmmo, maxAmmo);
             
             Debug.Log($"[RangedCombat] Reload complete! ({currentAmmo}/{maxAmmo})");
             
