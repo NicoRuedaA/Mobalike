@@ -198,7 +198,8 @@ namespace MobaGameplay.Combat
         /// </summary>
         public void UpdateCharge()
         {
-            if (!IsCharging || entity?.IsDead == true) return;
+            // Don't charge while reloading or dead
+            if (!IsCharging || entity?.IsDead == true || isReloading) return;
             
             if (ChargeProgress < maxChargeTime)
             {
@@ -305,6 +306,9 @@ namespace MobaGameplay.Combat
                 return;
             }
             
+            // Reset charge when starting reload (prevents charged shots after reload)
+            ResetCharge();
+            
             reloadCoroutine = StartCoroutine(ReloadCoroutine());
         }
         
@@ -323,6 +327,9 @@ namespace MobaGameplay.Combat
             
             isReloading = false;
             TriggerOnReloadCancelled();
+            
+            // Also reset charge when cancelling reload
+            ResetCharge();
             
             Debug.Log("[RangedCombat] Reload cancelled!");
         }
@@ -352,6 +359,9 @@ namespace MobaGameplay.Combat
             isReloading = false;
             reloadCooldownTimer = 0.5f;  // Small cooldown post-reload
             reloadCoroutine = null;
+            
+            // Reset charge when reload completes (prevents accidental charged shots)
+            ResetCharge();
             
             TriggerOnReloadComplete(currentAmmo, maxAmmo);
             
