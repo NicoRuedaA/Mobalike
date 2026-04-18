@@ -131,6 +131,12 @@ namespace MobaGameplay.Movement
             if (currentDirection.sqrMagnitude > DIRECTION_DEADZONE)
             {
                 currentMode = MovementMode.Directional;
+                
+                // Cancel reload when starting to move
+                if (entity?.Combat is MobaGameplay.Combat.RangedCombat rangedCombat)
+                {
+                    rangedCombat.CancelReload();
+                }
             }
             else if (currentMode == MovementMode.Directional)
             {
@@ -188,6 +194,12 @@ namespace MobaGameplay.Movement
             dashTimer = dashDuration;
             dashCooldownTimer = dashCooldown;
             verticalVelocity = 0f; // Reset gravity for straight dash
+            
+            // Cancel reload on dash
+            if (entity?.Combat is MobaGameplay.Combat.RangedCombat rangedCombat)
+            {
+                rangedCombat.CancelReload();
+            }
             
             TriggerOnDashStart();
         }

@@ -65,6 +65,7 @@ namespace MobaGameplay.Controllers
             ProcessAbilities();
             ProcessCombat();
             ProcessJump();
+            ProcessReload();
         }
 
         #endregion
@@ -533,6 +534,32 @@ namespace MobaGameplay.Controllers
             return true;
         }
 
+        #endregion
+        
+        #region Reload
+        
+        /// <summary>
+        /// Processes reload input (R key).
+        /// </summary>
+        private void ProcessReload()
+        {
+            if (Keyboard.current.rKey.wasPressedThisFrame)
+            {
+                TryReload();
+            }
+        }
+        
+        /// <summary>
+        /// Attempt to reload weapon.
+        /// </summary>
+        private void TryReload()
+        {
+            if (cachedRangedCombat != null)
+            {
+                cachedRangedCombat.Reload();
+            }
+        }
+        
         #endregion
 
         #region Jump
