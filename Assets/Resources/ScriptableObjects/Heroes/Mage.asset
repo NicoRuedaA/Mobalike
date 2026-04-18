@@ -39,3 +39,6 @@ MonoBehaviour:
   chargedDamageMultiplier: 1.5
   chargedSpeedMultiplier: 1.3
   chargedSizeMultiplier: 1.5
+  hasAmmoSystem: 1
+  maxAmmo: 6
+  reloadTime: 2
