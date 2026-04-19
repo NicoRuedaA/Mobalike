@@ -144,17 +144,17 @@ namespace MobaGameplay.Combat
         {
             if (entity == null || entity.IsDead) return;
             
+            // Check reload FIRST (before ammo check to prevent attack during reload)
+            if (isReloading)
+            {
+                Debug.Log("[RangedCombat] Cannot attack while reloading!");
+                return;
+            }
+            
             // Check ammo
             if (hasAmmoSystem && currentAmmo <= 0)
             {
                 Debug.Log($"[RangedCombat] No ammo! Press R to reload. ({reloadTime}s)");
-                return;
-            }
-            
-            // Check reload
-            if (isReloading)
-            {
-                Debug.Log("[RangedCombat] Cannot attack while reloading!");
                 return;
             }
             
@@ -170,8 +170,9 @@ namespace MobaGameplay.Combat
                 if (hasAmmoSystem)
                 {
                     currentAmmo--;
-                    TriggerOnAmmoChanged(currentAmmo, maxAmmo);
                     Debug.Log($"[RangedCombat] Attack! Ammo left: {currentAmmo}/{maxAmmo}");
+                    // Fire event AFTER logging to ensure UI updates with correct value
+                    TriggerOnAmmoChanged(currentAmmo, maxAmmo);
                 }
                 
                 bool isCharged = IsCharging && ChargeProgress > MIN_CHARGE_THRESHOLD;
@@ -357,15 +358,20 @@ namespace MobaGameplay.Combat
             
             currentAmmo = maxAmmo;
             isReloading = false;
-            reloadCooldownTimer = 0.5f;  // Small cooldown post-reload
             reloadCoroutine = null;
             
             // Reset charge when reload completes (prevents accidental charged shots)
             ResetCharge();
             
+            // Fire ammo changed event FIRST (so UI updates before reload complete event)
+            TriggerOnAmmoChanged(currentAmmo, maxAmmo);
+            Debug.Log($"[RangedCombat] Reload complete! ({currentAmmo}/{maxAmmo})");
+            
+            // Then fire reload complete event
             TriggerOnReloadComplete(currentAmmo, maxAmmo);
             
-            Debug.Log($"[RangedCombat] Reload complete! ({currentAmmo}/{maxAmmo})");
+            // Small cooldown post-reload
+            reloadCooldownTimer = 0.5f;
             
             // Tick reload cooldown
             while (reloadCooldownTimer > 0)

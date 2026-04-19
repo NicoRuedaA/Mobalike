@@ -106,11 +106,11 @@ namespace MobaGameplay.UI
         {
             if (rangedCombat == null) return;
             
-            // Subscribe to events
+            // Subscribe to events with explicit lambda wrappers to avoid ambiguity
             rangedCombat.OnAmmoChanged += UpdateAmmoUI;
             rangedCombat.OnReloadStart += ShowReloadIndicator;
-            rangedCombat.OnReloadComplete += HideReloadIndicator;  // Uses (int, int) overload
-            rangedCombat.OnReloadCancelled += HideReloadIndicator;  // Uses () overload
+            rangedCombat.OnReloadComplete += (current, max) => HideReloadIndicatorAfterReload(current, max);
+            rangedCombat.OnReloadCancelled += () => HideReloadIndicatorAfterCancel();
             
             // Initial update
             if (rangedCombat.HasAmmoSystem)
@@ -186,9 +186,9 @@ namespace MobaGameplay.UI
         }
         
         /// <summary>
-        /// Hide reload indicator (called when reload completes).
+        /// Hide reload indicator after reload completes (wrapper to avoid event ambiguity).
         /// </summary>
-        private void HideReloadIndicator(int current, int max)
+        private void HideReloadIndicatorAfterReload(int current, int max)
         {
             if (reloadIndicator != null)
             {
@@ -197,22 +197,24 @@ namespace MobaGameplay.UI
             
             // Refresh ammo text with provided values
             UpdateAmmoUI(current, max);
+            Debug.Log($"[AmmoUI] Reload complete - displaying: {current}/{max}");
         }
         
         /// <summary>
-        /// Hide reload indicator (called when reload is cancelled).
+        /// Hide reload indicator after reload is cancelled (wrapper to avoid event ambiguity).
         /// </summary>
-        private void HideReloadIndicator()
+        private void HideReloadIndicatorAfterCancel()
         {
             if (reloadIndicator != null)
             {
                 reloadIndicator.SetActive(false);
             }
             
-            // Refresh ammo text
+            // Refresh ammo text from combat directly
             if (rangedCombat != null && ammoText != null)
             {
                 UpdateAmmoUI(rangedCombat.CurrentAmmo, rangedCombat.MaxAmmo);
+                Debug.Log($"[AmmoUI] Reload cancelled - displaying: {rangedCombat.CurrentAmmo}/{rangedCombat.MaxAmmo}");
             }
         }
     }
