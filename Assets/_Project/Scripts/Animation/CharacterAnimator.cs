@@ -41,8 +41,8 @@ namespace MobaGameplay.Animation
         [Header("Placeholder Names")]
         [Tooltip("Nombre exacto del clip placeholder en el AnimatorController para cada estado")]
         [SerializeField] private string placeholderIdle         = "Idle";
-        [SerializeField] private string placeholderWalk         = "Walk_N";
-        [SerializeField] private string placeholderRun          = "Run_N";
+        [SerializeField] private string placeholderWalk         = "walk";
+        [SerializeField] private string placeholderRun          = "run";
         [SerializeField] private string placeholderInAir        = "InAir";
         [SerializeField] private string placeholderJumpStart    = "JumpStart";
         [SerializeField] private string placeholderJumpLand     = "JumpLand";
