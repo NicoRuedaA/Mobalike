@@ -1,534 +1,327 @@
 [English](README.md) | [Español](README.es.md)
 
-# MobaGameplay - Sistema de Input
+# Mobalike — Prototipo MOBA en Unity 6
 
-Sistema de input para un juego MOBA estilo League of Legends/Dota 2 construido con Unity 2022+ y el nuevo Input System.
+Un prototipo de MOBA estilo League of Legends/Dota 2/Supervive construido con **Unity 6 (6000.0.29f1)** y el New Input System. Sistema data-driven con arquitectura modular "Brain and Body".
 
-## 1. Descripción
-
-Framework de input para personajes MOBA que soporta movimiento, combate a distancia con carga (charged attacks), habilidades targeting, y sistemas de hover/outline. Diseñado para ser modular, testeable y extensible.
-
-**Problema que resuelve:** Coordinar múltiples sistemas de input (teclado, ratón) con estado del personaje (vivo/muerto, apuntando, cargando ataque) de forma predecible y sin race conditions.
-
-**Para quién es:** Desarrolladores de juegos MOBA en Unity que necesitan un sistema de input robusto y extensible.
+> **Estado actual:** ~60-70% completo (single-player funcional)  
+> **Última actualización:** 2026-04-19
 
 ---
 
-## 2. Arquitectura
+## 1. ¿Qué es Mobalike?
+
+Framework de gameplay MOBA que incluye:
+
+- **Movimiento:** WASD con sprint, dash, jump — todo en plano XZ
+- **Combate:** Ranged con munición + carga (charged attacks), melee en progreso
+- **Habilidades:** Sistema data-driven con 5 behaviors (projectile, AoE, trail, buff, smash)
+- **Entidades:** Heroes, enemigos, oleadas con arquitectura component-based
+- **Inventario:** 20 slots + 6 slots de equipo con stats
+- **UI:** HUD completo con barras, habilidades, munición, floating text
+
+**Arquitectura:** "Brain and Body" — separación clara entre lógica (Brain) y representación (Body).
+
+---
+
+## 2. Arquitectura "Brain and Body"
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────┐
-│                         PLAYER GAMEOBJECT                                │
-│  ┌─────────────────┐  ┌─────────────────┐  ┌─────────────────┐      │
-│  │  HeroEntity     │  │  XZPlaneMovement │  │  RangedCombat   │      │
-│  │  (BaseEntity)   │  │  (BaseMovement)  │  │  (BaseCombat)   │      │
-│  │                 │  │                 │  │                 │      │
-│  │  - Health       │  │  - Walk/Sprint  │  │  - BasicAttack  │      │
-│  │  - Mana        │  │  - Dash         │  │  - ChargedAtk   │      │
-│  │  - Stats       │  │  - Aim          │  │  - Projectiles  │      │
-│  └────────┬────────┘  └────────┬────────┘  └────────┬────────┘      │
-│           │                   │                   │                  │
-│           └───────────────────┼───────────────────┘                  │
-│                               │                                      │
-│  ┌───────────────────────────┴─────────────────────────────────┐    │
-│  │                    PLAYERINPUTCONTROLLER                     │    │
-│  │                                                              │    │
-│  │  Responsabilidades:                                           │    │
-│  │  - Procesar input de teclado (WASD, Space, 1-3)             │    │
-│  │  - Procesar input de ratón (Left/Right click)               │    │
-│  │  - Coordinar estado entre sistemas                           │    │
-│  │  - Cachear direcciones de cámara                            │    │
-│  │                                                              │    │
-│  │  Proceso por frame:                                          │    │
-│  │  1. ValidateInput() → Early exit si inválido                 │    │
-│  │  2. UpdateCameraCache() → Actualiza cada 0.5s               │    │
-│  │  3. ProcessHover() → Raycast para outline                   │    │
-│  │  4. ProcessAiming() → Rotación hacia ratón                  │    │
-│  │  5. ProcessMovement() → WASD → Movement                     │    │
-│  │  6. ProcessAbilities() → 1-2-3 → Abilities                 │    │
-│  │  7. ProcessCombat() → Charged attack logic                  │    │
-│  │  8. ProcessDash() → Space → Dash                            │    │
-│  └──────────────────────────────────────────────────────────────┘    │
-│                               │                                      │
-│  ┌───────────────────────────┴─────────────────────────────────┐    │
-│  │                    ABILITYCONTROLLER                         │    │
-│  │                                                              │    │
-│  │  - Gestiona slots de habilidades (1, 2, 3)                  │    │
-│  │  - Estado de targeting activo                                │    │
-│  │  - Ejecución de habilidades                                  │    │
-│  │                                                              │    │
-│  │  Estados:                                                    │    │
-│  │  None → Targeting → Executing → None                         │    │
-│  └──────────────────────────────────────────────────────────────┘    │
+│                         HERO GAMEOBJECT                                  │
+│                                                                          │
+│  ┌─────────────────┐  ┌─────────────────┐  ┌─────────────────┐            │
+│  │   HeroEntity    │  │ XZPlaneMovement │  │  RangedCombat   │          │
+│  │    (Brain)      │  │    (Body)       │  │    (Brain)      │          │
+│  │                 │  │                 │  │                 │          │
+│  │  - Health/Mana  │  │  - Walk/Sprint  │  │  - Ammo system  │          │
+│  │  - Stats (STR/  │  │  - Dash/Jump    │  │  - Charged atk  │          │
+│  │    AGI/INT)    │  │  - Character    │  │  - Reload       │          │
+│  │  - Events       │  │    Controller   │  │  - Projectiles  │          │
+│  └────────┬────────┘  └─────────────────┘  └────────┬────────┘          │
+│           │                                         │                   │
+│           └─────────────────────────────────────────┘                   │
+│                              │                                         │
+│  ┌───────────────────────────┴─────────────────────────────────┐       │
+│  │                 PlayerInputController                        │       │
+│  │                                                              │       │
+│  │  - Procesa input (WASD, mouse, 1-4)                        │       │
+│  │  - Coordina entre sistemas                                   │       │
+│  │  - Gestiona estados (apuntando, cargando)                    │       │
+│  └──────────────────────────────────────────────────────────────┘       │
+│                                                                          │
+│  ┌─────────────────────────────────────────────────────────────┐        │
+│  │                  AbilitySystem (Data-driven)                 │        │
+│  │                                                              │        │
+│  │  - AbilityData ScriptableObjects                            │        │
+│  │  - AbilityBehaviorFactory                                   │        │
+│  │  - 5 tipos: Projectile, AoE, Trail, Buff, Smash            │        │
+│  └─────────────────────────────────────────────────────────────┘        │
 └─────────────────────────────────────────────────────────────────────────┘
 
 FLUJO DE INPUT:
 ──────────────────────────────────────────────────────────────────────────
 
-    ┌─────────┐     ┌──────────────┐     ┌──────────────────┐
-    │ Teclado │────▶│Input System  │────▶│ PlayerInputCtrl │
-    │ Mouse   │     │ (New Input)  │     │ .Update()       │
-    └─────────┘     └──────────────┘     └────────┬─────────┘
-                                                     │
-         ┌────────────────────────────────────────────┼─────────────────┐
-         │                                            │                 │
-         ▼                                            ▼                 ▼
-┌─────────────────┐                    ┌──────────────────┐   ┌────────────────┐
-│ Hover Outline   │                    │ AbilityController │   │ RangedCombat  │
-│                 │                    │                  │   │                │
-│ - GetComponent  │                    │ - TryStartTarget │   │ - StartCharge │
-│ - SetHover(true)│                    │ - ExecuteTarget  │   │ - UpdateCharge│
-│ - SetHover(false│                    │ - CancelTarget   │   │ - ResetCharge │
-└─────────────────┘                    └──────────────────┘   └────────────────┘
-
-COMBAT FLOW (Charged Attack):
-──────────────────────────────────────────────────────────────────────────
-
-    ┌───────────┐     ┌───────────┐     ┌───────────┐     ┌───────────┐
-    │ R-Click   │────▶│ isAiming  │────▶│ L-Hold    │────▶│Charging...│
-    │ (Press)   │     │ = true    │     │ (Start)   │     │           │
-    └───────────┘     └───────────┘     └───────────┘     └─────┬─────┘
-                                                                 │
-                                                                 ▼
-    ┌───────────┐     ┌───────────┐     ┌───────────┐     ┌───────────┐
-    │ R-Click   │◀────│ isAiming  │◀────│ L-Release │◀────│ Progress  │
-    │ (Release) │     │ = false   │     │ (Stop)    │     │ = 1.0     │
-    └─────┬─────┘     └───────────┘     └─────┬─────┘     └─────┬─────┘
-          │                                       │                 │
-          │                                       ▼                 ▼
-          │                              ┌───────────────────────────┐
-          │                              │ ResetCharge()              │
-          │                              │ BasicAttack()              │
-          │                              │ FireProjectile(isCharged)   │
-          │                              └───────────────────────────┘
-          │
-          ▼
-    ┌─────────────────┐
-    │ Charged cooldown │
-    │ = 2.0s          │
-    └─────────────────┘
+    Teclado/Mouse → Input System → PlayerInputController → Sistemas
+                                                           (Movement,
+                                                            Combat,
+                                                            Abilities)
 ```
 
 ---
 
-## 3. Requisitos Previos
+## 3. Sistemas Implementados
 
-| Tecnología | Versión Mínima | Versión Recomendada | Notas |
-|------------|-----------------|---------------------|-------|
-| Unity Editor | 2022.3 LTS | **6000.3 (Unity 6)** | LTS preferred; project uses Unity 6 |
-| Input System Package | 1.6.0 | 1.19.0 | New Input System |
-| URP | 14.0.0 | **17.3.0** | Universal Render Pipeline |
-| C# | 9.0 | 10.0 | .NET Standard 2.1 |
-| IDE | VS 2022 | Rider 2024.1 | Recomendado para debugging |
+| Sistema | Estado | Descripción |
+|---------|--------|-------------|
+| **Entity Framework** | ✅ | BaseEntity, HeroEntity, EnemyEntity con eventos |
+| **Ability System** | ✅ | Data-driven con AbilityData ScriptableObjects |
+| **Movimiento XZ** | ✅ | Walk, sprint, dash, jump con CharacterController |
+| **Combate Ranged** | ✅ | Sistema de munición con recarga y charged attacks |
+| **Combate Melee** | 🟡 | Esqueleto creado, pendiente implementación |
+| **Input System** | ✅ | Unity Input System moderno |
+| **Targeting** | ✅ | Circle, Line, Trail indicators |
+| **Proyectiles** | ✅ | Linear, Homing, BasicAttack con pooling implícito |
+| **Enemy AI** | ✅ | State machine de 636 líneas |
+| **Wave System** | ✅ | Spawning por oleadas |
+| **Inventario** | ✅ | 20 slots con drag-and-drop |
+| **Equipamiento** | ✅ | 6 slots con stats (STR/AGI/INT) |
+| **Buff System** | 🟡 | Heal implementado, falta AttackSpeed/MoveSpeed |
+| **Animaciones** | ✅ | CharacterAnimator con override controllers |
+| **UI/HUD** | ✅ | Completo con barras, habilidades, munición |
 
-### Paquetes de Unity Requeridos
+---
+
+## 4. Requisitos Técnicos
+
+| Tecnología | Versión | Notas |
+|------------|---------|-------|
+| Unity Editor | **6000.0.29f1** | Unity 6 LTS |
+| Input System | 1.11.2 | New Input System |
+| URP | 17.0.3 | Universal Render Pipeline |
+| C# | 10.0 | .NET Standard 2.1 |
+
+### Paquetes Requeridos
 
 ```bash
-# Core
-com.unity.inputsystem@1.7.0
-com.unity.render-pipelines.universal@14.0.10
-
-# Testing (opcional pero recomendado)
-com.unity.test-framework@1.1.33
+# Core (ya incluidos)
+com.unity.inputsystem@1.11.2
+com.unity.render-pipelines.universal@17.0.3
+com.unity.cinemachine@3.1.3
 ```
 
-### Configuración de Input System
+### Configuración de Input
 
 ```
-1. Edit → Project Settings → Player → Active Input Handling → Both
-2. Reiniciar Unity cuando se cambie esta configuración
+Edit → Project Settings → Player → Active Input Handling → Both
 ```
 
 ---
 
-## 4. Instalación
-
-### Paso 1: Abrir el Proyecto
+## 5. Instalación Rápida
 
 ```bash
-# Usando Unity Hub
-# 1. Abrir Unity Hub
-# 2. Click "Open" → Seleccionar carpeta "MobaGameplay"
-# 3. Esperar importación de assets
-```
+# 1. Clonar repositorio
+git clone https://github.com/NicoRuedaA/Mobalike.git
+cd Mobalike
 
-### Paso 2: Configurar Input System (si no está instalado)
+# 2. Abrir en Unity Hub
+# Unity Hub → Open → Seleccionar carpeta Mobalike
 
-```bash
-# Window → Package Manager → Unity Registry
-# Buscar "Input System" → Install
-```
+# 3. Abrir escena principal
+Assets/_Project/Scenes/SampleScene.unity
 
-### Paso 3: Configurar Layers
-
-```
-1. Edit → Project Settings → Tags and Layers
-2. Crear/verificar las siguientes capas:
-   - Ground (capa 0 por defecto)
-   - Player (capa 8)
-   - Enemy (capa 9)
-```
-
-### Paso 4: Configurar API Compatibility
-
-```
-1. Edit → Project Settings → Player → Other Settings
-2. API Compatibility Level: .NET Standard 2.1
-```
-
-### Paso 5: Abrir la Escena de Prueba
-
-```
-1. En Project window: Assets/_Project/Scenes/
-2. Double-click en SampleScene
-3. Play (▶)
+# 4. Play (▶)
 ```
 
 ---
 
-## 5. Variables de Entorno (Project Settings)
+## 6. Controles
 
-| Variable | Descripción | Valor por Defecto | Ubicación |
-|----------|-------------|-------------------|-----------|
-| Active Input Handling | Sistema de input activo | Both | Player Settings |
-| API Compatibility | Versión .NET | .NET Standard 2.1 | Player Settings |
-| Default Isometric Angle | Ángulo de cámara | 30° | CameraController |
+| Input | Acción | Notas |
+|-------|--------|-------|
+| `WASD` | Movimiento | Relativo a cámara |
+| `Shift` (hold) | Sprint | Consume stamina |
+| `Space` | Dash | Invulnerabilidad frames |
+| `Right Click` (hold) | Apuntar | Activa laser sight |
+| `Left Click` (hold) | Cargar ataque | Solo mientras apunta |
+| `Left Click` (release) | Disparar | Básico o cargado |
+| `R` | Recargar | Cancela carga si hay |
+| `1, 2, 3, 4` | Habilidades | Q, W, E, R estilo MOBA |
+| `Right Click` | Cancelar habilidad | En modo targeting |
+| `B` | Inventario | Toggle UI |
 
 ---
 
-## 6. Estructura del Proyecto
+## 7. Estructura del Proyecto
 
 ```
 Assets/
-├── _Project/                          # Código principal del proyecto
+├── _Project/                          # Código principal
 │   ├── Art/
-│   │   ├── Animations/
-│   │   │   ├── Controllers/         # .controller (playerAnimator.controller)
-│   │   │   ├── Clips/              # .anim clips
-│   │   │   └── Mask/               # Avatar masks
-│   │   ├── Icons/
-│   │   │   ├── Abilities/          # Íconos de habilidades
-│   │   │   └── Items/              # Íconos de items/equipo
-│   │   ├── Materials/               # Materiales varios
-│   │   └── Shaders/                # Outline.shader, UIHealthBarTick.shader
+│   │   ├── Animations/               # Controllers, clips, masks
+│   │   ├── Materials/                # URP materials
+│   │   └── Shaders/                  # Outline, healthbar shaders
 │   │
-│   ├── Data/                        # ScriptableObjects de datos
-│   │   ├── Abilities/              # AbilityData (FireballAbilityData, etc.)
-│   │   └── Classes/               # HeroClass (Mage.asset, Warrior.asset)
+│   ├── Data/                         # ScriptableObjects
+│   │   ├── Abilities/               # AbilityData (Fireball, Heal, etc.)
+│   │   └── Classes/                # HeroClass (Mage, Warrior)
 │   │
-│   ├── Documentation/               # Documentación del proyecto
+│   ├── Documentation/               # Roadmap, guías, prompts
+│   │   ├── prompts/                # Plantillas para prompts
+│   │   └── ANIMATION_SYSTEM_STATUS.md
 │   │
-│   ├── Prefabs/                     # Prefabs del proyecto
-│   │   ├── Abilities/              # VFX: AoEZone, TrailZone, proyectiles
-│   │   ├── Characters/             # Player, enemies
-│   │   ├── Environment/            # Paredes, rampas, escaleras
-│   │   ├── Items/                 # GoldDrop, etc.
-│   │   └── UI/                    # HUD, status bars, floating text
-│   │       └── Targeting/          # Indicators (circle, line, trail)
+│   ├── Prefabs/
+│   │   ├── Abilities/              # VFX: zones, projectiles, trails
+│   │   ├── Characters/             # Player, Enemy prefabs
+│   │   ├── Environment/            # Walls, ramps
+│   │   └── UI/                    # HUD elements, targeting indicators
 │   │
-│   ├── Scenes/                     # SampleScene
+│   ├── Scenes/                     # SampleScene principal
 │   │
-│   └── Scripts/
-│       ├── Abilities/              # Sistema de habilidades data-driven
-│       │   ├── Core/              # AbilitySystem, AbilityData, AbilityInstance
-│       │   ├── Behaviors/         # AbilityBehaviorFactory
-│       │   ├── Types/             # ProjectileAbility, AoEAbility, etc.
-│       │   ├── Projectiles/       # Projectile, LinearProjectile, HomingProjectile
-│       │   └── AreaEffects/       # AoE zones, trail zones
-│       ├── AI/                    # EnemyAIController
-│       ├── Animation/             # CharacterAnimator, AnimationEventReceiver
-│       ├── Combat/               # RangedCombat, MeleeCombat, DamageInfo
-│       ├── Controllers/          # PlayerInputController
-│       ├── Core/                 # BaseEntity, HeroEntity, EnemyEntity, BaseController
-│       ├── Editor/               # Herramientas de editor + EquipmentTester
-│       ├── Game/                 # GameStateManager, ItemDropInitializer, WaveData
-│       ├── Inventory/           # InventoryComponent, EquipmentComponent, ItemData
-│       ├── Movement/            # XZPlaneMovement
-│       ├── UI/                 # HUD, AbilitySlotUI, ResourceBarUI, FloatingText
-│       │   └── Targeting/       # TargetingManager, indicators
-│       ├── VFX/                # SimpleVFX
-│       └── Visuals/            # LaserSight
+│   └── Scripts/                    # Código fuente (namespace MobaGameplay.*)
+│       ├── Abilities/              # Core, Behaviors, Types, Projectiles
+│       ├── AI/                     # EnemyAIController
+│       ├── Animation/              # CharacterAnimator
+│       ├── Combat/                 # RangedCombat, MeleeCombat (wip), DamageInfo
+│       ├── Controllers/            # PlayerInputController
+│       ├── Core/                   # BaseEntity, HeroEntity, GameStateManager
+│       ├── Editor/                 # Tools (20+ scripts)
+│       ├── Inventory/              # InventoryComponent, EquipmentComponent
+│       ├── Movement/               # XZPlaneMovement
+│       └── UI/                     # HUD, AbilitySlotUI, AmmoUI
 │
-├── StarterAssets/                # Assets base de Unity (IGNORADO por .opencodeignore)
+├── Tests/                          # Tests unitarios (62 pasando)
 │
-├── Tests/                        # Tests unitarios (62 tests pasando)
-│   └── MobaGameplay.Tests.asmdef
-│
-└── docs/                        # Documentación legacy
-    └── DEPLOYMENT.md
+└── .atl/                          # Agent Teams Lite config
+    └── skill-registry.md
 ```
 
 ---
 
-## 7. Guía de Contribución
+## 8. Convenciones de Código
 
-### 7.1 Configurar Git Flow
-
-```bash
-# Clonar repositorio
-git clone https://github.com/tu-usuario/MobaGameplay.git
-cd MobaGameplay
-
-# Crear branch para feature
-git checkout -b feature/nueva-habilidad
-
-# O para bugfix
-git checkout -b fix/bug-de-carga
-```
-
-### 7.2 Convenciones de Commits
-
-```
-formato: <tipo>(<alcance>): <descripción>
-
-tipos:
-  - feat: nueva funcionalidad
-  - fix: corrección de bug
-  - refactor: refactorización sin cambio de funcionalidad
-  - docs: documentación
-  - perf: mejora de rendimiento
-  - test: agregar tests
-  - chore: mantenimiento
-
-ejemplos:
-  feat(combat): agregar charged attack para ranged combat
-  fix(input): cancelar carga al dejar de apuntar
-  refactor(movement): extraer dash logic a método separado
-  docs(readme): actualizar guía de contribución
-```
-
-### 7.3 Checklist Antes de PR
-
-```bash
-# 1. Verificar que el código compila
-# (En Unity: Ctrl+Shift+C o File → Save Project)
-
-# 2. Verificar que no hay errores en Console
-# (Window → General → Console)
-
-# 3. Probar manualmente:
-#    - Movimiento WASD
-#    - Apuntar con click derecho
-#    - Ataque cargado (mantener L-click mientras apunta)
-#    - Habilidades (1, 2, 3)
-#    - Dash (Espacio)
-#    - Morir y verificar que input para
-
-# 4. Verificar Scene sigue guardando
-# (File → Save Scene)
-```
-
-### 7.4 Pull Request Template
-
-```markdown
-## Descripción
-[Descripción breve de los cambios]
-
-## Tipo de Cambio
-- [ ] Bug fix
-- [ ] Nueva feature
-- [ ] Breaking change
-- [ ] Documentación
-
-## Testing
-[ ] Compila sin errores
-[ ] Tests manuales completados:
-- [ ] Movimiento
-- [ ] Combate
-- [ ] Habilidades
-- [ ] Muerte
-
-## Screenshots (si aplica)
-[Agregar screenshots de cambios visuales]
-```
-
----
-
-## 8. Sistema de Input - Referencia Rápida
-
-### Controles
-
-| Input | Acción | Sistema |
-|-------|--------|---------|
-| WASD / Flechas | Movimiento | XZPlaneMovement |
-| Shift (hold) | Sprint | XZPlaneMovement |
-| Right Click (hold) | Apuntar | RangedCombat, LaserSight |
-| Left Click (hold) | Cargar ataque | RangedCombat |
-| Left Click (release) | Disparar | RangedCombat |
-| 1, 2, 3 | Usar habilidad | AbilityController |
-| Space | Dash | XZPlaneMovement |
-| Right Click | Cancelar habilidad | AbilityController |
-
-### Estados del Jugador
-
-```
-┌────────────────────────────────────────────────────────────┐
-│                     INPUT VALIDO                           │
-│                                                              │
-│  isAlive = true                                             │
-│  isAiming = (right click pressed)                          │
-│  isCharging = (left click pressed AND isAiming)            │
-│  hasActiveAbility = (ability in targeting mode)            │
-└────────────────────────────────────────────────────────────┘
-
-Ejemplo de lógica:
-─────────────────────────────────────────────────────────────
-
-if (isAlive && isAiming && hasActiveAbility == false)
-{
-    // PUEDE cargar ataque
-    if (leftClickPressed && canCharge)
-        StartCharging()
-}
-else if (leftClickReleased)
-{
-    // DISPARAR
-    BasicAttack() // Si isCharging → charged attack
-}
-```
-
----
-
-## 9. Extendiendo el Sistema
-
-### 9.1 Crear una Nueva Habilidad
+### Namespaces
 
 ```csharp
-using UnityEngine;
-using MobaGameplay.Core;
-using MobaGameplay.Combat;
-
-namespace TuNamespace
-{
-    public class TuHabilidad : BaseAbility
-    {
-        [Header("Tu Habilidad")]
-        public float damage = 100f;
-        public GameObject effectPrefab;
-
-        protected override void OnExecute(Vector3 targetPosition, BaseEntity targetEntity)
-        {
-            // Tu lógica aquí
-            float finalDamage = damage + ownerEntity.AbilityPower * 0.5f;
-            
-            // Ejemplo: aplicar daño en área
-            Collider[] hits = Physics.OverlapSphere(targetPosition, Range);
-            foreach (var hit in hits)
-            {
-                var entity = hit.GetComponentInParent<BaseEntity>();
-                if (entity != null && entity != ownerEntity)
-                {
-                    entity.TakeDamage(new DamageInfo(finalDamage, DamageType.Magical, ownerEntity));
-                }
-            }
-
-            // Instanciar VFX
-            if (effectPrefab != null)
-            {
-                Instantiate(effectPrefab, targetPosition, Quaternion.identity);
-            }
-        }
-    }
-}
+MobaGameplay.Core        // Entidades, GameState
+MobaGameplay.Movement    // XZPlaneMovement
+MobaGameplay.Combat      // RangedCombat, DamageInfo
+MobaGameplay.Abilities   // AbilitySystem, behaviors
+MobaGameplay.UI          // HUD, barras, inventario
+MobaGameplay.Inventory   // Items, equipamiento
+MobaGameplay.Animation   // CharacterAnimator
 ```
 
-### 9.2 Crear un Nuevo Tipo de Proyectil
+### Commits
 
-```csharp
-using UnityEngine;
-using MobaGameplay.Core;
-using MobaGameplay.Combat;
+Formato: `<tipo>(<scope>): <descripción>`
 
-namespace TuNamespace
-{
-    public class TuProyectil : MonoBehaviour
-    {
-        private Vector3 direction;
-        private float speed;
-        private float damage;
-        private DamageType damageType;
-        private BaseEntity caster;
-        private LayerMask hitLayers;
-
-        public void Initialize(Vector3 dir, float dmg, DamageType type, BaseEntity source, float spd, LayerMask layers)
-        {
-            direction = dir.normalized;
-            speed = spd;
-            damage = dmg;
-            damageType = type;
-            caster = source;
-            hitLayers = layers;
-        }
-
-        private void Update()
-        {
-            // Tu lógica de movimiento
-            transform.position += direction * speed * Time.deltaTime;
-            
-            // Tu lógica de detección de impacto
-            // ...
-        }
-    }
-}
+```bash
+feat(combat): agregar cancelación de recarga
+fix(ammo): corregir UI estática 6/6
+refactor(abilities): migrar a data-driven system
+docs(readme): actualizar controles y arquitectura
 ```
 
 ---
 
-## 10. Solución de Problemas Comunes
+## 9. Solución de Problemas Comunes
 
 ### "El personaje no se mueve"
 
-1. Verificar que `PlayerInputController` está habilitado en el GameObject
-2. Verificar que el `CharacterController` está adjunto
-3. Verificar que `XZPlaneMovement` está en el mismo GameObject
-4. Revisar Console por errores de null reference
+1. Verificar `PlayerInputController` habilitado
+2. Verificar `CharacterController` adjunto
+3. Verificar layer "Ground" en terrain
+
+### "Las animaciones hacen snap-back"
+
+Fixed en sesión 2026-04-19. Causa: import settings de Mixamo con `loopBlendPositionXZ: 1`. Solución: desactivar en `.fbx.meta`.
 
 ### "El ataque cargado no funciona"
 
-1. Verificar que `RangedCombat` está en el GameObject del jugador
-2. Verificar que `BasicAttackProjectile` prefab está asignado en RangedCombat
-3. Verificar que el laser sight aparece (significa que está apuntando)
-4. Revisar `IsOnChargedCooldown` en RangedCombat
+1. Verificar `RangedCombat` en el GameObject
+2. Verificar `BasicAttackProjectile` prefab asignado
+3. Verificar que estás apuntando (Right Click) mientras cargas
 
 ### "Las habilidades no aparecen"
 
-1. Verificar que `AbilityController` tiene las 3 habilidades asignadas
-2. Verificar que los prefabs de abilities están en las ranuras correctas
-3. Verificar que el personaje tiene suficiente mana
-
-### "El outline de hover no funciona"
-
-1. Verificar que el shader `Custom/Outline` existe en el proyecto
-2. Verificar que `HoverOutline` está adjunto al prefab del enemigo
-3. Revisar que el collider tiene la capa correcta
+1. Verificar `AbilitySystem` tiene AbilityData asignados
+2. Verificar targetingType no es "None" en el asset
+3. Verificar mana suficiente
 
 ---
 
-## 11. Registro de Cambios
+## 10. Registro de Cambios
 
-### v0.4.0 (2026-04-11)
-- Documentación actualizada
-- Sistema completo con 62 tests unitarios pasando ✅
-- Assembly definitions configuradas (Runtime, Editor, Tests)
-- Sistema de habilidades data-driven con AbilityData ScriptableObjects
+### v0.5.0 (19-04-2026)
+- ✅ Fix: Roll animation snap-back resuelto
+- ✅ Fix: Character sinking en walk/run resuelto
+- ✅ Fix: 4 bugs de sistema de munición corregidos
+- ✅ Fix: AmmoUI ahora actualiza correctamente
+- ✅ Feat: HealBuffBehavior implementado
+- ✅ Feat: Idle y Roll loop funcionando correctamente
+- ✅ Docs: Roadmap completo creado
 
-### v0.3.0 (2026-04-10)
-- 62 tests unitarios pasando ✅
-- Assembly definitions configuradas
-- Sistema de habilidades migrado a data-driven (AbilitySystem + AbilityData)
-- Cooldown overlay ahora funciona correctamente
-- Bugfixes: críticos duplicados, GoldDrop, Equipment stats, namespaces
+### v0.4.0 (11-04-2026)
+- ✅ Sistema de habilidades data-driven consolidado
+- ✅ 62 tests unitarios pasando
+- ✅ Assembly definitions configuradas
+- ✅ AbilityData ScriptableObjects funcionando
+- ✅ Cooldown overlay funcional
 
-### v0.2.0 (2024)
-- Sistema de charged attack refactorizado
-- Input system optimizado (raycasts reducidos)
-- Mejor manejo de estados y edge cases
-- Hover outline con memory leak fix
+### v0.3.0 (10-04-2026)
+- ✅ Sistema de charged attack refactorizado
+- ✅ Optimización de raycasts en input
+- ✅ Hover outline sin memory leaks
+- ✅ Fixes: críticos duplicados, GoldDrop, Equipment stats
 
-### v0.1.0 (2024)
-- Sistema de input básico implementado
-- Charged attack con cooldown
-- Habilidades con targeting
-- Dash implementado
-- Hover outline funcional
-- Laser sight con feedback visual
+### v0.2.0 (09-04-2026)
+- ✅ Sistema de input básico
+- ✅ Dash implementado
+- ✅ Habilidades con targeting
+- ✅ Laser sight visual
+
+### v0.1.0 (08-04-2026)
+- ✅ Setup inicial proyecto Unity 6
+- ✅ Movimiento WASD básico
+- ✅ Estructura de carpetas `_Project`
+
+---
+
+## 11. Roadmap
+
+Ver [roadmap.md](./roadmap.md) para detalle completo.
+
+**Fase 1: Combate Completo** (70%)
+- ✅ Ranged combat
+- 🟡 Melee combat (pendiente)
+- 🟡 Buff system parcial
+
+**Fase 2: Sistemas MOBA** (0%)
+- ❌ Team system (Blue vs Red)
+- ❌ Tower system
+- ❌ Creep waves
+- ❌ Shop system
+
+**Fase 3: Pulido** (0%)
+- ❌ Scoreboard
+- ❌ Sound system
+- ❌ Balance
+
+**Fase 4: Multiplayer** (Opcional)
+- ❌ Networking
+- ❌ Matchmaking
+
+---
+
+## 12. Recursos
+
+- **Repositorio:** https://github.com/NicoRuedaA/Mobalike
+- **Unity MOBA Reference:** https://github.com/Michael032/Unity-MOBA
+- **Documentación:** `Assets/_Project/Documentation/`
+- **Roadmap:** [roadmap.md](./roadmap.md)
+
+---
+
+*Built with Unity 6 + pasión + vibes rioplatenses* 🇦🇷
