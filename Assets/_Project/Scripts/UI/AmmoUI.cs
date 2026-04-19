@@ -27,6 +27,10 @@ namespace MobaGameplay.UI
         private bool isInitialized = false;
         private HeroEntity heroEntity;
         
+        // Event handler delegates (stored for proper unsubscription)
+        private System.Action<int, int> onReloadCompleteHandler;
+        private System.Action onReloadCancelledHandler;
+        
         private void Awake()
         {
             // Auto-find Text if not set
@@ -106,11 +110,15 @@ namespace MobaGameplay.UI
         {
             if (rangedCombat == null) return;
             
+            // Create handler delegates (stored for proper unsubscription)
+            onReloadCompleteHandler = (current, max) => HideReloadIndicatorAfterReload(current, max);
+            onReloadCancelledHandler = () => HideReloadIndicatorAfterCancel();
+            
             // Subscribe to events with explicit lambda wrappers to avoid ambiguity
             rangedCombat.OnAmmoChanged += UpdateAmmoUI;
             rangedCombat.OnReloadStart += ShowReloadIndicator;
-            rangedCombat.OnReloadComplete += (current, max) => HideReloadIndicatorAfterReload(current, max);
-            rangedCombat.OnReloadCancelled += () => HideReloadIndicatorAfterCancel();
+            rangedCombat.OnReloadComplete += onReloadCompleteHandler;
+            rangedCombat.OnReloadCancelled += onReloadCancelledHandler;
             
             // Initial update
             if (rangedCombat.HasAmmoSystem)
@@ -139,9 +147,11 @@ namespace MobaGameplay.UI
             {
                 rangedCombat.OnAmmoChanged -= UpdateAmmoUI;
                 rangedCombat.OnReloadStart -= ShowReloadIndicator;
-                // Note: C# allows unsubscribing without specifying which overload
-                rangedCombat.OnReloadComplete -= HideReloadIndicator;
-                rangedCombat.OnReloadCancelled -= HideReloadIndicator;
+                // Unsubscribe using stored delegates
+                if (onReloadCompleteHandler != null)
+                    rangedCombat.OnReloadComplete -= onReloadCompleteHandler;
+                if (onReloadCancelledHandler != null)
+                    rangedCombat.OnReloadCancelled -= onReloadCancelledHandler;
             }
         }
         

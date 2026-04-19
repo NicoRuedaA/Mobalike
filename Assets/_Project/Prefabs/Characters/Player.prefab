@@ -1707,19 +1707,14 @@ Animator:
   m_GameObject: {fileID: 6748198931497789682}
   m_Enabled: 1
   m_Avatar: {fileID: 9000000, guid: 36078ab0369161e49a29d349ae3e0739, type: 3}
-  m_Controller: {fileID: 9100000, guid: 40db3173a05ae3242b1c182a09b0a183, type: 2}
+  m_Controller: {fileID: 9100000, guid: 78886d29da8ec964caafd3f946bd7347, type: 2}
   m_CullingMode: 1
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
   m_LinearVelocityBlending: 0
   m_StabilizeFeet: 0
   m_AnimatePhysics: 0
-  m_WarningMessage: "\nBinding warning: Some generic clip(s) animate transforms that
-    are already bound by a Humanoid avatar. These transforms can only be changed
-    by Humanoid clips.\n\tTransform 'Left_LowerArm'\n\tTransform 'Chest'\n\tTransform
-    'Spine'\n\tTransform 'Right_Foot'\n\tTransform 'Right_Toes'\n\tTransform 'Right_LowerLeg'\n\tTransform
-    'UpperChest'\n\tTransform 'Left_Toes'\n\tTransform 'Right_Shoulder'\n\tTransform
-    'Left_Foot'\n\tand more ...\n\tFrom animation clip 'mixamo.com'"
+  m_WarningMessage: 
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
@@ -2001,11 +1996,13 @@ MonoBehaviour:
   groundLayer:
     serializedVersion: 2
     m_Bits: 4294967295
+  ignoreLayerIndex: 8
   jumpHeight: 1.2
   gravity: -20
   dashSpeed: 25
   dashDuration: 0.15
   dashCooldown: 2
+  dashImpactVFXPrefab: {fileID: 3026673575921716240, guid: 68dfa65f369f848408e9c5b7256a66b0, type: 3}
 --- !u!114 &5853232107393476491
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2018,7 +2015,30 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7421306df2f3d1248b33e9e56a03ac4d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MobaGameplay.Animation.CharacterAnimator
-  animator: {fileID: 0}
+  clipIdle: {fileID: 0}
+  clipWalk: {fileID: 0}
+  clipRun: {fileID: 0}
+  clipInAir: {fileID: 0}
+  clipJumpStart: {fileID: 0}
+  clipJumpLand: {fileID: 0}
+  clipDash: {fileID: 0}
+  clipHit: {fileID: 0}
+  clipCast: {fileID: 0}
+  clipDeath: {fileID: 0}
+  clipBasicAttack: {fileID: 0}
+  blendWalkSpeed: 2
+  blendSprintSpeed: 5.335
+  placeholderIdle: Idle
+  placeholderWalk: Walk_N
+  placeholderRun: Run_N
+  placeholderInAir: InAir
+  placeholderJumpStart: JumpStart
+  placeholderJumpLand: JumpLand
+  placeholderDash: Roll
+  placeholderHit: Hit
+  placeholderCast: Cast
+  placeholderDeath: Death
+  placeholderBasicAttack: punch
 --- !u!114 &7018278147091297895
 MonoBehaviour:
   m_ObjectHideFlags: 0
