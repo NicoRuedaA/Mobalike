@@ -97,3 +97,23 @@ InitTestScene*.unity*
 
 # Auto-generated scenes by play mode tests
 /[Aa]ssets/[Ii]nit[Tt]est[Ss]cene*.unity*
+
+
+# AI dev tools (local only)
+.atl/
+.bezisidekick/
+.engram/
+.mcpignore
+.opencodeignore
+.ignore
+
+# Process / planning files (not part of the game)
+idea_inicial_plantilla.md
+scrape_supervive.py
+
+# IDE
+.idea/
+.vscode/
+
+# Accidental files
+et --hard
