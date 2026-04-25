@@ -5,7 +5,7 @@
 Un prototipo de MOBA estilo League of Legends/Dota 2/Supervive construido con **Unity 6 (6000.0.29f1)** y el New Input System. Sistema data-driven con arquitectura modular "Brain and Body".
 
 > **Estado actual:** ~60-70% completo (single-player funcional)  
-> **Última actualización:** 2026-04-19
+> **Última actualización:** 2026-04-25
 
 ---
 
