@@ -1,5 +1,10 @@
 # Mobalike — MOBA Prototype in Unity 6
 
+![Unity](https://img.shields.io/badge/Unity-6000.0.29f1-black?logo=unity)
+![C#](https://img.shields.io/badge/C%23-10.0-purple?logo=csharp)
+![Status](https://img.shields.io/badge/Status-60--70%25%20Complete-yellow)
+![Tests](https://img.shields.io/badge/Tests-62%20passing-brightgreen)
+
 A League of Legends/Dota 2/Supervive-style MOBA prototype built with **Unity 6 (6000.0.29f1)** and the New Input System. Data-driven system with modular "Brain and Body" architecture.
 
 > **Current Status:** ~60-70% complete (functional single-player)  
